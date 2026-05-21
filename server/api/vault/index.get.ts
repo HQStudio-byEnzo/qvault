@@ -1,0 +1,40 @@
+/**
+ * GET /api/vault
+ * Récupère tous les éléments du coffre-fort de l'utilisateur connecté
+ * Supporte le filtrage par type et la recherche
+ */
+export default defineEventHandler(async (event) => {
+  const session = await requireAuth(event)
+  const db = useDB(event)
+  const query = getQuery(event)
+
+  const type = query.type as string | undefined
+  const search = query.search as string | undefined
+  const favorites = query.favorites === 'true'
+
+  let sql = 'SELECT * FROM vault_items WHERE user_id = ?'
+  const params: unknown[] = [session.user.id]
+
+  if (type && ['link', 'password', 'crypto'].includes(type)) {
+    sql += ' AND type = ?'
+    params.push(type)
+  }
+
+  if (favorites) {
+    sql += ' AND favorite = 1'
+  }
+
+  if (search) {
+    sql += ' AND (label LIKE ? OR (is_encrypted = 0 AND payload LIKE ?))'
+    params.push(`%${search}%`, `%${search}%`)
+  }
+
+  sql += ' ORDER BY favorite DESC, created_at DESC'
+
+  const result = await db.prepare(sql).bind(...params).all()
+
+  return {
+    items: result.results,
+    count: result.results.length,
+  }
+})

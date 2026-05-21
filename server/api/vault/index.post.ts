@@ -32,31 +32,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Vérification des limites (plan Free)
-  const config = useRuntimeConfig()
-  const user = session.user as any
-
-  if (!user.premium_until || new Date(user.premium_until) < new Date()) {
-    // Utilisateur Free - vérifier les limites
-    if (type === 'password' || type === 'crypto') {
-      const countResult = await db
-        .prepare('SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND type = ?')
-        .bind(session.user.id, type)
-        .first<{ count: number }>()
-
-      const limit = type === 'password' 
-        ? config.public.freeLimits.passwords 
-        : config.public.freeLimits.crypto
-
-      if (countResult && countResult.count >= limit) {
-        throw createError({
-          statusCode: 403,
-          message: `Limite atteinte (${limit} ${type}s). Passez au plan Premium pour un stockage illimité.`,
-        })
-      }
-    }
-  }
-
   // Génération de l'ID
   const id = crypto.randomUUID()
 

@@ -11,12 +11,6 @@
       </button>
     </div>
 
-    <!-- Limit warning -->
-    <div v-if="stats?.limits && !stats.isPremium" class="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-400 flex items-center gap-2">
-      <Icon name="lucide:alert-triangle" class="w-4 h-4 flex-shrink-0" />
-      <span>Plan Free : {{ stats.counts.passwords }}/{{ stats.limits.passwords }} mots de passe utilisés.</span>
-    </div>
-
     <div v-if="loading" class="flex items-center justify-center py-12">
       <Icon name="lucide:loader-2" class="w-6 h-6 text-accent-400 animate-spin" />
     </div>
@@ -55,7 +49,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-const { items, stats, loading, fetchItems, fetchStats, toggleFavorite, deleteItem } = useVault()
+const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
 
@@ -68,6 +62,5 @@ async function handleDelete(id: string) {
 
 onMounted(() => {
   fetchItems({ type: 'password' })
-  fetchStats()
 })
 </script>

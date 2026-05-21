@@ -40,9 +40,6 @@
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-surface-200 truncate">{{ user?.name }}</p>
-            <p class="text-xs text-surface-500 truncate">
-              {{ isPremium ? 'Premium' : 'Free' }}
-            </p>
           </div>
           <button @click="signOut" class="p-1.5 rounded-lg hover:bg-surface-800 text-surface-400 hover:text-surface-200 transition-colors">
             <Icon name="lucide:log-out" class="w-4 h-4" />
@@ -100,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-const { user, isPremium, signOut } = useAuthClient()
+const { user, signOut } = useAuthClient()
 const mobileMenuOpen = ref(false)
 
 const navItems = [

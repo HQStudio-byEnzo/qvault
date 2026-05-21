@@ -11,12 +11,6 @@
       </button>
     </div>
 
-    <!-- Limit warning -->
-    <div v-if="stats?.limits && !stats.isPremium" class="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-400 flex items-center gap-2">
-      <Icon name="lucide:alert-triangle" class="w-4 h-4 flex-shrink-0" />
-      <span>Plan Free : {{ stats.counts.crypto }}/{{ stats.limits.crypto }} éléments crypto utilisés.</span>
-    </div>
-
     <!-- Security notice -->
     <div class="p-3 rounded-lg bg-accent-500/10 border border-accent-500/20 text-sm text-accent-300 flex items-center gap-2">
       <Icon name="lucide:shield-check" class="w-4 h-4 flex-shrink-0" />
@@ -61,7 +55,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-const { items, stats, loading, fetchItems, fetchStats, toggleFavorite, deleteItem } = useVault()
+const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
 
@@ -74,6 +68,5 @@ async function handleDelete(id: string) {
 
 onMounted(() => {
   fetchItems({ type: 'crypto' })
-  fetchStats()
 })
 </script>

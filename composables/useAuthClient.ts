@@ -6,10 +6,6 @@ export function useAuthClient() {
   const user = useState<any | null>('auth-user', () => null)
   const session = useState<any | null>('auth-session', () => null)
   const loading = useState('auth-loading', () => true)
-  const isPremium = computed(() => {
-    if (!user.value?.premium_until) return false
-    return new Date(user.value.premium_until) > new Date()
-  })
 
   /**
    * Récupère la session courante
@@ -83,7 +79,6 @@ export function useAuthClient() {
     user,
     session,
     loading,
-    isPremium,
     fetchSession,
     signUp,
     signIn,

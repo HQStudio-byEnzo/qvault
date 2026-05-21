@@ -29,15 +29,6 @@ export function useAuth(event: H3Event) {
         expiresIn: 60 * 60 * 24 * 7, // 7 jours
         updateAge: 60 * 60 * 24, // Rafraîchir après 1 jour
       },
-      user: {
-        additionalFields: {
-          premium_until: {
-            type: 'string',
-            required: false,
-            defaultValue: null,
-          },
-        },
-      },
       trustedOrigins: [config.betterAuthUrl],
     })
   }

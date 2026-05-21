@@ -1,6 +1,6 @@
 # Kipit - Coffre-fort Numérique Zero-Knowledge
 
-Kipit est une application de coffre-fort numérique sécurisée qui permet de stocker des liens, mots de passe et clés crypto avec un chiffrement zero-knowledge côté client.
+Kipit est une application de coffre-fort numérique sécurisée et 100% gratuite qui permet de stocker des liens, mots de passe et clés crypto avec un chiffrement zero-knowledge côté client.
 
 ## Architecture de Sécurité
 
@@ -14,18 +14,17 @@ Kipit est une application de coffre-fort numérique sécurisée qui permet de st
 - **Framework** : Nuxt 3 (SSR activé)
 - **Base de données** : Cloudflare D1 (SQLite)
 - **Authentification** : BetterAuth
-- **Paiement** : Flutterwave (Mobile Money - M-Pesa, Orange Money, Airtel Money)
 - **UI** : TailwindCSS avec un design minimaliste inspiré Linear/Vercel
 - **Déploiement** : Cloudflare Pages
 
-## Business Model
+## Fonctionnalités
 
-| Feature | Free | Premium (2,99 €/mois) |
-|---------|------|----------------------|
-| Liens | Illimité | Illimité |
-| Mots de passe | 15 max | Illimité |
-| Crypto | 15 max | Illimité |
-| Paiement | - | Mobile Money (RDC) |
+- Liens illimités
+- Mots de passe illimités
+- Clés crypto illimitées
+- Chiffrement optionnel par élément (zero-knowledge)
+- Favoris et recherche
+- Interface responsive (mobile + desktop)
 
 ## Installation
 
@@ -71,7 +70,6 @@ npm run build
 ├── server/
 │   ├── api/auth/[...all].ts   # Routes BetterAuth
 │   ├── api/vault/             # CRUD coffre-fort
-│   ├── api/payment/           # Intégration Flutterwave
 │   ├── database/schema.sql    # Schéma D1
 │   └── utils/                 # Utilitaires serveur
 └── public/

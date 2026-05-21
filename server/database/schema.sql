@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT NOT NULL UNIQUE,
   email_verified INTEGER DEFAULT 0,
   image TEXT,
-  premium_until TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -76,22 +75,3 @@ CREATE TABLE IF NOT EXISTS vault_items (
 CREATE INDEX IF NOT EXISTS idx_vault_items_user_id ON vault_items(user_id);
 CREATE INDEX IF NOT EXISTS idx_vault_items_user_type ON vault_items(user_id, type);
 CREATE INDEX IF NOT EXISTS idx_vault_items_favorite ON vault_items(user_id, favorite);
-
--- ============================================
--- Table des paiements
--- ============================================
-CREATE TABLE IF NOT EXISTS payments (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  flutterwave_ref TEXT,
-  flutterwave_tx_id TEXT,
-  amount REAL NOT NULL,
-  currency TEXT NOT NULL DEFAULT 'EUR',
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'successful', 'failed', 'cancelled')),
-  payment_method TEXT,
-  created_at TEXT DEFAULT (datetime('now')),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
-CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);

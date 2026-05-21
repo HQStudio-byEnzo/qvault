@@ -17,10 +17,6 @@ export default defineEventHandler(async (event) => {
       .bind(session.user.id).first<{ count: number }>(),
   ])
 
-  const config = useRuntimeConfig()
-  const user = session.user as any
-  const isPremium = user.premium_until && new Date(user.premium_until) > new Date()
-
   return {
     counts: {
       links: links?.count || 0,
@@ -29,10 +25,5 @@ export default defineEventHandler(async (event) => {
       favorites: favorites?.count || 0,
       total: (links?.count || 0) + (passwords?.count || 0) + (crypto?.count || 0),
     },
-    limits: isPremium ? null : {
-      passwords: config.public.freeLimits.passwords,
-      crypto: config.public.freeLimits.crypto,
-    },
-    isPremium,
   }
 })

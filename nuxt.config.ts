@@ -17,6 +17,14 @@ export default defineNuxtConfig({
     experimental: {
       database: true,
     },
+    // Inclure les modules better-auth dans le bundle (pas en external)
+    externals: {
+      inline: [
+        'better-auth',
+        '@better-auth/infra',
+        '@better-auth/core',
+      ],
+    },
   },
 
   // Variables d'environnement runtime

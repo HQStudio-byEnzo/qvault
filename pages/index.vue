@@ -36,7 +36,7 @@
         <!-- Title -->
         <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
           Gardez vos secrets<br>
-          <span class="bg-gradient-to-r from-accent-400 to-purple-400 bg-clip-text text-transparent">en sécurité absolue</span>
+          <span class="bg-gradient-to-r from-accent-400 to-emerald-300 bg-clip-text text-transparent">en sécurité absolue</span>
         </h1>
 
         <!-- Subtitle -->

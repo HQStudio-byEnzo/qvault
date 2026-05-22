@@ -1,17 +1,19 @@
 /**
  * POST /api/payment/create
  * Crée un paiement crypto via NOWPayments
- * L'utilisateur reçoit une adresse crypto pour payer
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
   const config = useRuntimeConfig()
   const body = await readBody(event)
 
-  const { crypto: payCrypto } = body // 'usdttrc20' | 'btc' | 'ltc' | 'eth'
+  const { crypto: payCrypto } = body
 
   if (!config.nowpaymentsApiKey) {
-    throw createError({ statusCode: 500, message: 'Paiement non configuré.' })
+    throw createError({
+      statusCode: 503,
+      message: 'Le système de paiement n\'est pas encore configuré. Contactez l\'administrateur.',
+    })
   }
 
   const db = useDB()
@@ -29,30 +31,41 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  const appUrl = config.appUrl || 'https://kipit-two.vercel.app'
+
   // Créer le paiement via NOWPayments
-  const nowResponse = await $fetch<any>('https://api.nowpayments.io/v1/invoice', {
-    method: 'POST',
-    headers: {
-      'x-api-key': config.nowpaymentsApiKey,
-      'Content-Type': 'application/json',
-    },
-    body: {
-      price_amount: 2.99,
-      price_currency: 'usd',
-      pay_currency: payCrypto || 'usdttrc20',
-      order_id: `kipit-${session.user.id}-${Date.now()}`,
-      order_description: 'Kipit Premium - 30 jours',
-      ipn_callback_url: `${config.appUrl}/api/payment/webhook`,
-      success_url: `${config.appUrl}/dashboard/settings?payment=success`,
-      cancel_url: `${config.appUrl}/dashboard/settings?payment=cancelled`,
-    },
-  })
+  let nowResponse: any
+  try {
+    nowResponse = await $fetch<any>('https://api.nowpayments.io/v1/invoice', {
+      method: 'POST',
+      headers: {
+        'x-api-key': config.nowpaymentsApiKey,
+        'Content-Type': 'application/json',
+      },
+      body: {
+        price_amount: 2.99,
+        price_currency: 'usd',
+        pay_currency: payCrypto || 'usdttrc20',
+        order_id: `kipit-${session.user.id}-${Date.now()}`,
+        order_description: 'Kipit Premium - 30 jours',
+        ipn_callback_url: `${appUrl}/api/payment/webhook`,
+        success_url: `${appUrl}/dashboard/settings?payment=success`,
+        cancel_url: `${appUrl}/dashboard/settings?payment=cancelled`,
+      },
+    })
+  } catch (err: any) {
+    console.error('NOWPayments error:', err?.data || err?.message || err)
+    throw createError({
+      statusCode: 502,
+      message: 'Erreur lors de la création du paiement. Réessayez dans quelques instants.',
+    })
+  }
 
   // Sauvegarder en BDD
   const paymentId = crypto.randomUUID()
   await db.execute({
     sql: "INSERT INTO payments (id, user_id, amount, currency, crypto, status, nowpayments_id, created_at) VALUES (?, ?, ?, ?, ?, 'pending', ?, datetime('now'))",
-    args: [paymentId, session.user.id, 2.99, 'USD', payCrypto || 'usdttrc20', String(nowResponse.id)],
+    args: [paymentId, session.user.id, 2.99, 'USD', payCrypto || 'usdttrc20', String(nowResponse.id || '')],
   })
 
   return {

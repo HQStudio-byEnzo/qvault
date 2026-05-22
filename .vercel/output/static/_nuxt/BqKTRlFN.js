@@ -1,0 +1,1 @@
+import{X as s,S as a,q as r,t as u,s as o}from"./Cdz2o_EX.js";function i(e){const t=e||a();return t?.ssrContext?.head||t?.runWithContext(()=>{if(r())return u(o)})}function x(e,t={}){const n=i(t.nuxt);if(n)return s(e,{head:n,...t})}export{x as u};

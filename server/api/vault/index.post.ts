@@ -5,7 +5,7 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  const db = useDB(event)
+  const db = useDB()
   const body = await readBody(event)
 
   // Validation
@@ -35,12 +35,10 @@ export default defineEventHandler(async (event) => {
   // Génération de l'ID
   const id = crypto.randomUUID()
 
-  await db
-    .prepare(
-      'INSERT INTO vault_items (id, user_id, type, label, is_encrypted, payload, iv, favorite, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, datetime(\'now\'), datetime(\'now\'))'
-    )
-    .bind(id, session.user.id, type, label || '', is_encrypted ? 1 : 0, payload, iv || null)
-    .run()
+  await db.execute({
+    sql: 'INSERT INTO vault_items (id, user_id, type, label, is_encrypted, payload, iv, favorite, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, datetime(\'now\'), datetime(\'now\'))',
+    args: [id, session.user.id, type, label || '', is_encrypted ? 1 : 0, payload, iv || null],
+  })
 
   return {
     id,

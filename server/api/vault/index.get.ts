@@ -1,11 +1,10 @@
 /**
  * GET /api/vault
  * Récupère tous les éléments du coffre-fort de l'utilisateur connecté
- * Supporte le filtrage par type et la recherche
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  const db = useDB(event)
+  const db = useDB()
   const query = getQuery(event)
 
   const type = query.type as string | undefined
@@ -13,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const favorites = query.favorites === 'true'
 
   let sql = 'SELECT * FROM vault_items WHERE user_id = ?'
-  const params: unknown[] = [session.user.id]
+  const params: any[] = [session.user.id]
 
   if (type && ['link', 'password', 'crypto'].includes(type)) {
     sql += ' AND type = ?'
@@ -31,10 +30,10 @@ export default defineEventHandler(async (event) => {
 
   sql += ' ORDER BY favorite DESC, created_at DESC'
 
-  const result = await db.prepare(sql).bind(...params).all()
+  const result = await db.execute({ sql, args: params })
 
   return {
-    items: result.results,
-    count: result.results.length,
+    items: result.rows,
+    count: result.rows.length,
   }
 })

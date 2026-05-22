@@ -11,12 +11,9 @@ export default defineNuxtConfig({
     '@nuxt/icon',
   ],
 
-  // Configuration Nitro pour Cloudflare D1
+  // Configuration Nitro pour Vercel
   nitro: {
-    preset: 'cloudflare-pages',
-    experimental: {
-      database: true,
-    },
+    preset: 'vercel',
   },
 
   // Variables d'environnement runtime
@@ -24,6 +21,8 @@ export default defineNuxtConfig({
     // Clés privées (serveur uniquement)
     betterAuthSecret: process.env.BETTER_AUTH_SECRET || 'kipit-dev-secret-change-in-production',
     betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+    tursoDbUrl: process.env.TURSO_DB_URL || '',
+    tursoDbToken: process.env.TURSO_DB_TOKEN || '',
     // Clés publiques (client + serveur)
     public: {
       appName: 'Kipit',

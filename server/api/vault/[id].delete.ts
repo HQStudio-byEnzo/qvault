@@ -4,7 +4,7 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  const db = useDB(event)
+  const db = useDB()
   const id = getRouterParam(event, 'id')
 
   if (!id) {
@@ -12,19 +12,19 @@ export default defineEventHandler(async (event) => {
   }
 
   // Vérifier que l'item appartient à l'utilisateur
-  const existing = await db
-    .prepare('SELECT id FROM vault_items WHERE id = ? AND user_id = ?')
-    .bind(id, session.user.id)
-    .first()
+  const existing = await db.execute({
+    sql: 'SELECT id FROM vault_items WHERE id = ? AND user_id = ?',
+    args: [id, session.user.id],
+  })
 
-  if (!existing) {
+  if (existing.rows.length === 0) {
     throw createError({ statusCode: 404, message: 'Élément non trouvé.' })
   }
 
-  await db
-    .prepare('DELETE FROM vault_items WHERE id = ? AND user_id = ?')
-    .bind(id, session.user.id)
-    .run()
+  await db.execute({
+    sql: 'DELETE FROM vault_items WHERE id = ? AND user_id = ?',
+    args: [id, session.user.id],
+  })
 
   return { message: 'Élément supprimé.' }
 })

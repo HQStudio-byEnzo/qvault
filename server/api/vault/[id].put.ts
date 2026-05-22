@@ -4,7 +4,7 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  const db = useDB(event)
+  const db = useDB()
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
 
@@ -13,17 +13,17 @@ export default defineEventHandler(async (event) => {
   }
 
   // Vérifier que l'item appartient à l'utilisateur
-  const existing = await db
-    .prepare('SELECT id FROM vault_items WHERE id = ? AND user_id = ?')
-    .bind(id, session.user.id)
-    .first()
+  const existing = await db.execute({
+    sql: 'SELECT id FROM vault_items WHERE id = ? AND user_id = ?',
+    args: [id, session.user.id],
+  })
 
-  if (!existing) {
+  if (existing.rows.length === 0) {
     throw createError({ statusCode: 404, message: 'Élément non trouvé.' })
   }
 
   const updates: string[] = []
-  const params: unknown[] = []
+  const params: any[] = []
 
   if (body.label !== undefined) {
     updates.push('label = ?')
@@ -50,13 +50,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Aucune modification fournie.' })
   }
 
-  updates.push('updated_at = datetime(\'now\')')
+  updates.push("updated_at = datetime('now')")
   params.push(id, session.user.id)
 
-  await db
-    .prepare(`UPDATE vault_items SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`)
-    .bind(...params)
-    .run()
+  await db.execute({
+    sql: `UPDATE vault_items SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
+    args: params,
+  })
 
   return { message: 'Élément mis à jour.' }
 })

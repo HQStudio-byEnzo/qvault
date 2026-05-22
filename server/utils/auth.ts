@@ -5,19 +5,17 @@ let authInstance: ReturnType<typeof betterAuth> | null = null
 
 /**
  * Initialise et retourne l'instance BetterAuth
- * L'authentification fonctionne de manière autonome (self-hosted)
+ * Utilise Turso (LibSQL) comme base de données
  */
 export function useAuth(event: H3Event) {
   const config = useRuntimeConfig()
-  
-  // Récupère la DB D1
-  const { DB } = (event.context.cloudflare?.env || {}) as { DB?: any }
-  
-  if (!authInstance || DB) {
+
+  if (!authInstance) {
     authInstance = betterAuth({
       database: {
-        type: 'd1',
-        db: DB,
+        type: 'sqlite',
+        url: config.tursoDbUrl,
+        authToken: config.tursoDbToken,
       },
       secret: config.betterAuthSecret,
       baseURL: config.betterAuthUrl,
@@ -42,7 +40,7 @@ export function useAuth(event: H3Event) {
 export async function getUserSession(event: H3Event) {
   const auth = useAuth(event)
   const headers = getHeaders(event)
-  
+
   const session = await auth.api.getSession({
     headers: new Headers(headers as Record<string, string>),
   })
@@ -56,7 +54,7 @@ export async function getUserSession(event: H3Event) {
  */
 export async function requireAuth(event: H3Event) {
   const session = await getUserSession(event)
-  
+
   if (!session?.user) {
     throw createError({
       statusCode: 401,

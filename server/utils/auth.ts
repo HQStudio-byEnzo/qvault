@@ -1,11 +1,12 @@
 import { betterAuth } from 'better-auth'
+import { dash } from '@better-auth/dash'
 import type { H3Event } from 'h3'
 
 let authInstance: ReturnType<typeof betterAuth> | null = null
 
 /**
  * Initialise et retourne l'instance BetterAuth
- * Utilise un pattern singleton pour éviter les recréations
+ * Connecté au dashboard Better Auth Infrastructure
  */
 export function useAuth(event: H3Event) {
   const config = useRuntimeConfig()
@@ -30,6 +31,11 @@ export function useAuth(event: H3Event) {
         updateAge: 60 * 60 * 24, // Rafraîchir après 1 jour
       },
       trustedOrigins: [config.betterAuthUrl],
+      plugins: [
+        dash({
+          apiKey: config.betterAuthApiKey,
+        }),
+      ],
     })
   }
 

@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
   // Trouver l'utilisateur
   const result = await db.execute({
-    sql: 'SELECT id, name, email, password FROM users WHERE email = ?',
+    sql: 'SELECT id, name, email, password, email_verified FROM users WHERE email = ?',
     args: [email.toLowerCase()],
   })
 
@@ -32,8 +32,16 @@ export default defineEventHandler(async (event) => {
 
   // Créer la session
   await setUserSession(event, {
-    user: { id: user.id, name: user.name, email: user.email },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      emailVerified: user.email_verified === 1,
+    },
   })
 
-  return { user: { id: user.id, name: user.name, email: user.email } }
+  return {
+    user: { id: user.id, name: user.name, email: user.email },
+    needsVerification: user.email_verified !== 1,
+  }
 })

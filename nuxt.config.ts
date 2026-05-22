@@ -25,6 +25,8 @@ export default defineNuxtConfig({
     // Base de données Turso
     tursoDbUrl: process.env.TURSO_DB_URL || '',
     tursoDbToken: process.env.TURSO_DB_TOKEN || '',
+    // Resend (email)
+    resendApiKey: process.env.RESEND_API_KEY || '',
     // Public
     public: {
       appName: 'Kipit',

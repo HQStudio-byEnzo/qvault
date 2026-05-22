@@ -1,6 +1,7 @@
 /**
  * POST /api/auth/register
  * Inscription par email/mot de passe
+ * Envoie un code de vérification par email
  */
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -26,19 +27,28 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, message: 'Un compte existe déjà avec cet email.' })
   }
 
-  // Créer l'utilisateur
+  // Créer l'utilisateur (non vérifié)
   const id = crypto.randomUUID()
   const hashedPassword = await hashPassword(password)
+  const code = generateVerificationCode()
+  const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString() // 15 min
 
   await db.execute({
-    sql: "INSERT INTO users (id, name, email, password, created_at) VALUES (?, ?, ?, ?, datetime('now'))",
-    args: [id, name, email.toLowerCase(), hashedPassword],
+    sql: "INSERT INTO users (id, name, email, password, email_verified, verification_code, verification_expires, created_at) VALUES (?, ?, ?, ?, 0, ?, ?, datetime('now'))",
+    args: [id, name, email.toLowerCase(), hashedPassword, code, expires],
   })
 
-  // Créer la session
+  // Envoyer l'email de vérification
+  try {
+    await sendVerificationEmail(email.toLowerCase(), name, code)
+  } catch (err) {
+    console.error('Erreur envoi email:', err)
+  }
+
+  // Créer la session (mais marquer comme non vérifié)
   await setUserSession(event, {
-    user: { id, name, email: email.toLowerCase() },
+    user: { id, name, email: email.toLowerCase(), emailVerified: false },
   })
 
-  return { user: { id, name, email: email.toLowerCase() } }
+  return { user: { id, name, email: email.toLowerCase() }, needsVerification: true }
 })

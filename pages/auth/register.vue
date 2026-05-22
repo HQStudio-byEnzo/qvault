@@ -129,7 +129,7 @@ async function handleRegister() {
       email: form.email,
       password: form.password,
     })
-    navigateTo('/dashboard')
+    navigateTo('/auth/verify')
   } catch (err: any) {
     errorMsg.value = err.data?.message || 'Erreur lors de la création du compte.'
   } finally {

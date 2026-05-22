@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth'
-import { dash } from '@better-auth/dash'
+import { dash } from '@better-auth/infra'
 import type { H3Event } from 'h3'
 
 let authInstance: ReturnType<typeof betterAuth> | null = null

@@ -27,9 +27,19 @@ export default defineNuxtConfig({
     tursoDbToken: process.env.TURSO_DB_TOKEN || '',
     // Resend (email)
     resendApiKey: process.env.RESEND_API_KEY || '',
+    // NOWPayments (crypto)
+    nowpaymentsApiKey: process.env.NOWPAYMENTS_API_KEY || '',
+    nowpaymentsIpnSecret: process.env.NOWPAYMENTS_IPN_SECRET || '',
+    // App URL (pour les callbacks)
+    appUrl: process.env.APP_URL || 'http://localhost:3000',
     // Public
     public: {
       appName: 'Kipit',
+      premiumPrice: 2.99,
+      freeLimits: {
+        passwords: 15,
+        crypto: 15,
+      },
     },
   },
 

@@ -17,14 +17,6 @@ export default defineNuxtConfig({
     experimental: {
       database: true,
     },
-    // Inclure les modules better-auth dans le bundle (pas en external)
-    externals: {
-      inline: [
-        'better-auth',
-        '@better-auth/infra',
-        '@better-auth/core',
-      ],
-    },
   },
 
   // Variables d'environnement runtime
@@ -32,7 +24,6 @@ export default defineNuxtConfig({
     // Clés privées (serveur uniquement)
     betterAuthSecret: process.env.BETTER_AUTH_SECRET || 'kipit-dev-secret-change-in-production',
     betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
-    betterAuthApiKey: process.env.BETTER_AUTH_API_KEY || '',
     // Clés publiques (client + serveur)
     public: {
       appName: 'Kipit',

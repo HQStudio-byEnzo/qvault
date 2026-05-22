@@ -231,14 +231,7 @@
           </div>
           <span class="text-sm font-medium text-surface-400">Kipit</span>
         </div>
-        <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit. Conçu avec sécurité en RDC.</p>
-        <div class="flex items-center gap-4 text-sm text-surface-500">
-          <span>Nuxt 3</span>
-          <span class="w-1 h-1 rounded-full bg-surface-700"></span>
-          <span>Turso</span>
-          <span class="w-1 h-1 rounded-full bg-surface-700"></span>
-          <span>Vercel</span>
-        </div>
+        <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — par la <span class="text-surface-300 font-medium">Team RootLayer</span></p>
       </div>
     </footer>
   </div>

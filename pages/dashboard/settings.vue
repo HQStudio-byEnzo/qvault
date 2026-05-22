@@ -97,99 +97,7 @@
       </form>
     </section>
 
-    <!-- Premium section -->
-    <section class="card space-y-4">
-      <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-        <Icon name="lucide:crown" class="w-5 h-5 text-accent-400" />
-        Premium
-      </h2>
 
-      <div v-if="isPremium" class="p-4 rounded-lg bg-accent-500/10 border border-accent-500/20">
-        <div class="flex items-center gap-2 mb-2">
-          <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400" />
-          <span class="font-medium text-white">Plan Premium actif</span>
-        </div>
-        <p class="text-sm text-surface-400">
-          Actif jusqu'au <span class="text-surface-200 font-medium">{{ formatDate(premiumUntil) }}</span>.
-          Tout est illimité.
-        </p>
-      </div>
-
-      <div v-else class="space-y-4">
-        <div class="p-4 rounded-lg bg-surface-800 border border-surface-700">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <p class="font-semibold text-white">Plan Free</p>
-              <p class="text-xs text-surface-500">Limites actuelles</p>
-            </div>
-          </div>
-          <ul class="text-sm text-surface-400 space-y-1.5">
-            <li class="flex items-center gap-2">
-              <Icon name="lucide:check" class="w-3.5 h-3.5 text-green-400" />
-              Liens illimités
-            </li>
-            <li class="flex items-center gap-2">
-              <Icon name="lucide:x" class="w-3.5 h-3.5 text-red-400" />
-              Mots de passe limités à 15
-            </li>
-            <li class="flex items-center gap-2">
-              <Icon name="lucide:x" class="w-3.5 h-3.5 text-red-400" />
-              Crypto limité à 15
-            </li>
-          </ul>
-        </div>
-
-        <div class="p-4 rounded-lg bg-accent-900/20 border border-accent-600/30">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <p class="font-semibold text-white flex items-center gap-2">
-                <Icon name="lucide:crown" class="w-4 h-4 text-accent-400" />
-                Premium
-              </p>
-              <p class="text-sm text-surface-400">Tout illimité, pour toujours</p>
-            </div>
-            <div class="text-right">
-              <p class="text-2xl font-bold text-white">2,99$</p>
-              <p class="text-xs text-surface-500">/mois en crypto</p>
-            </div>
-          </div>
-
-          <ul class="text-sm text-surface-400 space-y-1.5 mb-5">
-            <li class="flex items-center gap-2">
-              <Icon name="lucide:check" class="w-3.5 h-3.5 text-green-400" />
-              Liens, mots de passe, crypto illimités
-            </li>
-            <li class="flex items-center gap-2">
-              <Icon name="lucide:check" class="w-3.5 h-3.5 text-green-400" />
-              Paiement en USDT, BTC, ETH, LTC
-            </li>
-          </ul>
-
-          <div class="grid grid-cols-2 gap-2">
-            <button @click="initPayment('usdttrc20')" :disabled="payLoading" class="btn-primary flex items-center justify-center gap-2 text-sm">
-              <Icon name="lucide:circle-dollar-sign" class="w-4 h-4" />
-              USDT
-            </button>
-            <button @click="initPayment('btc')" :disabled="payLoading" class="btn-secondary flex items-center justify-center gap-2 text-sm">
-              <Icon name="lucide:bitcoin" class="w-4 h-4" />
-              BTC
-            </button>
-            <button @click="initPayment('eth')" :disabled="payLoading" class="btn-secondary flex items-center justify-center gap-2 text-sm">
-              ETH
-            </button>
-            <button @click="initPayment('ltc')" :disabled="payLoading" class="btn-secondary flex items-center justify-center gap-2 text-sm">
-              LTC
-            </button>
-          </div>
-
-          <p v-if="payError" class="text-sm text-red-400 mt-3">{{ payError }}</p>
-          <p v-if="payLoading" class="text-sm text-surface-400 mt-3 flex items-center gap-2">
-            <Icon name="lucide:loader-2" class="w-4 h-4 animate-spin" />
-            Création du paiement...
-          </p>
-        </div>
-      </div>
-    </section>
 
     <!-- Security section -->
     <section class="card space-y-4">
@@ -261,44 +169,6 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user, signOut } = useAuthClient()
-
-// Premium
-const isPremium = ref(false)
-const premiumUntil = ref<string | null>(null)
-const payLoading = ref(false)
-const payError = ref('')
-
-onMounted(async () => {
-  try {
-    const status = await $fetch<any>('/api/payment/status')
-    isPremium.value = status.isPremium
-    premiumUntil.value = status.premiumUntil
-  } catch {}
-
-  // Check URL params for payment callback
-  const route = useRoute()
-  if (route.query.payment === 'success') {
-    isPremium.value = true
-  }
-})
-
-async function initPayment(crypto: string) {
-  payLoading.value = true
-  payError.value = ''
-  try {
-    const response = await $fetch<{ invoice_url: string }>('/api/payment/create', {
-      method: 'POST',
-      body: { crypto },
-    })
-    if (response.invoice_url) {
-      window.location.href = response.invoice_url
-    }
-  } catch (err: any) {
-    payError.value = err.data?.message || 'Erreur lors de la création du paiement.'
-  } finally {
-    payLoading.value = false
-  }
-}
 
 // Change password
 const pwdForm = reactive({ currentPassword: '', newPassword: '', confirmPassword: '' })

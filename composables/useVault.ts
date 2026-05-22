@@ -26,9 +26,6 @@ export interface VaultStats {
     favorites: number
     total: number
   }
-  isPremium: boolean
-  premiumUntil: string | null
-  limits: { passwords: number; crypto: number } | null
 }
 
 export function useVault() {

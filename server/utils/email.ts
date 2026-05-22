@@ -27,7 +27,7 @@ export async function sendVerificationEmail(email: string, name: string, code: s
   const resend = getResend()
 
   await resend.emails.send({
-    from: 'Kipit <noreply@kipit.app>',
+    from: 'Kipit <onboarding@resend.dev>',
     to: email,
     subject: `${code} — Votre code de vérification Kipit`,
     html: `

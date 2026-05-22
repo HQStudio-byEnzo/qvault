@@ -40,9 +40,15 @@ export default defineEventHandler(async (event) => {
 
   // Envoyer l'email de vérification
   try {
-    await sendVerificationEmail(email.toLowerCase(), name, code)
-  } catch (err) {
-    console.error('Erreur envoi email:', err)
+    const config = useRuntimeConfig()
+    if (!config.resendApiKey) {
+      console.error('RESEND_API_KEY non configurée !')
+    } else {
+      await sendVerificationEmail(email.toLowerCase(), name, code)
+      console.log('Email envoyé à', email.toLowerCase())
+    }
+  } catch (err: any) {
+    console.error('Erreur envoi email:', err?.message || err)
   }
 
   // Créer la session (mais marquer comme non vérifié)

@@ -3,38 +3,38 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-12-01',
   devtools: { enabled: true },
 
-  // SSR activé
   ssr: true,
 
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxt/icon',
+    'nuxt-auth-utils',
   ],
 
-  // Configuration Nitro pour Vercel
+  // Vercel deployment
   nitro: {
     preset: 'vercel',
   },
 
   // Variables d'environnement runtime
   runtimeConfig: {
-    // Clés privées (serveur uniquement)
-    betterAuthSecret: process.env.BETTER_AUTH_SECRET || 'kipit-dev-secret-change-in-production',
-    betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+    // Session (nuxt-auth-utils utilise NUXT_SESSION_PASSWORD)
+    session: {
+      password: process.env.NUXT_SESSION_PASSWORD || '',
+    },
+    // Base de données Turso
     tursoDbUrl: process.env.TURSO_DB_URL || '',
     tursoDbToken: process.env.TURSO_DB_TOKEN || '',
-    // Clés publiques (client + serveur)
+    // Public
     public: {
       appName: 'Kipit',
     },
   },
 
-  // Configuration Tailwind
   tailwindcss: {
     cssPath: '~/assets/css/main.css',
   },
 
-  // Auto-imports
   imports: {
     dirs: ['composables/**'],
   },

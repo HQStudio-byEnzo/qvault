@@ -1,16 +1,11 @@
 /**
  * Middleware d'authentification
- * Redirige vers /auth/login si l'utilisateur n'est pas connecté
+ * Redirige vers /auth/login si non connecté
  */
-export default defineNuxtRouteMiddleware(async (to) => {
-  const { user, fetchSession, loading } = useAuthClient()
+export default defineNuxtRouteMiddleware(async () => {
+  const { loggedIn } = useUserSession()
 
-  // Charger la session si pas encore fait
-  if (!user.value && loading.value) {
-    await fetchSession()
-  }
-
-  if (!user.value) {
+  if (!loggedIn.value) {
     return navigateTo('/auth/login')
   }
 })

@@ -4,13 +4,14 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
+  const userId = session.user.id
   const db = useDB()
 
   const [links, passwords, crypto, favorites] = await Promise.all([
-    db.execute({ sql: 'SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND type = ?', args: [session.user.id, 'link'] }),
-    db.execute({ sql: 'SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND type = ?', args: [session.user.id, 'password'] }),
-    db.execute({ sql: 'SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND type = ?', args: [session.user.id, 'crypto'] }),
-    db.execute({ sql: 'SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND favorite = 1', args: [session.user.id] }),
+    db.execute({ sql: 'SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND type = ?', args: [userId, 'link'] }),
+    db.execute({ sql: 'SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND type = ?', args: [userId, 'password'] }),
+    db.execute({ sql: 'SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND type = ?', args: [userId, 'crypto'] }),
+    db.execute({ sql: 'SELECT COUNT(*) as count FROM vault_items WHERE user_id = ? AND favorite = 1', args: [userId] }),
   ])
 
   return {

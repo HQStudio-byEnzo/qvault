@@ -1,1 +1,0 @@
-import{l as n,W as o,n as i,x as r}from"./Cdz2o_EX.js";const d=n(async()=>{let e,a;const{user:t,fetchSession:s,loading:u}=o();if(!t.value&&u.value&&([e,a]=i(()=>s()),await e,a()),t.value)return r("/dashboard")});export{d as default};

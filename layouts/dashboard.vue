@@ -2,7 +2,6 @@
   <div class="min-h-screen bg-surface-950 flex">
     <!-- Sidebar -->
     <aside class="hidden lg:flex w-64 flex-col border-r border-surface-800 bg-surface-950">
-      <!-- Logo -->
       <div class="h-16 flex items-center px-6 border-b border-surface-800">
         <NuxtLink to="/dashboard" class="flex items-center gap-2">
           <div class="w-8 h-8 bg-accent-600 rounded-lg flex items-center justify-center">
@@ -12,7 +11,6 @@
         </NuxtLink>
       </div>
 
-      <!-- Navigation -->
       <nav class="flex-1 px-3 py-4 space-y-1">
         <NuxtLink
           v-for="item in navItems"
@@ -30,7 +28,6 @@
         </NuxtLink>
       </nav>
 
-      <!-- User info -->
       <div class="p-4 border-t border-surface-800">
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 rounded-full bg-surface-700 flex items-center justify-center">
@@ -65,7 +62,7 @@
         </button>
       </header>
 
-      <!-- Mobile menu overlay -->
+      <!-- Mobile menu -->
       <Teleport to="body">
         <Transition name="fade">
           <div v-if="mobileMenuOpen" class="fixed inset-0 z-50 lg:hidden">
@@ -88,7 +85,6 @@
         </Transition>
       </Teleport>
 
-      <!-- Page content -->
       <main class="flex-1 overflow-y-auto">
         <slot />
       </main>

@@ -1,62 +1,17 @@
 -- ============================================
--- Kipit Database Schema (Cloudflare D1)
+-- Kipit Database Schema (Turso/LibSQL)
 -- ============================================
 
--- Table utilisateurs (BetterAuth gère la création)
+-- Table utilisateurs
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
-  email_verified INTEGER DEFAULT 0,
-  image TEXT,
-  created_at TEXT DEFAULT (datetime('now')),
-  updated_at TEXT DEFAULT (datetime('now'))
+  password TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now'))
 );
 
--- Table sessions (BetterAuth)
-CREATE TABLE IF NOT EXISTS sessions (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  token TEXT NOT NULL UNIQUE,
-  expires_at TEXT NOT NULL,
-  ip_address TEXT,
-  user_agent TEXT,
-  created_at TEXT DEFAULT (datetime('now')),
-  updated_at TEXT DEFAULT (datetime('now')),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Table accounts (BetterAuth - OAuth providers)
-CREATE TABLE IF NOT EXISTS accounts (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  account_id TEXT NOT NULL,
-  provider_id TEXT NOT NULL,
-  access_token TEXT,
-  refresh_token TEXT,
-  access_token_expires_at TEXT,
-  refresh_token_expires_at TEXT,
-  scope TEXT,
-  id_token TEXT,
-  password TEXT,
-  created_at TEXT DEFAULT (datetime('now')),
-  updated_at TEXT DEFAULT (datetime('now')),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Table verifications (BetterAuth)
-CREATE TABLE IF NOT EXISTS verifications (
-  id TEXT PRIMARY KEY,
-  identifier TEXT NOT NULL,
-  value TEXT NOT NULL,
-  expires_at TEXT NOT NULL,
-  created_at TEXT DEFAULT (datetime('now')),
-  updated_at TEXT DEFAULT (datetime('now'))
-);
-
--- ============================================
 -- Table principale du coffre-fort
--- ============================================
 CREATE TABLE IF NOT EXISTS vault_items (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,

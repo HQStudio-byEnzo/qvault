@@ -1,1 +1,0 @@
-import{l as n,W as o,n as i,x as l}from"./Cdz2o_EX.js";const f=n(async r=>{let e,t;const{user:a,fetchSession:s,loading:u}=o();if(!a.value&&u.value&&([e,t]=i(()=>s()),await e,t()),!a.value)return l("/auth/login")});export{f as default};

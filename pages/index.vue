@@ -309,20 +309,8 @@
       </div>
     </section>
 
-    <!-- CTA Final -->
-    <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
-      <div class="max-w-2xl mx-auto text-center space-y-6">
-        <h2 class="text-3xl md:text-4xl font-bold text-white">{{ t('cta.title') }}</h2>
-        <p class="text-surface-400 text-lg">{{ t('cta.subtitle') }}</p>
-        <NuxtLink to="/auth/register" class="group btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">
-          {{ t('cta.btn') }}
-          <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </NuxtLink>
-      </div>
-    </section>
-
     <!-- Contact -->
-    <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
+    <section id="contact" class="px-6 lg:px-12 py-24 border-t border-surface-800/50 scroll-mt-28">
       <div class="max-w-3xl mx-auto text-center space-y-6">
         <h2 class="text-3xl md:text-4xl font-bold text-white">Contact</h2>
         <p class="text-surface-400 text-lg">Have a question? Join our Discord community for support.</p>
@@ -372,5 +360,6 @@ const navLinks = [
   { id: 'security', label: 'nav.security' },
   { id: 'reviews', label: 'nav.reviews' },
   { id: 'faq', label: 'nav.faq' },
+  { id: 'contact', label: 'nav.contact' },
 ]
 </script>

@@ -9,11 +9,12 @@
         <span class="text-lg font-bold text-white tracking-tight">Kipit</span>
       </div>
       <div class="flex items-center gap-3">
+        <LangSwitch />
         <NuxtLink to="/auth/login" class="hidden sm:inline-flex text-sm text-surface-300 hover:text-white transition-colors px-4 py-2">
-          Se connecter
+          {{ t('nav.login') }}
         </NuxtLink>
         <NuxtLink to="/auth/register" class="btn-primary text-sm">
-          Commencer
+          {{ t('nav.start') }}
         </NuxtLink>
       </div>
     </header>
@@ -30,29 +31,28 @@
         <!-- Badge -->
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent-500/20 bg-accent-500/5 text-xs font-medium text-accent-300">
           <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-          100% Gratuit · Chiffrement Zero-Knowledge
+          {{ t('hero.badge') }}
         </div>
 
         <!-- Title -->
         <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
-          Gardez vos secrets<br>
-          <span class="bg-gradient-to-r from-accent-400 to-emerald-300 bg-clip-text text-transparent">en sécurité absolue</span>
+          {{ t('hero.title1') }}<br>
+          <span class="bg-gradient-to-r from-accent-400 to-emerald-300 bg-clip-text text-transparent">{{ t('hero.title2') }}</span>
         </h1>
 
         <!-- Subtitle -->
         <p class="text-lg md:text-xl text-surface-400 max-w-2xl mx-auto leading-relaxed">
-          Liens, mots de passe, seed phrases crypto — tout est chiffré <strong class="text-surface-200">côté client</strong> avec AES-256. 
-          Même nous ne pouvons pas lire vos données.
+          {{ t('hero.subtitle') }}
         </p>
 
         <!-- CTA -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <NuxtLink to="/auth/register" class="group btn-primary text-base px-8 py-3.5 flex items-center gap-2">
-            Créer mon coffre-fort
+            {{ t('hero.cta') }}
             <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </NuxtLink>
           <NuxtLink to="/auth/login" class="btn-secondary text-base px-8 py-3.5">
-            J'ai déjà un compte
+            {{ t('hero.login') }}
           </NuxtLink>
         </div>
 
@@ -80,8 +80,8 @@
     <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
       <div class="max-w-5xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Comment ça marche</h2>
-          <p class="text-surface-400 max-w-lg mx-auto">Trois étapes simples pour sécuriser vos données les plus sensibles.</p>
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('how.title') }}</h2>
+          <p class="text-surface-400 max-w-lg mx-auto">{{ t('how.subtitle') }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -114,8 +114,8 @@
     <section class="px-6 lg:px-12 py-24 bg-surface-900/30 border-t border-surface-800/50">
       <div class="max-w-5xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Tout ce qu'il vous faut</h2>
-          <p class="text-surface-400 max-w-lg mx-auto">Un coffre-fort numérique complet, sans compromis sur la sécurité.</p>
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('features.title') }}</h2>
+          <p class="text-surface-400 max-w-lg mx-auto">{{ t('features.subtitle') }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -213,10 +213,10 @@
     <!-- CTA Final -->
     <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
       <div class="max-w-2xl mx-auto text-center space-y-6">
-        <h2 class="text-3xl md:text-4xl font-bold text-white">Prêt à sécuriser vos données ?</h2>
-        <p class="text-surface-400 text-lg">Créez votre coffre-fort en 10 secondes. Gratuit, sans engagement.</p>
+        <h2 class="text-3xl md:text-4xl font-bold text-white">{{ t('cta.title') }}</h2>
+        <p class="text-surface-400 text-lg">{{ t('cta.subtitle') }}</p>
         <NuxtLink to="/auth/register" class="group btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">
-          Commencer maintenant
+          {{ t('cta.btn') }}
           <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </NuxtLink>
       </div>
@@ -231,7 +231,7 @@
           </div>
           <span class="text-sm font-medium text-surface-400">Kipit</span>
         </div>
-        <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — par la <span class="text-surface-300 font-medium">Team RootLayer</span></p>
+        <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — {{ t('footer.by') }} <span class="text-surface-300 font-medium">Team RootLayer</span></p>
       </div>
     </footer>
   </div>
@@ -241,4 +241,6 @@
 definePageMeta({
   layout: 'default',
 })
+
+const { t } = useI18n()
 </script>

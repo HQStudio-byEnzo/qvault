@@ -99,6 +99,30 @@
 
 
 
+    <!-- Language section -->
+    <section class="card space-y-4">
+      <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+        <Icon name="lucide:globe" class="w-5 h-5 text-surface-400" />
+        Langue / Language
+      </h2>
+      <div class="flex gap-2">
+        <button
+          @click="setLocale('fr')"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+          :class="locale === 'fr' ? 'bg-accent-600 text-white' : 'bg-surface-800 text-surface-400 border border-surface-700 hover:border-surface-600'"
+        >
+          🇫🇷 Français
+        </button>
+        <button
+          @click="setLocale('en')"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+          :class="locale === 'en' ? 'bg-accent-600 text-white' : 'bg-surface-800 text-surface-400 border border-surface-700 hover:border-surface-600'"
+        >
+          🇬🇧 English
+        </button>
+      </div>
+    </section>
+
     <!-- Security section -->
     <section class="card space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
@@ -169,6 +193,7 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user, signOut } = useAuthClient()
+const { locale, setLocale } = useI18n()
 
 // Change password
 const pwdForm = reactive({ currentPassword: '', newPassword: '', confirmPassword: '' })

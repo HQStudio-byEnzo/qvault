@@ -98,7 +98,7 @@ const translations: Record<string, Record<string, string>> = {
   },
 }
 
-export function useI18n() {
+export function useLang() {
   const locale = useState<string>('locale', () => 'fr')
 
   function t(key: string): string {

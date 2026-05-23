@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-const { locale, setLocale } = useI18n()
+const { locale, setLocale } = useLang()
 
 function toggle() {
   setLocale(locale.value === 'fr' ? 'en' : 'fr')

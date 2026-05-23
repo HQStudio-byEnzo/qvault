@@ -20,19 +20,7 @@
           <span class="text-sm text-surface-400">Email</span>
           <span class="text-sm text-surface-200">{{ user?.email }}</span>
         </div>
-        <div class="flex items-center justify-between py-2 border-b border-surface-800">
-          <span class="text-sm text-surface-400">Email vérifié</span>
-          <div class="flex items-center gap-2">
-            <span v-if="user?.emailVerified" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20 text-xs font-medium text-green-400">
-              <Icon name="lucide:check-circle" class="w-3 h-3" />
-              Vérifié
-            </span>
-            <span v-else class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-medium text-amber-400">
-              <Icon name="lucide:alert-circle" class="w-3 h-3" />
-              Non vérifié
-            </span>
-          </div>
-        </div>
+
         <div class="flex items-center justify-between py-2">
           <span class="text-sm text-surface-400">Membre depuis</span>
           <span class="text-sm text-surface-200">{{ formatDate(user?.created_at) }}</span>
@@ -193,7 +181,7 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user, signOut } = useAuthClient()
-const { locale, setLocale } = useI18n()
+const { locale, setLocale } = useLang()
 
 // Change password
 const pwdForm = reactive({ currentPassword: '', newPassword: '', confirmPassword: '' })

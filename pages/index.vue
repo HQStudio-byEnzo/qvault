@@ -8,6 +8,19 @@
         </div>
         <span class="text-lg font-bold text-white tracking-tight">Kipit</span>
       </div>
+
+      <!-- Section nav links (desktop only) -->
+      <div class="hidden lg:flex items-center gap-1">
+        <a
+          v-for="link in navLinks"
+          :key="link.id"
+          :href="'#' + link.id"
+          class="px-3 py-1.5 rounded-full text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800/60 transition-all"
+        >
+          {{ t(link.label) }}
+        </a>
+      </div>
+
       <div class="flex items-center gap-3">
         <LangSwitch />
         <NuxtLink to="/auth/login" class="hidden sm:inline-flex text-sm text-surface-300 hover:text-white transition-colors px-4 py-2">
@@ -19,22 +32,8 @@
       </div>
     </header>
 
-    <!-- Sticky Sub-Navigation (visible on lg screens only) -->
-    <nav class="fixed top-16 left-0 right-0 z-40 hidden lg:block backdrop-blur-xl bg-surface-950/80 border-b border-surface-800/50">
-      <div class="max-w-5xl mx-auto flex items-center justify-center gap-2 py-2.5 px-6">
-        <a
-          v-for="link in navLinks"
-          :key="link.id"
-          :href="'#' + link.id"
-          class="px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 text-surface-400 hover:text-white hover:bg-surface-800/60 border border-transparent hover:border-surface-700/50"
-        >
-          {{ t(link.label) }}
-        </a>
-      </div>
-    </nav>
-
     <!-- Hero Section -->
-    <section class="relative flex-1 flex items-center justify-center px-6 pt-32 pb-20 lg:pt-44 lg:pb-32">
+    <section class="relative flex-1 flex items-center justify-center px-6 pt-32 pb-20 lg:pt-36 lg:pb-32">
       <!-- Background effects -->
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-accent-600/8 rounded-full blur-[120px]"></div>

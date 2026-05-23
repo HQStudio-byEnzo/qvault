@@ -362,4 +362,8 @@ const navLinks = [
   { id: 'faq', label: 'nav.faq' },
   { id: 'contact', label: 'nav.contact' },
 ]
+
+onMounted(() => {
+  window.scrollTo(0, 0)
+})
 </script>

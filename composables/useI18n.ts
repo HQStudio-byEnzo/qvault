@@ -154,7 +154,6 @@ const translations: Record<string, Record<string, string>> = {
 
 export function useLang() {
   const locale = useState<string>('locale', () => 'fr')
-  const hydrated = useState<boolean>('lang-hydrated', () => false)
 
   function t(key: string): string {
     return translations[locale.value]?.[key] || translations.fr[key] || key
@@ -165,17 +164,6 @@ export function useLang() {
     if (import.meta.client) {
       localStorage.setItem('kipit-lang', lang)
     }
-  }
-
-  // Load saved language only after hydration (prevents SSR mismatch)
-  if (import.meta.client && !hydrated.value) {
-    onMounted(() => {
-      const saved = localStorage.getItem('kipit-lang')
-      if (saved && (saved === 'fr' || saved === 'en')) {
-        locale.value = saved
-      }
-      hydrated.value = true
-    })
   }
 
   return { t, locale, setLocale }

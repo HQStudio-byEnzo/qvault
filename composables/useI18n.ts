@@ -153,7 +153,7 @@ const translations: Record<string, Record<string, string>> = {
 }
 
 export function useLang() {
-  const locale = useState<string>('locale', () => 'fr')
+  const locale = useState<string>('locale', () => 'en')
 
   function t(key: string): string {
     return translations[locale.value]?.[key] || translations.fr[key] || key

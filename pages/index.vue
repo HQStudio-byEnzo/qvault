@@ -22,7 +22,6 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <LangSwitch />
         <NuxtLink to="/auth/login" class="hidden sm:inline-flex text-sm text-surface-300 hover:text-white transition-colors px-4 py-2">
           {{ t('nav.login') }}
         </NuxtLink>
@@ -282,7 +281,7 @@
           <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('faq.title') }}</h2>
         </div>
 
-        <div class="space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div
             v-for="i in 6"
             :key="i"
@@ -319,6 +318,18 @@
           {{ t('cta.btn') }}
           <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </NuxtLink>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
+      <div class="max-w-3xl mx-auto text-center space-y-6">
+        <h2 class="text-3xl md:text-4xl font-bold text-white">Contact</h2>
+        <p class="text-surface-400 text-lg">Have a question? Join our Discord community for support.</p>
+        <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="group btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">
+          <Icon name="lucide:message-circle" class="w-5 h-5" />
+          Join Discord
+        </a>
       </div>
     </section>
 

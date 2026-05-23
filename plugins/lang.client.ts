@@ -1,6 +1,6 @@
 /**
- * Plugin client qui charge la langue sauvegardée depuis localStorage
- * S'exécute uniquement côté client, après l'hydratation
+ * Plugin client that loads the saved language from localStorage
+ * Runs only client-side, after hydration
  */
 export default defineNuxtPlugin(() => {
   const locale = useState<string>('locale')

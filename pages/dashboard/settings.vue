@@ -111,6 +111,19 @@
       </div>
     </section>
 
+    <!-- Support -->
+    <section class="card space-y-4">
+      <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+        <Icon name="lucide:message-circle" class="w-5 h-5 text-surface-400" />
+        Support
+      </h2>
+      <p class="text-sm text-surface-400">Besoin d'aide ? Rejoignez notre serveur Discord pour obtenir de l'assistance.</p>
+      <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="btn-secondary inline-flex items-center gap-2">
+        <Icon name="lucide:message-circle" class="w-4 h-4" />
+        Rejoindre le Discord
+      </a>
+    </section>
+
     <!-- Security section -->
     <section class="card space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">

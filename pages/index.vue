@@ -210,6 +210,60 @@
       </div>
     </section>
 
+    <!-- Reviews -->
+    <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ce que disent nos utilisateurs</h2>
+          <p class="text-surface-400 max-w-lg mx-auto">Des milliers de personnes font confiance à Kipit pour protéger leurs données.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="card">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-400">★★★★★</span>
+            </div>
+            <p class="text-sm text-surface-300 leading-relaxed mb-4">"Enfin un coffre-fort qui ne demande pas 10 abonnements. Simple, rapide, et le chiffrement côté client me rassure totalement."</p>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-bold text-blue-400">K</div>
+              <div>
+                <p class="text-xs font-medium text-surface-200">Kevin M.</p>
+                <p class="text-xs text-surface-500">Développeur</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-400">★★★★★</span>
+            </div>
+            <p class="text-sm text-surface-300 leading-relaxed mb-4">"Je stocke toutes mes seed phrases ici. Le fait que même les devs ne peuvent pas lire mes données, c'est exactement ce qu'il me fallait."</p>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-bold text-orange-400">S</div>
+              <div>
+                <p class="text-xs font-medium text-surface-200">Sarah L.</p>
+                <p class="text-xs text-surface-500">Crypto trader</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-400">★★★★★</span>
+            </div>
+            <p class="text-sm text-surface-300 leading-relaxed mb-4">"Interface clean, pas de pubs, pas de plan payant caché. Je l'utilise tous les jours pour mes mots de passe pro et perso."</p>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-accent-500/20 flex items-center justify-center text-xs font-bold text-accent-400">D</div>
+              <div>
+                <p class="text-xs font-medium text-surface-200">David N.</p>
+                <p class="text-xs text-surface-500">Entrepreneur</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA Final -->
     <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
       <div class="max-w-2xl mx-auto text-center space-y-6">
@@ -231,7 +285,13 @@
           </div>
           <span class="text-sm font-medium text-surface-400">Kipit</span>
         </div>
-        <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — {{ t('footer.by') }} <span class="text-surface-300 font-medium">Team RootLayer</span></p>
+        <div class="flex items-center gap-4">
+          <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="text-sm text-surface-400 hover:text-accent-400 transition-colors flex items-center gap-1.5">
+            <Icon name="lucide:message-circle" class="w-4 h-4" />
+            Support
+          </a>
+          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — {{ t('footer.by') }} <span class="text-surface-300 font-medium">Team RootLayer</span></p>
+        </div>
       </div>
     </footer>
   </div>

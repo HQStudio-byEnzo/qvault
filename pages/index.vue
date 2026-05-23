@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-surface-950 overflow-hidden">
+  <div class="min-h-screen flex flex-col bg-surface-950 overflow-hidden scroll-smooth">
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 lg:px-12 backdrop-blur-xl bg-surface-950/80 border-b border-surface-800/50">
       <div class="flex items-center gap-2.5">
@@ -19,8 +19,22 @@
       </div>
     </header>
 
+    <!-- Sticky Sub-Navigation (visible on lg screens only) -->
+    <nav class="fixed top-16 left-0 right-0 z-40 hidden lg:block backdrop-blur-xl bg-surface-950/80 border-b border-surface-800/50">
+      <div class="max-w-5xl mx-auto flex items-center justify-center gap-2 py-2.5 px-6">
+        <a
+          v-for="link in navLinks"
+          :key="link.id"
+          :href="'#' + link.id"
+          class="px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 text-surface-400 hover:text-white hover:bg-surface-800/60 border border-transparent hover:border-surface-700/50"
+        >
+          {{ t(link.label) }}
+        </a>
+      </div>
+    </nav>
+
     <!-- Hero Section -->
-    <section class="relative flex-1 flex items-center justify-center px-6 pt-32 pb-20 lg:pt-40 lg:pb-32">
+    <section class="relative flex-1 flex items-center justify-center px-6 pt-32 pb-20 lg:pt-44 lg:pb-32">
       <!-- Background effects -->
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-accent-600/8 rounded-full blur-[120px]"></div>
@@ -111,7 +125,7 @@
     </section>
 
     <!-- Features -->
-    <section class="px-6 lg:px-12 py-24 bg-surface-900/30 border-t border-surface-800/50">
+    <section id="features" class="px-6 lg:px-12 py-24 bg-surface-900/30 border-t border-surface-800/50 scroll-mt-28">
       <div class="max-w-5xl mx-auto">
         <div class="text-center mb-16">
           <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('features.title') }}</h2>
@@ -171,7 +185,7 @@
     </section>
 
     <!-- Security section -->
-    <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
+    <section id="security" class="px-6 lg:px-12 py-24 border-t border-surface-800/50 scroll-mt-28">
       <div class="max-w-4xl mx-auto">
         <div class="card p-8 md:p-12 border-accent-500/20 bg-gradient-to-br from-accent-900/10 to-surface-900">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -209,7 +223,7 @@
     </section>
 
     <!-- Reviews -->
-    <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
+    <section id="reviews" class="px-6 lg:px-12 py-24 border-t border-surface-800/50 scroll-mt-28">
       <div class="max-w-5xl mx-auto">
         <div class="text-center mb-16">
           <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('reviews.title') }}</h2>
@@ -262,6 +276,41 @@
       </div>
     </section>
 
+    <!-- FAQ -->
+    <section id="faq" class="px-6 lg:px-12 py-24 bg-surface-900/30 border-t border-surface-800/50 scroll-mt-28">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('faq.title') }}</h2>
+        </div>
+
+        <div class="space-y-3">
+          <div
+            v-for="i in 6"
+            :key="i"
+            class="card overflow-hidden"
+          >
+            <button
+              class="w-full flex items-center justify-between gap-4 p-5 text-left"
+              @click="toggleFaq(i)"
+            >
+              <span class="font-medium text-white text-sm md:text-base">{{ t(`faq.q${i}`) }}</span>
+              <Icon
+                name="lucide:chevron-down"
+                class="w-5 h-5 text-surface-400 flex-shrink-0 transition-transform duration-200"
+                :class="{ 'rotate-180': openFaq === i }"
+              />
+            </button>
+            <div
+              v-show="openFaq === i"
+              class="px-5 pb-5 -mt-1"
+            >
+              <p class="text-sm text-surface-400 leading-relaxed">{{ t(`faq.a${i}`) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA Final -->
     <section class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
       <div class="max-w-2xl mx-auto text-center space-y-6">
@@ -301,4 +350,17 @@ definePageMeta({
 })
 
 const { t } = useLang()
+
+const openFaq = ref<number | null>(null)
+
+function toggleFaq(index: number) {
+  openFaq.value = openFaq.value === index ? null : index
+}
+
+const navLinks = [
+  { id: 'features', label: 'nav.features' },
+  { id: 'security', label: 'nav.security' },
+  { id: 'reviews', label: 'nav.reviews' },
+  { id: 'faq', label: 'nav.faq' },
+]
 </script>

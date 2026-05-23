@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
   email_verified INTEGER NOT NULL DEFAULT 0,
   verification_code TEXT,
   verification_expires TEXT,
-  premium_until TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
@@ -30,21 +29,7 @@ CREATE TABLE IF NOT EXISTS vault_items (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Table des paiements
-CREATE TABLE IF NOT EXISTS payments (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  amount REAL NOT NULL,
-  currency TEXT NOT NULL DEFAULT 'USD',
-  crypto TEXT,
-  status TEXT NOT NULL DEFAULT 'pending',
-  nowpayments_id TEXT,
-  created_at TEXT DEFAULT (datetime('now')),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
 -- Index
 CREATE INDEX IF NOT EXISTS idx_vault_items_user_id ON vault_items(user_id);
 CREATE INDEX IF NOT EXISTS idx_vault_items_user_type ON vault_items(user_id, type);
 CREATE INDEX IF NOT EXISTS idx_vault_items_favorite ON vault_items(user_id, favorite);
-CREATE INDEX IF NOT EXISTS idx_payments_user ON payments(user_id);

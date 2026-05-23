@@ -22,7 +22,9 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <LangSwitch />
+        <ClientOnly>
+          <LangSwitch />
+        </ClientOnly>
         <NuxtLink to="/auth/login" class="hidden sm:inline-flex text-sm text-surface-300 hover:text-white transition-colors px-4 py-2">
           {{ t('nav.login') }}
         </NuxtLink>

@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
   // Trouver l'utilisateur
   const result = await db.execute({
-    sql: 'SELECT id, name, email, password, email_verified FROM users WHERE email = ?',
+    sql: 'SELECT id, name, email, password, email_verified, created_at FROM users WHERE email = ?',
     args: [email.toLowerCase()],
   })
 
@@ -37,6 +37,7 @@ export default defineEventHandler(async (event) => {
       name: user.name,
       email: user.email,
       emailVerified: user.email_verified === 1,
+      created_at: user.created_at,
     },
   })
 

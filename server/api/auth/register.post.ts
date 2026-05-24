@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
 
   // Créer la session (mais marquer comme non vérifié)
   await setUserSession(event, {
-    user: { id, name, email: email.toLowerCase(), emailVerified: false },
+    user: { id, name, email: email.toLowerCase(), emailVerified: false, created_at: new Date().toISOString() },
   })
 
   return { user: { id, name, email: email.toLowerCase() }, needsVerification: true }

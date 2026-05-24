@@ -1,94 +1,97 @@
-# Kipit - Coffre-fort Numérique Zero-Knowledge
+# Kipit - Zero-Knowledge Digital Vault
 
-Kipit est une application de coffre-fort numérique sécurisée et 100% gratuite qui permet de stocker des liens, mots de passe et clés crypto avec un chiffrement zero-knowledge côté client.
+Kipit is a free, open-source digital vault that stores your links, passwords, and crypto keys with client-side zero-knowledge encryption.
 
-## Architecture de Sécurité
+**Live:** [kipit-two.vercel.app](https://kipit-two.vercel.app)
 
-- **Chiffrement AES-256-GCM** côté client exclusivement (Web Crypto API)
-- **Dérivation de clé PBKDF2** avec 100 000 itérations SHA-256
-- Le serveur ne stocke que des données chiffrées illisibles
-- Le mot de passe maître n'est **jamais** transmis au serveur
+## Features
 
-## Stack Technique
+- **Links** — Save important URLs and bookmarks
+- **Passwords** — Store credentials with military-grade encryption
+- **Crypto** — Protect seed phrases and private keys
+- **Client-side encryption** — AES-256-GCM, your data is encrypted in the browser before being sent
+- **Seed Phrase Generator** — Generate random 12-word seed phrases
+- **Password Health Audit** — Check the strength of your stored passwords
+- **Export / Import** — Download or upload your vault data as JSON
+- **Auto-lock** — Automatic logout after 5 minutes of inactivity
+- **Multi-language** — English and French support
+- **Chrome Extension** — Access your vault from the browser toolbar
 
-- **Framework** : Nuxt 3 (SSR activé)
-- **Base de données** : Cloudflare D1 (SQLite)
-- **Authentification** : BetterAuth
-- **UI** : TailwindCSS avec un design minimaliste inspiré Linear/Vercel
-- **Déploiement** : Cloudflare Pages
+## Security
 
-## Fonctionnalités
+- **Zero-Knowledge** — The server never sees your plaintext data
+- **AES-256-GCM** — Military-standard authenticated encryption
+- **PBKDF2** — 100,000 iterations for key derivation
+- **bcrypt** — Password hashing with cost factor 12
+- **No tracking** — Your master password never leaves your browser
 
-- Liens illimités
-- Mots de passe illimités
-- Clés crypto illimitées
-- Chiffrement optionnel par élément (zero-knowledge)
-- Favoris et recherche
-- Interface responsive (mobile + desktop)
+## Tech Stack
 
-## Installation
+- **Framework:** Nuxt 3 (SSR)
+- **Database:** Turso (LibSQL)
+- **Auth:** nuxt-auth-utils (encrypted cookie sessions)
+- **UI:** TailwindCSS
+- **Deployment:** Vercel
+- **Analytics:** Vercel Analytics + Google Analytics
+
+## Getting Started
 
 ```bash
-# Installer les dépendances
+# Install dependencies
 npm install
 
-# Copier la config
+# Copy config
 cp .env.example .env
 
-# Lancer en dev
+# Run dev server
 npm run dev
 
-# Build pour Cloudflare
+# Build for production
 npm run build
 ```
 
-## Structure du Projet
+## Environment Variables
+
+```env
+NUXT_SESSION_PASSWORD=your-secret-at-least-32-characters-long
+TURSO_DB_URL=libsql://your-db.turso.io
+TURSO_DB_TOKEN=your-token
+RESEND_API_KEY=re_xxxxx (optional, for email verification)
+```
+
+## Project Structure
 
 ```
-├── app.vue                    # Point d'entrée
-├── nuxt.config.ts             # Configuration Nuxt
-├── wrangler.toml              # Configuration Cloudflare
-├── composables/
-│   ├── useAuthClient.ts       # Authentification client
-│   ├── useCrypto.ts           # Chiffrement AES-256-GCM
-│   └── useVault.ts            # Gestion du coffre-fort
-├── components/vault/
-│   ├── VaultItemCard.vue      # Carte d'élément
-│   ├── VaultAddModal.vue      # Modal d'ajout
-│   └── VaultDecryptModal.vue  # Modal de déchiffrement
-├── layouts/
-│   ├── default.vue            # Layout par défaut
-│   └── dashboard.vue          # Layout dashboard avec sidebar
-├── middleware/
-│   ├── auth.ts                # Protection des routes
-│   └── guest.ts               # Redirection si connecté
 ├── pages/
 │   ├── index.vue              # Landing page
-│   ├── auth/login.vue         # Connexion
-│   ├── auth/register.vue      # Inscription
-│   └── dashboard/             # Pages du dashboard
-├── server/
-│   ├── api/auth/[...all].ts   # Routes BetterAuth
-│   ├── api/vault/             # CRUD coffre-fort
-│   ├── database/schema.sql    # Schéma D1
-│   └── utils/                 # Utilitaires serveur
-└── public/
-    └── favicon.svg            # Favicon
+│   ├── auth/login.vue         # Login
+│   ├── auth/register.vue      # Register
+│   └── dashboard/
+│       ├── index.vue          # Dashboard home
+│       ├── vault.vue          # All vault items
+│       ├── links.vue          # Links
+│       ├── passwords.vue      # Passwords
+│       ├── crypto.vue         # Crypto keys
+│       ├── audit.vue          # Password health audit
+│       ├── export.vue         # Export/Import
+│       └── settings.vue       # Account settings
+├── server/api/
+│   ├── auth/                  # Auth endpoints
+│   └── vault/                 # Vault CRUD
+├── composables/
+│   ├── useCrypto.ts           # AES-256-GCM encryption
+│   ├── useVault.ts            # Vault management
+│   ├── useAuthClient.ts       # Auth client
+│   ├── useAutoLock.ts         # Auto-lock timer
+│   ├── useSeedGenerator.ts    # Seed phrase generator
+│   └── useI18n.ts             # Translations (FR/EN)
+└── components/vault/          # Vault UI components
 ```
 
-## Déploiement sur Cloudflare
+## Chrome Extension
 
-1. Créer une base D1 : `wrangler d1 create kipit-db`
-2. Mettre à jour l'ID dans `wrangler.toml`
-3. Appliquer le schéma : `wrangler d1 execute kipit-db --file=server/database/schema.sql`
-4. Déployer : `wrangler pages deploy .output/public`
+See [Kipit-extension](https://github.com/wave3k/Kipit-extension) for the browser extension.
 
-## Sécurité
+## License
 
-- Le chiffrement est optionnel par élément (flag `is_encrypted`)
-- Les données chiffrées utilisent le format : `salt:ciphertext` avec un IV séparé
-- **Important** : La perte du mot de passe maître rend les données chiffrées irrécupérables
-
-## Licence
-
-Propriétaire - Tous droits réservés.
+MIT — Team RootLayer

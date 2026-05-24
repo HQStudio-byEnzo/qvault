@@ -52,9 +52,19 @@
 
           <!-- Payload -->
           <div>
-            <label for="payload" class="block text-sm font-medium text-surface-300 mb-1">
-              {{ payloadLabel }}
-            </label>
+            <div class="flex items-center justify-between mb-1">
+              <label for="payload" class="block text-sm font-medium text-surface-300">
+                {{ payloadLabel }}
+              </label>
+              <button
+                v-if="form.type === 'crypto'"
+                type="button"
+                @click="generateSeed"
+                class="text-xs px-2 py-1 rounded bg-accent-600/20 text-accent-300 hover:bg-accent-600/30 transition-colors"
+              >
+                Générer seed phrase
+              </button>
+            </div>
             <textarea
               id="payload"
               v-model="form.payload"
@@ -133,6 +143,7 @@ const emit = defineEmits<{
 }>()
 
 const { addItem, error } = useVault()
+const { generateSeedPhrase } = useSeedGenerator()
 const isSubmitting = ref(false)
 
 const form = reactive({
@@ -186,5 +197,9 @@ async function handleSubmit() {
   } finally {
     isSubmitting.value = false
   }
+}
+
+function generateSeed() {
+  form.payload = generateSeedPhrase()
 }
 </script>

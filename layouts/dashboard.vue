@@ -89,12 +89,41 @@
         <slot />
       </main>
     </div>
+
+    <!-- Auto-lock warning toast -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="showWarning"
+          class="fixed bottom-6 right-6 z-[60] max-w-sm bg-yellow-900/90 border border-yellow-600/50 rounded-xl p-4 shadow-2xl backdrop-blur-sm"
+        >
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-yellow-600/20 flex items-center justify-center flex-shrink-0">
+              <Icon name="lucide:timer" class="w-4 h-4 text-yellow-400" />
+            </div>
+            <div>
+              <p class="text-sm font-medium text-yellow-200">Session bientôt expirée</p>
+              <p class="text-xs text-yellow-400 mt-1">
+                Déconnexion automatique dans {{ remainingSeconds }}s pour des raisons de sécurité.
+              </p>
+              <button
+                @click="resetTimers"
+                class="mt-2 text-xs px-3 py-1.5 rounded-lg bg-yellow-600/30 text-yellow-200 hover:bg-yellow-600/50 transition-colors"
+              >
+                Rester connecté
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 const { user, signOut } = useAuthClient()
 const mobileMenuOpen = ref(false)
+const { showWarning, remainingSeconds, resetTimers } = useAutoLock()
 
 const navItems = [
   { to: '/dashboard', label: 'Tableau de bord', icon: 'lucide:layout-dashboard' },
@@ -102,6 +131,8 @@ const navItems = [
   { to: '/dashboard/links', label: 'Liens', icon: 'lucide:link' },
   { to: '/dashboard/passwords', label: 'Mots de passe', icon: 'lucide:key-round' },
   { to: '/dashboard/crypto', label: 'Crypto', icon: 'lucide:bitcoin' },
+  { to: '/dashboard/audit', label: 'Audit', icon: 'lucide:shield-alert' },
+  { to: '/dashboard/export', label: 'Export / Import', icon: 'lucide:download' },
   { to: '/dashboard/settings', label: 'Paramètres', icon: 'lucide:settings' },
 ]
 </script>

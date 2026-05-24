@@ -23,7 +23,7 @@
 
         <div class="flex items-center justify-between py-2">
           <span class="text-sm text-surface-400">Membre depuis</span>
-          <span class="text-sm text-surface-200">{{ formatDate(user?.created_at) }}</span>
+          <span class="text-sm text-surface-200">{{ formatDate(userInfo?.created_at) }}</span>
         </div>
       </div>
     </section>
@@ -195,6 +195,14 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user, signOut } = useAuthClient()
 const { locale, setLocale } = useLang()
+
+const userInfo = ref<any>(null)
+
+onMounted(async () => {
+  try {
+    userInfo.value = await $fetch('/api/auth/me')
+  } catch {}
+})
 
 // Change password
 const pwdForm = reactive({ currentPassword: '', newPassword: '', confirmPassword: '' })

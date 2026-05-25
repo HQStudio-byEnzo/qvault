@@ -5,7 +5,7 @@
  */
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { name, email, password } = body
+  const { name, email, password, hint } = body
 
   if (!name || !email || !password) {
     throw createError({ statusCode: 400, message: 'Nom, email et mot de passe requis.' })
@@ -34,8 +34,8 @@ export default defineEventHandler(async (event) => {
   const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString() // 15 min
 
   await db.execute({
-    sql: "INSERT INTO users (id, name, email, password, email_verified, verification_code, verification_expires, created_at) VALUES (?, ?, ?, ?, 0, ?, ?, datetime('now'))",
-    args: [id, name, email.toLowerCase(), hashedPassword, code, expires],
+    sql: "INSERT INTO users (id, name, email, password, email_verified, verification_code, verification_expires, password_hint, created_at) VALUES (?, ?, ?, ?, 0, ?, ?, ?, datetime('now'))",
+    args: [id, name, email.toLowerCase(), hashedPassword, code, expires, hint || null],
   })
 
   // Envoyer l'email de vérification

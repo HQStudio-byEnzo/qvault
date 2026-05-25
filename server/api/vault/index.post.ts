@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const db = useDB()
   const body = await readBody(event)
 
-  const { type, label, is_encrypted, payload, iv } = body
+  const { type, label, is_encrypted, payload, iv, url } = body
 
   if (!type || !['link', 'password', 'crypto'].includes(type)) {
     throw createError({ statusCode: 400, message: 'Type invalide. Doit être: link, password, ou crypto.' })
@@ -24,8 +24,8 @@ export default defineEventHandler(async (event) => {
   const id = crypto.randomUUID()
 
   await db.execute({
-    sql: "INSERT INTO vault_items (id, user_id, type, label, is_encrypted, payload, iv, favorite, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), datetime('now'))",
-    args: [id, session.user.id, type, label || '', is_encrypted ? 1 : 0, payload, iv || null],
+    sql: "INSERT INTO vault_items (id, user_id, type, label, is_encrypted, payload, iv, url, favorite, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), datetime('now'))",
+    args: [id, session.user.id, type, label || '', is_encrypted ? 1 : 0, payload, iv || null, url || null],
   })
 
   return { id, message: 'Élément ajouté avec succès.' }

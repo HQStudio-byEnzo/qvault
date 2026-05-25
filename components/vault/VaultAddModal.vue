@@ -75,6 +75,12 @@
             ></textarea>
           </div>
 
+          <!-- URL (only for passwords) -->
+          <div v-if="form.type === 'password'">
+            <label for="url" class="block text-sm font-medium text-surface-300 mb-1">Website URL (optional)</label>
+            <input id="url" v-model="form.url" type="url" class="input-field" placeholder="https://gmail.com" />
+          </div>
+
           <!-- Encryption toggle -->
           <div class="flex items-center justify-between p-3 rounded-lg bg-surface-800 border border-surface-700">
             <div class="flex items-center gap-2">
@@ -150,6 +156,7 @@ const form = reactive({
   type: props.defaultType || 'link' as 'link' | 'password' | 'crypto',
   label: '',
   payload: '',
+  url: '',
   shouldEncrypt: props.defaultType === 'password' || props.defaultType === 'crypto',
   masterPassword: '',
 })
@@ -190,6 +197,7 @@ async function handleSubmit() {
       payload: form.payload,
       shouldEncrypt: form.shouldEncrypt,
       masterPassword: form.shouldEncrypt ? form.masterPassword : undefined,
+      url: form.type === 'password' ? form.url : undefined,
     })
     emit('added')
   } catch {

@@ -63,6 +63,12 @@
           />
         </div>
 
+        <div>
+          <label for="hint" class="block text-sm font-medium text-surface-300 mb-1">Password hint (optional)</label>
+          <input id="hint" v-model="form.hint" type="text" class="input-field" placeholder="Ex: Name of my first pet" />
+          <p class="text-xs text-surface-500 mt-1">This hint will be shown if you forget your password.</p>
+        </div>
+
         <!-- Error message -->
         <div v-if="errorMsg" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
           {{ errorMsg }}
@@ -102,6 +108,7 @@ const form = reactive({
   email: '',
   password: '',
   confirmPassword: '',
+  hint: '',
 })
 
 const isLoading = ref(false)
@@ -128,6 +135,7 @@ async function handleRegister() {
       name: form.name,
       email: form.email,
       password: form.password,
+      hint: form.hint,
     })
     navigateTo('/dashboard')
   } catch (err: any) {

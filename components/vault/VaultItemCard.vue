@@ -22,6 +22,15 @@
       <p class="text-xs text-surface-500 mt-0.5">
         {{ typeLabels[item.type] }} · {{ formatDate(item.created_at) }}
       </p>
+      <a
+        v-if="item.url"
+        :href="item.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-xs text-accent-400 hover:text-accent-300 truncate block mt-0.5"
+      >
+        {{ item.url }}
+      </a>
     </div>
 
     <!-- Actions -->

@@ -10,6 +10,7 @@ export interface VaultItem {
   is_encrypted: boolean
   payload: string
   iv: string | null
+  url?: string
   favorite: boolean
   created_at: string
   updated_at?: string
@@ -81,6 +82,7 @@ export function useVault() {
     payload: string
     shouldEncrypt: boolean
     masterPassword?: string
+    url?: string
   }) {
     error.value = null
 
@@ -104,6 +106,7 @@ export function useVault() {
           is_encrypted: data.shouldEncrypt,
           payload,
           iv,
+          url: data.url || undefined,
         },
       })
 

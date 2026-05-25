@@ -38,6 +38,22 @@
           />
         </div>
 
+        <!-- Hint section -->
+        <div class="flex items-center justify-between">
+          <button
+            type="button"
+            @click="showHint"
+            class="text-xs text-accent-400 hover:text-accent-300 font-medium"
+          >
+            Forgot password? Show hint
+          </button>
+        </div>
+
+        <div v-if="hintResult || hintMessage" class="p-3 rounded-lg bg-accent-500/10 border border-accent-500/20 text-sm text-accent-300">
+          <span v-if="hintResult">💡 Hint: {{ hintResult }}</span>
+          <span v-else>{{ hintMessage }}</span>
+        </div>
+
         <!-- Error message -->
         <div v-if="errorMsg" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
           {{ errorMsg }}
@@ -79,6 +95,29 @@ const form = reactive({
 
 const isLoading = ref(false)
 const errorMsg = ref('')
+const hintResult = ref('')
+const hintMessage = ref('')
+
+async function showHint() {
+  hintResult.value = ''
+  hintMessage.value = ''
+
+  if (!form.email) {
+    hintMessage.value = 'Please enter your email first.'
+    return
+  }
+
+  try {
+    const res = await $fetch<{ hint: string | null; message?: string }>(`/api/auth/hint?email=${encodeURIComponent(form.email)}`)
+    if (res.hint) {
+      hintResult.value = res.hint
+    } else {
+      hintMessage.value = res.message || 'No hint available for this account.'
+    }
+  } catch (err: any) {
+    hintMessage.value = err.data?.message || 'Error fetching hint.'
+  }
+}
 
 async function handleLogin() {
   isLoading.value = true

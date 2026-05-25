@@ -322,20 +322,33 @@
     </section>
 
     <!-- Footer -->
-    <footer class="px-6 lg:px-12 py-8 border-t border-surface-800/50">
-      <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-          <div class="w-6 h-6 bg-accent-600 rounded-md flex items-center justify-center">
-            <Icon name="lucide:shield" class="w-3.5 h-3.5 text-white" />
-          </div>
-          <span class="text-sm font-medium text-surface-400">Kipit</span>
-        </div>
-        <div class="flex items-center gap-4">
-          <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="text-sm text-surface-400 hover:text-accent-400 transition-colors flex items-center gap-1.5">
-            <Icon name="lucide:message-circle" class="w-4 h-4" />
-            {{ t('footer.support') }}
+    <footer class="px-6 lg:px-12 py-12 border-t border-surface-800/50">
+      <div class="max-w-5xl mx-auto space-y-8">
+        <!-- Open Source links -->
+        <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+          <a href="https://github.com/wave3k/Kipit" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+            <Icon name="lucide:github" class="w-4 h-4" />
+            Source Code
           </a>
-          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — {{ t('footer.by') }} <span class="text-surface-300 font-medium">Team RootLayer</span></p>
+          <a href="https://github.com/wave3k/Kipit-extension" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+            <Icon name="lucide:chrome" class="w-4 h-4" />
+            Chrome Extension
+          </a>
+          <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+            <Icon name="lucide:message-circle" class="w-4 h-4" />
+            Discord
+          </a>
+        </div>
+
+        <!-- Bottom -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-800/50">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 bg-accent-600 rounded-md flex items-center justify-center">
+              <Icon name="lucide:shield" class="w-3.5 h-3.5 text-white" />
+            </div>
+            <span class="text-sm font-medium text-surface-400">Kipit</span>
+          </div>
+          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — by <span class="text-surface-300 font-medium">Team RootLayer</span></p>
         </div>
       </div>
     </footer>

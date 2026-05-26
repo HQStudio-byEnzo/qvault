@@ -22,12 +22,34 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <NuxtLink to="/auth/login" class="hidden sm:inline-flex text-sm text-surface-300 hover:text-white transition-colors px-4 py-2">
-          {{ t('nav.login') }}
-        </NuxtLink>
-        <NuxtLink to="/auth/register" class="btn-primary text-sm">
-          {{ t('nav.start') }}
-        </NuxtLink>
+        <LangSwitch />
+        <!-- Show avatar if logged in -->
+        <div v-if="loggedIn" class="relative">
+          <button @click.stop="showUserMenu = !showUserMenu" class="w-8 h-8 rounded-full bg-accent-600 flex items-center justify-center text-sm font-bold text-white hover:ring-2 hover:ring-accent-400 transition-all">
+            {{ user?.name?.charAt(0)?.toUpperCase() || '?' }}
+          </button>
+          <!-- Dropdown -->
+          <div v-if="showUserMenu" class="absolute right-0 top-12 w-48 bg-surface-900 border border-surface-700 rounded-xl shadow-2xl py-2 z-50">
+            <p class="px-4 py-2 text-xs text-surface-500 truncate">{{ user?.email }}</p>
+            <NuxtLink to="/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-surface-300 hover:text-white hover:bg-surface-800 transition-colors" @click="showUserMenu = false">
+              <Icon name="lucide:layout-dashboard" class="w-4 h-4" />
+              Dashboard
+            </NuxtLink>
+            <button @click="handleLogout" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-surface-800 transition-colors">
+              <Icon name="lucide:log-out" class="w-4 h-4" />
+              Sign out
+            </button>
+          </div>
+        </div>
+        <!-- Show login/register if not logged in -->
+        <template v-else>
+          <NuxtLink to="/auth/login" class="hidden sm:inline-flex text-sm text-surface-300 hover:text-white transition-colors px-4 py-2">
+            {{ t('nav.login') }}
+          </NuxtLink>
+          <NuxtLink to="/auth/register" class="btn-primary text-sm">
+            {{ t('nav.start') }}
+          </NuxtLink>
+        </template>
       </div>
     </header>
 
@@ -361,6 +383,8 @@ definePageMeta({
 })
 
 const { t } = useLang()
+const { loggedIn, user } = useUserSession()
+const showUserMenu = ref(false)
 
 const openFaq = ref<number | null>(null)
 
@@ -376,7 +400,18 @@ const navLinks = [
   { id: 'contact', label: 'nav.contact' },
 ]
 
+async function handleLogout() {
+  showUserMenu.value = false
+  await $fetch('/api/auth/logout', { method: 'POST' })
+  window.location.reload()
+}
+
+function closeMenu(e: Event) {
+  if (showUserMenu.value) showUserMenu.value = false
+}
+
 onMounted(() => {
   window.scrollTo(0, 0)
+  document.addEventListener('click', closeMenu)
 })
 </script>

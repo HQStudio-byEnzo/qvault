@@ -158,7 +158,7 @@ export function useLang() {
   const locale = useState<string>('locale', () => 'en')
 
   function t(key: string): string {
-    return translations[locale.value]?.[key] || translations.fr[key] || key
+    return translations[locale.value]?.[key] || translations.en[key] || key
   }
 
   function setLocale(lang: string) {

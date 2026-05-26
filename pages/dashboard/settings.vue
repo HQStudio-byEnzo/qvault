@@ -1,28 +1,28 @@
 <template>
   <div class="p-6 lg:p-8 max-w-3xl mx-auto space-y-8">
     <div>
-      <h1 class="text-2xl font-bold text-white">Paramètres</h1>
-      <p class="text-surface-400 text-sm mt-1">Gérez votre compte</p>
+      <h1 class="text-2xl font-bold text-white">{{ t('settings.title') }}</h1>
+      <p class="text-surface-400 text-sm mt-1">{{ t('settings.subtitle') }}</p>
     </div>
 
     <!-- Account section -->
     <section class="card space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:user" class="w-5 h-5 text-surface-400" />
-        Compte
+        {{ t('settings.account') }}
       </h2>
       <div class="space-y-3">
         <div class="flex items-center justify-between py-2 border-b border-surface-800">
-          <span class="text-sm text-surface-400">Nom</span>
+          <span class="text-sm text-surface-400">{{ t('settings.name') }}</span>
           <span class="text-sm text-surface-200">{{ user?.name }}</span>
         </div>
         <div class="flex items-center justify-between py-2 border-b border-surface-800">
-          <span class="text-sm text-surface-400">Email</span>
+          <span class="text-sm text-surface-400">{{ t('settings.email') }}</span>
           <span class="text-sm text-surface-200">{{ user?.email }}</span>
         </div>
 
         <div class="flex items-center justify-between py-2">
-          <span class="text-sm text-surface-400">Membre depuis</span>
+          <span class="text-sm text-surface-400">{{ t('settings.since') }}</span>
           <span class="text-sm text-surface-200">{{ formatDate(userInfo?.created_at) }}</span>
         </div>
       </div>
@@ -32,12 +32,12 @@
     <section class="card space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:key-round" class="w-5 h-5 text-surface-400" />
-        Changer le mot de passe
+        {{ t('settings.changePwd') }}
       </h2>
 
       <form @submit.prevent="handleChangePassword" class="space-y-4">
         <div>
-          <label for="currentPwd" class="block text-sm font-medium text-surface-300 mb-1">Mot de passe actuel</label>
+          <label for="currentPwd" class="block text-sm font-medium text-surface-300 mb-1">{{ t('settings.currentPwd') }}</label>
           <input
             id="currentPwd"
             v-model="pwdForm.currentPassword"
@@ -48,7 +48,7 @@
           />
         </div>
         <div>
-          <label for="newPwd" class="block text-sm font-medium text-surface-300 mb-1">Nouveau mot de passe</label>
+          <label for="newPwd" class="block text-sm font-medium text-surface-300 mb-1">{{ t('settings.newPwd') }}</label>
           <input
             id="newPwd"
             v-model="pwdForm.newPassword"
@@ -60,7 +60,7 @@
           />
         </div>
         <div>
-          <label for="confirmPwd" class="block text-sm font-medium text-surface-300 mb-1">Confirmer</label>
+          <label for="confirmPwd" class="block text-sm font-medium text-surface-300 mb-1">{{ t('settings.confirmPwd') }}</label>
           <input
             id="confirmPwd"
             v-model="pwdForm.confirmPassword"
@@ -80,7 +80,7 @@
 
         <button type="submit" :disabled="pwdLoading" class="btn-primary">
           <span v-if="pwdLoading">Modification...</span>
-          <span v-else>Modifier le mot de passe</span>
+          <span v-else>{{ t('settings.changePwdBtn') }}</span>
         </button>
       </form>
     </section>
@@ -91,7 +91,7 @@
     <section class="card space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:globe" class="w-5 h-5 text-surface-400" />
-        Langue / Language
+        {{ t('settings.language') }}
       </h2>
       <div class="flex gap-2">
         <button
@@ -115,12 +115,12 @@
     <section class="card space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:message-circle" class="w-5 h-5 text-surface-400" />
-        Support
+        {{ t('settings.support') }}
       </h2>
-      <p class="text-sm text-surface-400">Besoin d'aide ? Rejoignez notre serveur Discord pour obtenir de l'assistance.</p>
+      <p class="text-sm text-surface-400">{{ t('settings.supportDesc') }}</p>
       <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="btn-secondary inline-flex items-center gap-2">
         <Icon name="lucide:message-circle" class="w-4 h-4" />
-        Rejoindre le Discord
+        {{ t('settings.joinDiscord') }}
       </a>
     </section>
 
@@ -128,13 +128,11 @@
     <section class="card space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:shield" class="w-5 h-5 text-surface-400" />
-        Sécurité
+        {{ t('settings.security') }}
       </h2>
       <div class="p-4 rounded-lg bg-surface-800 border border-surface-700">
         <p class="text-sm text-surface-400 leading-relaxed">
-          Kipit utilise un chiffrement <strong class="text-surface-200">AES-256-GCM</strong> côté client.
-          Vos données chiffrées ne sont jamais lisibles par nos serveurs. 
-          Assurez-vous de ne jamais oublier votre mot de passe maître — il est impossible de récupérer des données chiffrées sans lui.
+          {{ t('settings.securityDesc') }}
         </p>
       </div>
     </section>
@@ -143,29 +141,29 @@
     <section class="card border-red-500/20 space-y-4">
       <h2 class="text-lg font-semibold text-red-400 flex items-center gap-2">
         <Icon name="lucide:alert-triangle" class="w-5 h-5" />
-        Zone dangereuse
+        {{ t('settings.danger') }}
       </h2>
 
       <div class="space-y-4">
         <button @click="handleSignOut" class="btn-secondary flex items-center gap-2">
           <Icon name="lucide:log-out" class="w-4 h-4" />
-          Se déconnecter
+          {{ t('settings.logout') }}
         </button>
 
         <div class="border-t border-surface-800 pt-4">
           <p class="text-sm text-surface-400 mb-3">
-            La suppression est <strong class="text-red-400">irréversible</strong>. Toutes vos données (coffre-fort inclus) seront perdues.
+            {{ t('settings.deleteWarning') }}
           </p>
 
           <div v-if="!showDeleteConfirm">
             <button @click="showDeleteConfirm = true" class="btn-danger flex items-center gap-2">
               <Icon name="lucide:trash-2" class="w-4 h-4" />
-              Supprimer mon compte
+              {{ t('settings.deleteBtn') }}
             </button>
           </div>
 
           <div v-else class="space-y-3 p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-            <p class="text-sm text-red-300 font-medium">Confirmez avec votre mot de passe :</p>
+            <p class="text-sm text-red-300 font-medium">{{ t('settings.deleteConfirm') }}</p>
             <input
               v-model="deletePassword"
               type="password"
@@ -177,10 +175,10 @@
               <button @click="handleDeleteAccount" :disabled="deleteLoading" class="btn-danger flex items-center gap-2">
                 <Icon name="lucide:trash-2" class="w-4 h-4" />
                 <span v-if="deleteLoading">Suppression...</span>
-                <span v-else>Confirmer la suppression</span>
+                <span v-else>{{ t('settings.confirmDelete') }}</span>
               </button>
               <button @click="showDeleteConfirm = false; deletePassword = ''" class="btn-secondary">
-                Annuler
+                {{ t('settings.cancel') }}
               </button>
             </div>
           </div>
@@ -194,7 +192,7 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user, signOut } = useAuthClient()
-const { locale, setLocale } = useLang()
+const { locale, setLocale, t } = useLang()
 
 const userInfo = ref<any>(null)
 

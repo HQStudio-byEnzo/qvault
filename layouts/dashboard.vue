@@ -24,7 +24,7 @@
           ]"
         >
           <Icon :name="item.icon" class="w-5 h-5" />
-          <span>{{ item.label }}</span>
+          <span>{{ t(item.label) }}</span>
         </NuxtLink>
       </nav>
 
@@ -77,7 +77,7 @@
                   @click="mobileMenuOpen = false"
                 >
                   <Icon :name="item.icon" class="w-5 h-5" />
-                  <span>{{ item.label }}</span>
+                  <span>{{ t(item.label) }}</span>
                 </NuxtLink>
               </nav>
             </div>
@@ -122,18 +122,19 @@
 
 <script setup lang="ts">
 const { user, signOut } = useAuthClient()
+const { t } = useLang()
 const mobileMenuOpen = ref(false)
 const { showWarning, remainingSeconds, resetTimers } = useAutoLock()
 
 const navItems = [
-  { to: '/dashboard', label: 'Tableau de bord', icon: 'lucide:layout-dashboard' },
-  { to: '/dashboard/vault', label: 'Coffre-fort', icon: 'lucide:vault' },
-  { to: '/dashboard/links', label: 'Liens', icon: 'lucide:link' },
-  { to: '/dashboard/passwords', label: 'Mots de passe', icon: 'lucide:key-round' },
-  { to: '/dashboard/crypto', label: 'Crypto', icon: 'lucide:bitcoin' },
-  { to: '/dashboard/audit', label: 'Audit', icon: 'lucide:shield-alert' },
-  { to: '/dashboard/export', label: 'Export / Import', icon: 'lucide:download' },
-  { to: '/dashboard/settings', label: 'Paramètres', icon: 'lucide:settings' },
+  { to: '/dashboard', label: 'sidebar.dashboard', icon: 'lucide:layout-dashboard' },
+  { to: '/dashboard/vault', label: 'sidebar.vault', icon: 'lucide:vault' },
+  { to: '/dashboard/links', label: 'sidebar.links', icon: 'lucide:link' },
+  { to: '/dashboard/passwords', label: 'sidebar.passwords', icon: 'lucide:key-round' },
+  { to: '/dashboard/crypto', label: 'sidebar.crypto', icon: 'lucide:bitcoin' },
+  { to: '/dashboard/audit', label: 'sidebar.audit', icon: 'lucide:shield-alert' },
+  { to: '/dashboard/export', label: 'sidebar.export', icon: 'lucide:download' },
+  { to: '/dashboard/settings', label: 'sidebar.settings', icon: 'lucide:settings' },
 ]
 </script>
 

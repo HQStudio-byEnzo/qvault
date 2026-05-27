@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const db = useDB()
   const body = await readBody(event)
 
-  const { type, label, is_encrypted, payload, iv, url } = body
+  const { type, label, is_encrypted = true, payload, iv, url } = body
 
   if (!type || !['link', 'password', 'crypto'].includes(type)) {
     throw createError({ statusCode: 400, message: 'Type invalide. Doit être: link, password, ou crypto.' })
@@ -17,8 +17,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Le payload est requis.' })
   }
 
-  if (is_encrypted && !iv) {
-    throw createError({ statusCode: 400, message: "Le vecteur d'initialisation (iv) est requis pour les éléments chiffrés." })
+  if (!iv) {
+    throw createError({ statusCode: 400, message: "Le vecteur d'initialisation (iv) est requis. Tous les éléments doivent être chiffrés." })
   }
 
   const id = crypto.randomUUID()

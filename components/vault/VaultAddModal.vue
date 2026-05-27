@@ -81,29 +81,10 @@
             <input id="url" v-model="form.url" type="url" class="input-field" placeholder="https://gmail.com" />
           </div>
 
-          <!-- Encryption toggle -->
-          <div class="flex items-center justify-between p-3 rounded-lg bg-surface-800 border border-surface-700">
-            <div class="flex items-center gap-2">
-              <Icon name="lucide:lock" class="w-4 h-4 text-accent-400" />
-              <span class="text-sm text-surface-300">Chiffrer cet élément</span>
-            </div>
-            <button
-              type="button"
-              @click="form.shouldEncrypt = !form.shouldEncrypt"
-              class="relative w-10 h-6 rounded-full transition-colors"
-              :class="form.shouldEncrypt ? 'bg-accent-600' : 'bg-surface-600'"
-            >
-              <span
-                class="absolute top-1 w-4 h-4 rounded-full bg-white transition-transform"
-                :class="form.shouldEncrypt ? 'left-5' : 'left-1'"
-              ></span>
-            </button>
-          </div>
-
-          <!-- Master password (if encryption enabled) -->
-          <div v-if="form.shouldEncrypt">
+          <!-- Master password (always required — encryption is mandatory) -->
+          <div>
             <label for="masterPassword" class="block text-sm font-medium text-surface-300 mb-1">
-              Mot de passe maître
+              Master password
             </label>
             <input
               id="masterPassword"
@@ -114,7 +95,7 @@
               placeholder="Votre mot de passe de chiffrement"
             />
             <p class="text-xs text-surface-500 mt-1">
-              ⚠️ Ce mot de passe n'est jamais envoyé au serveur. Ne l'oubliez pas !
+              🔒 Required — used to encrypt your data locally. Never sent to the server.
             </p>
           </div>
 
@@ -157,7 +138,6 @@ const form = reactive({
   label: '',
   payload: '',
   url: '',
-  shouldEncrypt: props.defaultType === 'password' || props.defaultType === 'crypto',
   masterPassword: '',
 })
 
@@ -184,7 +164,7 @@ const payloadPlaceholder = computed(() => {
 })
 
 async function handleSubmit() {
-  if (form.shouldEncrypt && !form.masterPassword) {
+  if (!form.masterPassword) {
     return
   }
 
@@ -195,8 +175,8 @@ async function handleSubmit() {
       type: form.type,
       label: form.label,
       payload: form.payload,
-      shouldEncrypt: form.shouldEncrypt,
-      masterPassword: form.shouldEncrypt ? form.masterPassword : undefined,
+      shouldEncrypt: true,
+      masterPassword: form.masterPassword,
       url: form.type === 'password' ? form.url : undefined,
     })
     emit('added')

@@ -41,6 +41,14 @@
       </div>
     </div>
 
+    <!-- Encryption notice -->
+    <div class="bg-surface-900 border border-accent-500/20 rounded-xl p-4 flex items-start gap-3">
+      <Icon name="lucide:info" class="w-5 h-5 text-accent-400 mt-0.5 flex-shrink-0" />
+      <p class="text-sm text-surface-400">
+        Password audit only works with previously saved unencrypted passwords. All new passwords are encrypted.
+      </p>
+    </div>
+
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
       <Icon name="lucide:loader-2" class="w-6 h-6 text-accent-400 animate-spin" />

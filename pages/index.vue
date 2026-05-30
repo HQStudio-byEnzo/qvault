@@ -370,7 +370,7 @@
             </div>
             <span class="text-sm font-medium text-surface-400">Kipit</span>
           </div>
-          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — by <span class="text-surface-300 font-medium">Team RootLayer</span></p>
+          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — by <span class="text-surface-300 font-medium">RLT Labs</span></p>
         </div>
       </div>
     </footer>

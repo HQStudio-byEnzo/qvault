@@ -94,4 +94,4 @@ See [Kipit-extension](https://github.com/wave3k/Kipit-extension) for the browser
 
 ## License
 
-MIT — Team RootLayer
+MIT — RLT Labs

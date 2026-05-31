@@ -17,8 +17,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Le payload est requis.' })
   }
 
-  if (!iv) {
-    throw createError({ statusCode: 400, message: "Le vecteur d'initialisation (iv) est requis. Tous les éléments doivent être chiffrés." })
+  if (!is_encrypted) {
+    throw createError({ statusCode: 400, message: 'Tous les éléments du coffre doivent être chiffrés côté client.' })
+  }
+
+  if (!iv || typeof iv !== 'string') {
+    throw createError({ statusCode: 400, message: "Le vecteur d'initialisation (iv) est requis." })
+  }
+
+  if (typeof payload !== 'string' || payload.split(':').length !== 2) {
+    throw createError({ statusCode: 400, message: 'Format de payload chiffré invalide.' })
   }
 
   const id = crypto.randomUUID()

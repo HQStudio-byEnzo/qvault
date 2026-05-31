@@ -14,12 +14,29 @@ export default defineEventHandler(async (event) => {
 
   // Vérifier que l'item appartient à l'utilisateur
   const existing = await db.execute({
-    sql: 'SELECT id FROM vault_items WHERE id = ? AND user_id = ?',
+    sql: 'SELECT id, payload, iv, is_encrypted FROM vault_items WHERE id = ? AND user_id = ?',
     args: [id, session.user.id],
   })
 
   if (existing.rows.length === 0) {
     throw createError({ statusCode: 404, message: 'Élément non trouvé.' })
+  }
+
+  const current = existing.rows[0] as any
+  const nextIsEncrypted = body.is_encrypted !== undefined ? !!body.is_encrypted : current.is_encrypted === 1
+  const nextPayload = body.payload !== undefined ? body.payload : current.payload
+  const nextIv = body.iv !== undefined ? body.iv : current.iv
+
+  if (!nextIsEncrypted) {
+    throw createError({ statusCode: 400, message: 'Tous les éléments du coffre doivent rester chiffrés.' })
+  }
+
+  if (!nextIv || typeof nextIv !== 'string') {
+    throw createError({ statusCode: 400, message: "Le vecteur d'initialisation (iv) est requis." })
+  }
+
+  if (typeof nextPayload !== 'string' || nextPayload.split(':').length !== 2) {
+    throw createError({ statusCode: 400, message: 'Format de payload chiffré invalide.' })
   }
 
   const updates: string[] = []

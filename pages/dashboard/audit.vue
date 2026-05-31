@@ -1,25 +1,25 @@
 <template>
   <div class="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-white">Audit de securite</h1>
-      <p class="text-surface-400 text-sm mt-1">Analyse zero-knowledge des risques visibles dans votre coffre</p>
+      <h1 class="text-2xl font-bold text-white">{{ t('audit.title') }}</h1>
+      <p class="text-surface-400 text-sm mt-1">{{ t('audit.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div class="card">
-        <p class="text-xs text-surface-500 mb-2">Score</p>
+        <p class="text-xs text-surface-500 mb-2">{{ t('audit.score') }}</p>
         <p class="text-3xl font-bold" :class="scoreColor">{{ securityScore }}%</p>
       </div>
       <div class="card">
-        <p class="text-xs text-surface-500 mb-2">Alertes hautes</p>
+        <p class="text-xs text-surface-500 mb-2">{{ t('audit.highAlerts') }}</p>
         <p class="text-3xl font-bold text-red-400">{{ highIssues.length }}</p>
       </div>
       <div class="card">
-        <p class="text-xs text-surface-500 mb-2">A corriger</p>
+        <p class="text-xs text-surface-500 mb-2">{{ t('audit.toFix') }}</p>
         <p class="text-3xl font-bold text-yellow-400">{{ mediumIssues.length }}</p>
       </div>
       <div class="card">
-        <p class="text-xs text-surface-500 mb-2">Elements</p>
+        <p class="text-xs text-surface-500 mb-2">{{ t('audit.elements') }}</p>
         <p class="text-3xl font-bold text-white">{{ items.length }}</p>
       </div>
     </div>
@@ -27,7 +27,7 @@
     <div class="bg-surface-900 border border-accent-500/20 rounded-xl p-4 flex items-start gap-3">
       <Icon name="lucide:shield-check" class="w-5 h-5 text-accent-400 mt-0.5 flex-shrink-0" />
       <p class="text-sm text-surface-400">
-        L'audit ne dechiffre pas vos secrets. Il inspecte les metadonnees, le format de chiffrement, les doublons visibles et les anciens items non chiffres.
+        {{ t('audit.notice') }}
       </p>
     </div>
 
@@ -37,8 +37,8 @@
 
     <div v-else-if="issues.length === 0" class="text-center py-16">
       <Icon name="lucide:shield-check" class="w-12 h-12 text-green-500 mx-auto mb-4" />
-      <p class="text-surface-300 font-medium">Aucun risque visible detecte.</p>
-      <p class="text-sm text-surface-500 mt-1">Votre coffre respecte les controles zero-knowledge disponibles.</p>
+      <p class="text-surface-300 font-medium">{{ t('audit.empty') }}</p>
+      <p class="text-sm text-surface-500 mt-1">{{ t('audit.emptyHint') }}</p>
     </div>
 
     <div v-else class="space-y-3">
@@ -79,6 +79,7 @@ definePageMeta({
   middleware: 'auth',
 })
 
+const { t } = useLang()
 const { items, loading, fetchItems } = useVault()
 
 type Severity = 'high' | 'medium' | 'low'
@@ -92,11 +93,11 @@ interface AuditIssue {
   action: string
 }
 
-const severityLabel: Record<Severity, string> = {
-  high: 'Critique',
-  medium: 'Important',
-  low: 'Info',
-}
+const severityLabel = computed<Record<Severity, string>>(() => ({
+  high: t('audit.severityHigh'),
+  medium: t('audit.severityMedium'),
+  low: t('audit.severityLow'),
+}))
 
 const issues = computed<AuditIssue[]>(() => {
   const result: AuditIssue[] = []
@@ -113,9 +114,9 @@ const issues = computed<AuditIssue[]>(() => {
       key: 'unencrypted',
       severity: 'high',
       icon: 'lucide:unlock',
-      title: `${unencrypted.length} element(s) non chiffre(s)`,
-      description: 'Ces anciens items exposent leur payload cote serveur et dans les exports.',
-      action: 'Recreez-les avec un mot de passe maitre puis supprimez les anciennes versions.',
+      title: `${unencrypted.length} ${t('audit.unencryptedTitle')}`,
+      description: t('audit.unencryptedDesc'),
+      action: t('audit.unencryptedAction'),
     })
   }
 
@@ -124,9 +125,9 @@ const issues = computed<AuditIssue[]>(() => {
       key: 'invalid-encrypted',
       severity: 'high',
       icon: 'lucide:file-warning',
-      title: `${invalidEncrypted.length} element(s) chiffre(s) semblent corrompus`,
-      description: 'Ils n ont pas de iv ou pas de payload au format salt:ciphertext.',
-      action: 'Exportez un backup, puis remplacez les items concernes par une nouvelle sauvegarde chiffree.',
+      title: `${invalidEncrypted.length} ${t('audit.invalidTitle')}`,
+      description: t('audit.invalidDesc'),
+      action: t('audit.invalidAction'),
     })
   }
 
@@ -135,9 +136,9 @@ const issues = computed<AuditIssue[]>(() => {
       key: 'password-missing-url',
       severity: 'medium',
       icon: 'lucide:link-2-off',
-      title: `${passwordWithoutUrl.length} mot(s) de passe sans URL`,
-      description: 'Sans URL, l extension ne peut pas les associer automatiquement au bon site.',
-      action: 'Ajoutez le site officiel dans chaque item password.',
+      title: `${passwordWithoutUrl.length} ${t('audit.noUrlTitle')}`,
+      description: t('audit.noUrlDesc'),
+      action: t('audit.noUrlAction'),
     })
   }
 
@@ -146,9 +147,9 @@ const issues = computed<AuditIssue[]>(() => {
       key: `duplicate-url-${group.key}`,
       severity: 'medium',
       icon: 'lucide:copy',
-      title: `${group.items.length} items partagent le site ${group.key}`,
-      description: group.items.map(item => item.label || 'Sans titre').join(', '),
-      action: 'Verifiez que ces doublons sont voulus et supprimez les anciennes versions.',
+      title: `${group.items.length} ${t('audit.dupUrlTitle')} ${group.key}`,
+      description: group.items.map(item => item.label || t('vault.untitled')).join(', '),
+      action: t('audit.dupUrlDesc'),
     })
   })
 
@@ -157,9 +158,9 @@ const issues = computed<AuditIssue[]>(() => {
       key: `duplicate-label-${group.key}`,
       severity: 'low',
       icon: 'lucide:tags',
-      title: `${group.items.length} items ont le meme libelle`,
+      title: `${group.items.length} ${t('audit.dupLabelTitle')}`,
       description: group.items.map(item => item.type).join(', '),
-      action: 'Renommez-les pour rendre la recherche et les exports plus lisibles.',
+      action: t('audit.dupLabelAction'),
     })
   })
 
@@ -168,9 +169,9 @@ const issues = computed<AuditIssue[]>(() => {
       key: 'old-items',
       severity: 'low',
       icon: 'lucide:calendar-clock',
-      title: `${oldItems.length} element(s) n ont pas ete modifies depuis 180 jours`,
-      description: 'Les vieux secrets meritent une verification reguliere.',
-      action: 'Passez-les en revue et remplacez les mots de passe importants.',
+      title: `${oldItems.length} ${t('audit.oldTitle')}`,
+      description: t('audit.oldDesc'),
+      action: t('audit.oldAction'),
     })
   }
 

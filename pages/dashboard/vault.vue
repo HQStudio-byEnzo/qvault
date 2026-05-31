@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-white">Coffre-fort</h1>
-        <p class="text-surface-400 text-sm mt-1">Tous vos éléments sécurisés</p>
+        <h1 class="text-2xl font-bold text-white">{{ t('vault.title') }}</h1>
+        <p class="text-surface-400 text-sm mt-1">{{ t('vault.subtitle') }}</p>
       </div>
       <button @click="showAddModal = true" class="btn-primary flex items-center gap-2">
         <Icon name="lucide:plus" class="w-4 h-4" />
-        Ajouter
+        {{ t('vault.add') }}
       </button>
     </div>
 
@@ -19,7 +19,7 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Rechercher label, URL, type, favorite, has:url..."
+          :placeholder="t('vault.search')"
           class="input-field pl-10"
         />
       </div>
@@ -57,8 +57,8 @@
 
     <div v-else-if="visibleItems.length === 0" class="text-center py-16">
       <Icon name="lucide:vault" class="w-12 h-12 text-surface-600 mx-auto mb-4" />
-      <p class="text-surface-400">{{ items.length === 0 ? 'Votre coffre-fort est vide.' : 'Aucun resultat.' }}</p>
-      <p class="text-sm text-surface-500 mt-1">{{ items.length === 0 ? 'Commencez par ajouter un élément.' : 'Essayez un autre filtre ou une autre recherche.' }}</p>
+      <p class="text-surface-400">{{ items.length === 0 ? t('vault.empty') : t('vault.noResult') }}</p>
+      <p class="text-sm text-surface-500 mt-1">{{ items.length === 0 ? t('vault.emptyHint') : t('vault.noResultHint') }}</p>
     </div>
 
     <div v-else class="space-y-2">
@@ -94,6 +94,7 @@ definePageMeta({
   middleware: 'auth',
 })
 
+const { t } = useLang()
 const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
 
 const showAddModal = ref(false)
@@ -101,20 +102,20 @@ const decryptTarget = ref<any>(null)
 const searchQuery = ref('')
 const activeFilter = ref('')
 
-const filters = [
-  { label: 'Tout', value: '' },
-  { label: 'Liens', value: 'link' },
-  { label: 'Mots de passe', value: 'password' },
-  { label: 'Crypto', value: 'crypto' },
-]
+const filters = computed(() => [
+  { label: t('vault.filterAll'), value: '' },
+  { label: t('vault.filterLinks'), value: 'link' },
+  { label: t('vault.filterPasswords'), value: 'password' },
+  { label: t('vault.filterCrypto'), value: 'crypto' },
+])
 
-const searchChips = [
-  { label: 'Favoris', query: 'favorite' },
-  { label: 'Avec URL', query: 'has:url' },
-  { label: 'Sans URL', query: 'missing:url' },
-  { label: 'Mots de passe', query: 'type:password' },
-  { label: 'Crypto', query: 'type:crypto' },
-]
+const searchChips = computed(() => [
+  { label: t('vault.chipFavorites'), query: 'favorite' },
+  { label: t('vault.chipWithUrl'), query: 'has:url' },
+  { label: t('vault.chipWithoutUrl'), query: 'missing:url' },
+  { label: t('vault.chipPasswords'), query: 'type:password' },
+  { label: t('vault.chipCrypto'), query: 'type:crypto' },
+])
 
 const visibleItems = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
@@ -156,7 +157,7 @@ function handleDecrypt(item: any) {
 }
 
 async function handleDelete(id: string) {
-  if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
+  if (confirm(t('vault.confirmDelete'))) {
     await deleteItem(id)
   }
 }

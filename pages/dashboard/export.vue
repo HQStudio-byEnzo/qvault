@@ -2,8 +2,8 @@
   <div class="p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
     <!-- Header -->
     <div>
-      <h1 class="text-2xl font-bold text-white">Export / Import</h1>
-      <p class="text-surface-400 text-sm mt-1">Exportez ou importez vos données de coffre-fort</p>
+      <h1 class="text-2xl font-bold text-white">{{ t('export.title') }}</h1>
+      <p class="text-surface-400 text-sm mt-1">{{ t('export.subtitle') }}</p>
     </div>
 
     <!-- Export Section -->
@@ -13,12 +13,12 @@
           <Icon name="lucide:download" class="w-5 h-5 text-accent-400" />
         </div>
         <div>
-          <h2 class="text-lg font-semibold text-white">Exporter</h2>
-        <p class="text-sm text-surface-400">Téléchargez un backup JSON complet de votre coffre</p>
+          <h2 class="text-lg font-semibold text-white">{{ t('export.exportTitle') }}</h2>
+          <p class="text-sm text-surface-400">{{ t('export.exportDesc') }}</p>
         </div>
       </div>
       <p class="text-sm text-surface-500">
-        Les secrets restent chiffrés. L'export inclut aussi les URLs, favoris et dates pour restaurer le coffre sans perte de contexte.
+        {{ t('export.exportNotice') }}
       </p>
       <button
         @click="handleExport"
@@ -26,8 +26,8 @@
         class="btn-primary flex items-center gap-2"
       >
         <Icon name="lucide:download" class="w-4 h-4" />
-        <span v-if="exporting">Export en cours...</span>
-        <span v-else>Exporter les données</span>
+        <span v-if="exporting">{{ t('export.exporting') }}</span>
+        <span v-else>{{ t('export.exportBtn') }}</span>
       </button>
     </div>
 
@@ -38,18 +38,18 @@
           <Icon name="lucide:upload" class="w-5 h-5 text-green-400" />
         </div>
         <div>
-          <h2 class="text-lg font-semibold text-white">Importer</h2>
-          <p class="text-sm text-surface-400">Importez des éléments depuis un fichier JSON</p>
+          <h2 class="text-lg font-semibold text-white">{{ t('export.importTitle') }}</h2>
+          <p class="text-sm text-surface-400">{{ t('export.importDesc') }}</p>
         </div>
       </div>
       <p class="text-sm text-surface-500">
-        Sélectionnez un fichier JSON précédemment exporté depuis Kipit. Les items invalides seront ignorés.
+        {{ t('export.importNotice') }}
       </p>
       <div class="flex items-center gap-3">
         <label class="btn-primary flex items-center gap-2 cursor-pointer">
           <Icon name="lucide:upload" class="w-4 h-4" />
-          <span v-if="importing">Import en cours...</span>
-          <span v-else>Importer un fichier</span>
+          <span v-if="importing">{{ t('export.importing') }}</span>
+          <span v-else>{{ t('export.importBtn') }}</span>
           <input
             type="file"
             accept=".json"
@@ -79,6 +79,7 @@ definePageMeta({
   middleware: 'auth',
 })
 
+const { t } = useLang()
 const { items, fetchItems, addItem } = useVault()
 
 const exporting = ref(false)
@@ -127,7 +128,7 @@ async function handleExport() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   } catch (err: any) {
-    error.value = err.message || 'Erreur lors de l\'export.'
+    error.value = err.message || t('export.exportError')
   } finally {
     exporting.value = false
   }
@@ -147,7 +148,7 @@ async function handleImport(event: Event) {
     const data = JSON.parse(text)
 
     if (!data.items || !Array.isArray(data.items)) {
-      throw new Error('Format de fichier invalide.')
+      throw new Error(t('export.invalidFormat'))
     }
 
     let imported = 0
@@ -193,12 +194,12 @@ async function handleImport(event: Event) {
 
     importResult.value = {
       success: true,
-      message: `Import terminé : ${imported} élément(s) importé(s)${failed > 0 ? `, ${failed} erreur(s)` : ''}.`,
+      message: `${t('export.importSuccess')} : ${imported} element(s)${failed > 0 ? `, ${failed} error(s)` : ''}.`,
     }
   } catch (err: any) {
     importResult.value = {
       success: false,
-      message: err.message || 'Erreur lors de l\'import.',
+      message: err.message || t('export.importError'),
     }
   } finally {
     importing.value = false

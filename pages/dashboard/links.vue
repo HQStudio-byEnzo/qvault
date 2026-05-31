@@ -2,12 +2,12 @@
   <div class="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-white">Liens</h1>
-        <p class="text-surface-400 text-sm mt-1">Vos liens importants sauvegardés</p>
+        <h1 class="text-2xl font-bold text-white">{{ t('links.title') }}</h1>
+        <p class="text-surface-400 text-sm mt-1">{{ t('links.subtitle') }}</p>
       </div>
       <button @click="showAddModal = true" class="btn-primary flex items-center gap-2">
         <Icon name="lucide:plus" class="w-4 h-4" />
-        Ajouter un lien
+        {{ t('links.add') }}
       </button>
     </div>
 
@@ -18,7 +18,7 @@
 
     <div v-else-if="filteredItems.length === 0" class="text-center py-16">
       <Icon name="lucide:link" class="w-12 h-12 text-surface-600 mx-auto mb-4" />
-      <p class="text-surface-400">Aucun lien sauvegardé.</p>
+      <p class="text-surface-400">{{ t('links.empty') }}</p>
     </div>
 
     <div v-else class="space-y-2">
@@ -50,6 +50,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
+const { t } = useLang()
 const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
@@ -58,7 +59,7 @@ const filteredItems = computed(() => items.value.filter(i => i.type === 'link'))
 
 function handleDecrypt(item: any) { decryptTarget.value = item }
 async function handleDelete(id: string) {
-  if (confirm('Supprimer ce lien ?')) await deleteItem(id)
+  if (confirm(t('links.confirmDelete'))) await deleteItem(id)
 }
 
 onMounted(() => fetchItems({ type: 'link' }))

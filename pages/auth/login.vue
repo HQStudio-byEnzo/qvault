@@ -8,14 +8,14 @@
             <Icon name="lucide:shield" class="w-6 h-6 text-white" />
           </div>
         </NuxtLink>
-        <h1 class="text-2xl font-bold text-white">Bon retour</h1>
-        <p class="text-sm text-surface-400 mt-2">Connectez-vous à votre coffre-fort</p>
+        <h1 class="text-2xl font-bold text-white">{{ t('auth.login.title') }}</h1>
+        <p class="text-sm text-surface-400 mt-2">{{ t('auth.login.subtitle') }}</p>
       </div>
 
       <!-- Form -->
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div>
-          <label for="email" class="block text-sm font-medium text-surface-300 mb-1">Email</label>
+          <label for="email" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.login.email') }}</label>
           <input
             id="email"
             v-model="form.email"
@@ -27,7 +27,7 @@
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-surface-300 mb-1">Mot de passe</label>
+          <label for="password" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.login.password') }}</label>
           <input
             id="password"
             v-model="form.password"
@@ -45,12 +45,12 @@
             @click="showHint"
             class="text-xs text-accent-400 hover:text-accent-300 font-medium"
           >
-            Forgot password? Show hint
+            {{ t('auth.login.forgotHint') }}
           </button>
         </div>
 
         <div v-if="hintResult || hintMessage" class="p-3 rounded-lg bg-accent-500/10 border border-accent-500/20 text-sm text-accent-300">
-          <span v-if="hintResult">💡 Hint: {{ hintResult }}</span>
+          <span v-if="hintResult">{{ hintResult }}</span>
           <span v-else>{{ hintMessage }}</span>
         </div>
 
@@ -64,16 +64,16 @@
           :disabled="isLoading"
           class="btn-primary w-full py-2.5"
         >
-          <span v-if="isLoading">Connexion...</span>
-          <span v-else>Se connecter</span>
+          <span v-if="isLoading">{{ t('auth.login.loading') }}</span>
+          <span v-else>{{ t('auth.login.btn') }}</span>
         </button>
       </form>
 
       <!-- Footer -->
       <p class="text-center text-sm text-surface-400">
-        Pas encore de compte ?
+        {{ t('auth.login.noAccount') }}
         <NuxtLink to="/auth/register" class="text-accent-400 hover:text-accent-300 font-medium">
-          Créer un compte
+          {{ t('auth.login.createAccount') }}
         </NuxtLink>
       </p>
     </div>
@@ -86,6 +86,7 @@ definePageMeta({
   middleware: 'guest',
 })
 
+const { t } = useLang()
 const { signIn } = useAuthClient()
 
 const form = reactive({
@@ -103,7 +104,7 @@ async function showHint() {
   hintMessage.value = ''
 
   if (!form.email) {
-    hintMessage.value = 'Please enter your email first.'
+    hintMessage.value = t('auth.login.enterEmail')
     return
   }
 
@@ -112,10 +113,10 @@ async function showHint() {
     if (res.hint) {
       hintResult.value = res.hint
     } else {
-      hintMessage.value = res.message || 'No hint available for this account.'
+      hintMessage.value = res.message || t('auth.login.noHint')
     }
   } catch (err: any) {
-    hintMessage.value = err.data?.message || 'Error fetching hint.'
+    hintMessage.value = err.data?.message || t('auth.login.hintError')
   }
 }
 
@@ -127,7 +128,7 @@ async function handleLogin() {
     await signIn({ email: form.email, password: form.password })
     navigateTo('/dashboard')
   } catch (err: any) {
-    errorMsg.value = err.data?.message || 'Email ou mot de passe incorrect.'
+    errorMsg.value = err.data?.message || t('auth.login.error')
   } finally {
     isLoading.value = false
   }

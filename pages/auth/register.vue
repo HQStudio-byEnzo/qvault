@@ -8,26 +8,26 @@
             <Icon name="lucide:shield" class="w-6 h-6 text-white" />
           </div>
         </NuxtLink>
-        <h1 class="text-2xl font-bold text-white">Créer un compte</h1>
-        <p class="text-sm text-surface-400 mt-2">Commencez à sécuriser vos données</p>
+        <h1 class="text-2xl font-bold text-white">{{ t('auth.register.title') }}</h1>
+        <p class="text-sm text-surface-400 mt-2">{{ t('auth.register.subtitle') }}</p>
       </div>
 
       <!-- Form -->
       <form @submit.prevent="handleRegister" class="space-y-4">
         <div>
-          <label for="name" class="block text-sm font-medium text-surface-300 mb-1">Nom</label>
+          <label for="name" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.name') }}</label>
           <input
             id="name"
             v-model="form.name"
             type="text"
             required
             class="input-field"
-            placeholder="Votre nom"
+            :placeholder="t('auth.register.namePlaceholder')"
           />
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-surface-300 mb-1">Email</label>
+          <label for="email" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.email') }}</label>
           <input
             id="email"
             v-model="form.email"
@@ -39,7 +39,7 @@
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-surface-300 mb-1">Mot de passe</label>
+          <label for="password" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.password') }}</label>
           <input
             id="password"
             v-model="form.password"
@@ -52,7 +52,7 @@
         </div>
 
         <div>
-          <label for="confirmPassword" class="block text-sm font-medium text-surface-300 mb-1">Confirmer le mot de passe</label>
+          <label for="confirmPassword" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.confirmPassword') }}</label>
           <input
             id="confirmPassword"
             v-model="form.confirmPassword"
@@ -64,9 +64,9 @@
         </div>
 
         <div>
-          <label for="hint" class="block text-sm font-medium text-surface-300 mb-1">Password hint (optional)</label>
-          <input id="hint" v-model="form.hint" type="text" class="input-field" placeholder="Ex: Name of my first pet" />
-          <p class="text-xs text-surface-500 mt-1">This hint will be shown if you forget your password.</p>
+          <label for="hint" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.hint') }}</label>
+          <input id="hint" v-model="form.hint" type="text" class="input-field" :placeholder="t('auth.register.hintPlaceholder')" />
+          <p class="text-xs text-surface-500 mt-1">{{ t('auth.register.hintDesc') }}</p>
         </div>
 
         <!-- Error message -->
@@ -79,16 +79,16 @@
           :disabled="isLoading"
           class="btn-primary w-full py-2.5"
         >
-          <span v-if="isLoading">Création...</span>
-          <span v-else>Créer mon compte</span>
+          <span v-if="isLoading">{{ t('auth.register.loading') }}</span>
+          <span v-else>{{ t('auth.register.btn') }}</span>
         </button>
       </form>
 
       <!-- Footer -->
       <p class="text-center text-sm text-surface-400">
-        Déjà un compte ?
+        {{ t('auth.register.hasAccount') }}
         <NuxtLink to="/auth/login" class="text-accent-400 hover:text-accent-300 font-medium">
-          Se connecter
+          {{ t('auth.register.login') }}
         </NuxtLink>
       </p>
     </div>
@@ -101,6 +101,7 @@ definePageMeta({
   middleware: 'guest',
 })
 
+const { t } = useLang()
 const { signUp } = useAuthClient()
 
 const form = reactive({
@@ -119,13 +120,13 @@ async function handleRegister() {
   errorMsg.value = ''
 
   if (form.password !== form.confirmPassword) {
-    errorMsg.value = 'Les mots de passe ne correspondent pas.'
+    errorMsg.value = t('auth.register.pwdMismatch')
     isLoading.value = false
     return
   }
 
   if (form.password.length < 8) {
-    errorMsg.value = 'Le mot de passe doit contenir au moins 8 caractères.'
+    errorMsg.value = t('auth.register.pwdTooShort')
     isLoading.value = false
     return
   }
@@ -139,7 +140,7 @@ async function handleRegister() {
     })
     navigateTo('/dashboard')
   } catch (err: any) {
-    errorMsg.value = err.data?.message || 'Erreur lors de la création du compte.'
+    errorMsg.value = err.data?.message || t('auth.register.error')
   } finally {
     isLoading.value = false
   }

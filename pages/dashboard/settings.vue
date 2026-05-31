@@ -141,21 +141,21 @@
     <section class="card space-y-5">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:sliders-horizontal" class="w-5 h-5 text-surface-400" />
-        Parametres de securite
+        {{ t('settings.securityPrefs') }}
       </h2>
 
       <div class="space-y-2">
         <div class="flex items-center justify-between gap-4">
           <div>
-            <p class="text-sm font-medium text-surface-200">Verrouillage automatique</p>
-            <p class="text-xs text-surface-500">Deconnecte la session apres inactivite.</p>
+            <p class="text-sm font-medium text-surface-200">{{ t('settings.autoLock') }}</p>
+            <p class="text-xs text-surface-500">{{ t('settings.autoLockDesc') }}</p>
           </div>
           <select v-model="securitySettings.autoLockMinutes" class="input-field max-w-40">
             <option :value="1">1 min</option>
             <option :value="5">5 min</option>
             <option :value="15">15 min</option>
             <option :value="30">30 min</option>
-            <option :value="0">Desactive</option>
+            <option :value="0">{{ t('settings.disabled') }}</option>
           </select>
         </div>
       </div>
@@ -163,14 +163,14 @@
       <div class="space-y-2">
         <div class="flex items-center justify-between gap-4">
           <div>
-            <p class="text-sm font-medium text-surface-200">Effacement du presse-papiers</p>
-            <p class="text-xs text-surface-500">Rappel local pour vider les secrets copies.</p>
+            <p class="text-sm font-medium text-surface-200">{{ t('settings.clipboardClear') }}</p>
+            <p class="text-xs text-surface-500">{{ t('settings.clipboardClearDesc') }}</p>
           </div>
           <select v-model="securitySettings.clipboardClearSeconds" class="input-field max-w-40">
             <option :value="15">15 s</option>
             <option :value="30">30 s</option>
             <option :value="60">60 s</option>
-            <option :value="0">Desactive</option>
+            <option :value="0">{{ t('settings.disabled') }}</option>
           </select>
         </div>
       </div>
@@ -178,18 +178,18 @@
       <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer">
         <input v-model="securitySettings.hideDecryptedByDefault" type="checkbox" class="mt-1" />
         <span>
-          Masquer les secrets dechiffres par defaut
-          <span class="block text-xs text-surface-500 mt-0.5">Preparation pour les prochains ecrans de copie sans affichage.</span>
+          {{ t('settings.hideDecrypted') }}
+          <span class="block text-xs text-surface-500 mt-0.5">{{ t('settings.hideDecryptedDesc') }}</span>
         </span>
       </label>
 
       <div class="flex flex-wrap gap-2 pt-2">
-        <button class="btn-primary" @click="saveSecuritySettings">Enregistrer</button>
-        <button class="btn-secondary" @click="resetMasterOnboarding">Revoir l'onboarding master password</button>
+        <button class="btn-primary" @click="saveSecuritySettings">{{ t('settings.save') }}</button>
+        <button class="btn-secondary" @click="resetMasterOnboarding">{{ t('settings.resetOnboarding') }}</button>
       </div>
 
       <div v-if="securitySaved" class="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400">
-        Parametres enregistres.
+        {{ t('settings.saved') }}
       </div>
     </section>
 

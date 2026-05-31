@@ -30,7 +30,7 @@ Kipit is a free, open-source digital vault that stores your links, passwords, an
 - **Framework:** Nuxt 3 (SSR)
 - **Database:** Turso (LibSQL)
 - **Auth:** nuxt-auth-utils (encrypted cookie sessions)
-- **UI:** TailwindCSS
+- **UI:** TailwindCSS + Comfortaa font
 - **Deployment:** Vercel
 - **Analytics:** Vercel Analytics + Google Analytics
 

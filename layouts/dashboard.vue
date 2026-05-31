@@ -102,15 +102,15 @@
               <Icon name="lucide:timer" class="w-4 h-4 text-yellow-400" />
             </div>
             <div>
-              <p class="text-sm font-medium text-yellow-200">Session bientôt expirée</p>
+              <p class="text-sm font-medium text-yellow-200">{{ t('autolock.title') }}</p>
               <p class="text-xs text-yellow-400 mt-1">
-                Déconnexion automatique dans {{ remainingSeconds }}s pour des raisons de sécurité.
+                {{ t('autolock.desc').replace('{seconds}', String(remainingSeconds)) }}
               </p>
               <button
                 @click="resetTimers"
                 class="mt-2 text-xs px-3 py-1.5 rounded-lg bg-yellow-600/30 text-yellow-200 hover:bg-yellow-600/50 transition-colors"
               >
-                Rester connecté
+                {{ t('autolock.stay') }}
               </button>
             </div>
           </div>

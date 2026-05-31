@@ -8,7 +8,7 @@
       <div class="relative w-full max-w-md bg-surface-900 border border-surface-700 rounded-2xl p-6 animate-scale-in">
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold text-white">Ajouter un élément</h2>
+          <h2 class="text-lg font-semibold text-white">{{ t('vault.addTitle') }}</h2>
           <button @click="$emit('close')" class="p-2 rounded-lg hover:bg-surface-800 text-surface-400">
             <Icon name="lucide:x" class="w-5 h-5" />
           </button>
@@ -18,35 +18,35 @@
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <!-- Type -->
           <div>
-            <label class="block text-sm font-medium text-surface-300 mb-2">Type</label>
+            <label class="block text-sm font-medium text-surface-300 mb-2">{{ t('vault.typeLabel') }}</label>
             <div class="grid grid-cols-3 gap-2">
               <button
-                v-for="t in types"
-                :key="t.value"
+                v-for="tp in types"
+                :key="tp.value"
                 type="button"
-                @click="form.type = t.value"
+                @click="form.type = tp.value"
                 class="p-3 rounded-lg border text-center transition-all text-sm"
                 :class="[
-                  form.type === t.value
+                  form.type === tp.value
                     ? 'border-accent-500 bg-accent-500/10 text-accent-300'
                     : 'border-surface-700 bg-surface-800 text-surface-400 hover:border-surface-600'
                 ]"
               >
-                <Icon :name="t.icon" class="w-5 h-5 mx-auto mb-1" />
-                {{ t.label }}
+                <Icon :name="tp.icon" class="w-5 h-5 mx-auto mb-1" />
+                {{ tp.label }}
               </button>
             </div>
           </div>
 
           <!-- Label -->
           <div>
-            <label for="label" class="block text-sm font-medium text-surface-300 mb-1">Libellé</label>
+            <label for="label" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.labelField') }}</label>
             <input
               id="label"
               v-model="form.label"
               type="text"
               class="input-field"
-              placeholder="Ex: Gmail, Binance, Portfolio..."
+              :placeholder="t('vault.labelPlaceholder')"
             />
           </div>
 
@@ -62,7 +62,7 @@
                 @click="generateSeed"
                 class="text-xs px-2 py-1 rounded bg-accent-600/20 text-accent-300 hover:bg-accent-600/30 transition-colors"
               >
-                Générer seed phrase
+                {{ t('vault.generateSeed') }}
               </button>
             </div>
             <textarea
@@ -77,14 +77,14 @@
 
           <!-- URL (only for passwords) -->
           <div v-if="form.type === 'password'">
-            <label for="url" class="block text-sm font-medium text-surface-300 mb-1">Website URL (optional)</label>
+            <label for="url" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.websiteUrl') }}</label>
             <input id="url" v-model="form.url" type="url" class="input-field" placeholder="https://gmail.com" />
           </div>
 
           <!-- Master password (always required — encryption is mandatory) -->
           <div>
             <label for="masterPassword" class="block text-sm font-medium text-surface-300 mb-1">
-              Master password
+              {{ t('vault.masterPwdLabel') }}
             </label>
             <input
               id="masterPassword"
@@ -92,10 +92,10 @@
               type="password"
               required
               class="input-field"
-              placeholder="Votre mot de passe de chiffrement"
+              :placeholder="t('vault.masterPwdPlaceholder')"
             />
             <p class="text-xs text-surface-500 mt-1">
-              🔒 Required — used to encrypt your data locally. Never sent to the server.
+              {{ t('vault.masterPwdHint') }}
             </p>
           </div>
 
@@ -110,8 +110,8 @@
             :disabled="isSubmitting"
             class="btn-primary w-full py-2.5"
           >
-            <span v-if="isSubmitting">Ajout en cours...</span>
-            <span v-else>Ajouter au coffre-fort</span>
+            <span v-if="isSubmitting">{{ t('vault.adding') }}</span>
+            <span v-else>{{ t('vault.addBtn') }}</span>
           </button>
         </form>
       </div>
@@ -131,6 +131,7 @@ const emit = defineEmits<{
 
 const { addItem, error } = useVault()
 const { generateSeedPhrase } = useSeedGenerator()
+const { t } = useLang()
 const isSubmitting = ref(false)
 
 const form = reactive({
@@ -141,25 +142,25 @@ const form = reactive({
   masterPassword: '',
 })
 
-const types = [
-  { value: 'link' as const, label: 'Lien', icon: 'lucide:link' },
-  { value: 'password' as const, label: 'Mot de passe', icon: 'lucide:key-round' },
-  { value: 'crypto' as const, label: 'Crypto', icon: 'lucide:bitcoin' },
-]
+const types = computed(() => [
+  { value: 'link' as const, label: t('vault.typeLink'), icon: 'lucide:link' },
+  { value: 'password' as const, label: t('vault.typePassword'), icon: 'lucide:key-round' },
+  { value: 'crypto' as const, label: t('vault.typeCrypto'), icon: 'lucide:bitcoin' },
+])
 
 const payloadLabel = computed(() => {
   switch (form.type) {
-    case 'link': return 'URL'
-    case 'password': return 'Mot de passe'
-    case 'crypto': return 'Seed phrase / Clé privée'
+    case 'link': return t('vault.payloadLink')
+    case 'password': return t('vault.payloadPassword')
+    case 'crypto': return t('vault.payloadCrypto')
   }
 })
 
 const payloadPlaceholder = computed(() => {
   switch (form.type) {
-    case 'link': return 'https://...'
-    case 'password': return 'Votre mot de passe'
-    case 'crypto': return 'word1 word2 word3...'
+    case 'link': return t('vault.payloadPlaceholderLink')
+    case 'password': return t('vault.payloadPlaceholderPassword')
+    case 'crypto': return t('vault.payloadPlaceholderCrypto')
   }
 })
 

@@ -33,11 +33,11 @@
             <p class="px-4 py-2 text-xs text-surface-500 truncate">{{ user?.email }}</p>
             <NuxtLink to="/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-surface-300 hover:text-white hover:bg-surface-800 transition-colors" @click="showUserMenu = false">
               <Icon name="lucide:layout-dashboard" class="w-4 h-4" />
-              Dashboard
+              {{ t('nav.dashboard') }}
             </NuxtLink>
             <button @click="handleLogout" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-surface-800 transition-colors">
               <Icon name="lucide:log-out" class="w-4 h-4" />
-              Sign out
+              {{ t('nav.signout') }}
             </button>
           </div>
         </div>
@@ -334,11 +334,11 @@
     <!-- Contact -->
     <section id="contact" class="px-6 lg:px-12 py-24 border-t border-surface-800/50 scroll-mt-28">
       <div class="max-w-3xl mx-auto text-center space-y-6">
-        <h2 class="text-3xl md:text-4xl font-bold text-white">Contact</h2>
-        <p class="text-surface-400 text-lg">Have a question? Join our Discord community for support.</p>
+        <h2 class="text-3xl md:text-4xl font-bold text-white">{{ t('contact.title') }}</h2>
+        <p class="text-surface-400 text-lg">{{ t('contact.desc') }}</p>
         <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="group btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">
           <Icon name="lucide:message-circle" class="w-5 h-5" />
-          Join Discord
+          {{ t('contact.btn') }}
         </a>
       </div>
     </section>

@@ -12,7 +12,7 @@
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2">
         <p class="text-sm font-medium text-surface-200 truncate">
-          {{ item.label || 'Sans titre' }}
+          {{ item.label || t('vault.untitled') }}
         </p>
         <span v-if="item.is_encrypted" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-accent-500/10 text-accent-400 border border-accent-500/20">
           <Icon name="lucide:lock" class="w-2.5 h-2.5" />
@@ -87,13 +87,14 @@ defineEmits<{
   'decrypt': [item: VaultItem]
 }>()
 
+const { t } = useLang()
 const copied = ref(false)
 
-const typeLabels: Record<string, string> = {
-  link: 'Lien',
-  password: 'Mot de passe',
-  crypto: 'Crypto',
-}
+const typeLabels = computed(() => ({
+  link: t('vault.typeLink'),
+  password: t('vault.typePassword'),
+  crypto: t('vault.typeCrypto'),
+}))
 
 const typeStyles = computed(() => {
   switch (props.item.type) {

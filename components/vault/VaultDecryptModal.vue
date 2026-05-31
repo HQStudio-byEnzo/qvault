@@ -10,7 +10,7 @@
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-semibold text-white flex items-center gap-2">
             <Icon name="lucide:unlock" class="w-5 h-5 text-accent-400" />
-            Déchiffrer
+            {{ t('vault.decrypt') }}
           </h2>
           <button @click="$emit('close')" class="p-2 rounded-lg hover:bg-surface-800 text-surface-400">
             <Icon name="lucide:x" class="w-5 h-5" />
@@ -20,13 +20,13 @@
         <!-- Not yet decrypted -->
         <div v-if="!decryptedValue" class="space-y-4">
           <p class="text-sm text-surface-400">
-            Entrez votre mot de passe maître pour déchiffrer « <strong class="text-surface-200">{{ item.label || 'Sans titre' }}</strong> ».
+            {{ t('vault.decryptPrompt') }} « <strong class="text-surface-200">{{ item.label || t('vault.untitled') }}</strong> ».
           </p>
 
           <form @submit.prevent="handleDecrypt" class="space-y-4">
             <div>
               <label for="masterPwd" class="block text-sm font-medium text-surface-300 mb-1">
-                Mot de passe maître
+                {{ t('vault.masterPwd') }}
               </label>
               <input
                 id="masterPwd"
@@ -35,7 +35,7 @@
                 required
                 autofocus
                 class="input-field"
-                placeholder="Votre mot de passe de chiffrement"
+                :placeholder="t('vault.masterPwdPlaceholder')"
               />
             </div>
 
@@ -44,8 +44,8 @@
             </div>
 
             <button type="submit" :disabled="isDecrypting" class="btn-primary w-full">
-              <span v-if="isDecrypting">Déchiffrement...</span>
-              <span v-else>Déchiffrer</span>
+              <span v-if="isDecrypting">{{ t('vault.decrypting') }}</span>
+              <span v-else>{{ t('vault.decryptBtn') }}</span>
             </button>
           </form>
         </div>
@@ -53,22 +53,22 @@
         <!-- Decrypted result -->
         <div v-else class="space-y-4">
           <div class="p-4 rounded-lg bg-surface-800 border border-surface-700">
-            <p class="text-xs text-surface-500 mb-2">Contenu déchiffré :</p>
+            <p class="text-xs text-surface-500 mb-2">{{ t('vault.decryptedContent') }}</p>
             <p class="text-sm text-surface-100 font-mono break-all whitespace-pre-wrap">{{ decryptedValue }}</p>
           </div>
 
           <div class="flex gap-2">
             <button @click="copyDecrypted" class="btn-primary flex-1 flex items-center justify-center gap-2">
               <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" class="w-4 h-4" />
-              {{ copied ? 'Copié !' : 'Copier' }}
+              {{ copied ? t('vault.copied') : t('vault.copy') }}
             </button>
             <button @click="$emit('close')" class="btn-secondary flex-1">
-              Fermer
+              {{ t('vault.close') }}
             </button>
           </div>
 
           <p class="text-xs text-surface-500 text-center">
-            🔒 Cette donnée n'est visible que dans votre navigateur.
+            {{ t('vault.decryptNotice') }}
           </p>
         </div>
       </div>
@@ -87,6 +87,7 @@ defineEmits<{
   close: []
 }>()
 
+const { t } = useLang()
 const { decryptItem } = useVault()
 
 const masterPassword = ref('')
@@ -102,7 +103,7 @@ async function handleDecrypt() {
   try {
     decryptedValue.value = await decryptItem(props.item, masterPassword.value)
   } catch (err: any) {
-    errorMsg.value = 'Mot de passe incorrect ou données corrompues.'
+    errorMsg.value = t('vault.decryptError')
   } finally {
     isDecrypting.value = false
   }

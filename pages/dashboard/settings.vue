@@ -56,7 +56,7 @@
             required
             minlength="8"
             class="input-field"
-            placeholder="Minimum 8 caractères"
+            :placeholder="t('settings.newPwdPlaceholder')"
           />
         </div>
         <div>
@@ -79,7 +79,7 @@
         </div>
 
         <button type="submit" :disabled="pwdLoading" class="btn-primary">
-          <span v-if="pwdLoading">Modification...</span>
+          <span v-if="pwdLoading">{{ t('settings.changePwdBtn') }}...</span>
           <span v-else>{{ t('settings.changePwdBtn') }}</span>
         </button>
       </form>
@@ -224,13 +224,13 @@
               v-model="deletePassword"
               type="password"
               class="input-field"
-              placeholder="Votre mot de passe"
+              :placeholder="t('settings.yourPassword')"
             />
             <div v-if="deleteError" class="text-sm text-red-400">{{ deleteError }}</div>
             <div class="flex gap-2">
               <button @click="handleDeleteAccount" :disabled="deleteLoading" class="btn-danger flex items-center gap-2">
                 <Icon name="lucide:trash-2" class="w-4 h-4" />
-                <span v-if="deleteLoading">Suppression...</span>
+                <span v-if="deleteLoading">{{ t('settings.deleting') }}</span>
                 <span v-else>{{ t('settings.confirmDelete') }}</span>
               </button>
               <button @click="showDeleteConfirm = false; deletePassword = ''" class="btn-secondary">
@@ -276,7 +276,7 @@ async function handleChangePassword() {
   pwdSuccess.value = ''
 
   if (pwdForm.newPassword !== pwdForm.confirmPassword) {
-    pwdError.value = 'Les mots de passe ne correspondent pas.'
+    pwdError.value = t('settings.pwdMismatch')
     return
   }
 
@@ -286,12 +286,12 @@ async function handleChangePassword() {
       method: 'POST',
       body: { currentPassword: pwdForm.currentPassword, newPassword: pwdForm.newPassword },
     })
-    pwdSuccess.value = 'Mot de passe modifié avec succès.'
+    pwdSuccess.value = t('settings.pwdSuccess')
     pwdForm.currentPassword = ''
     pwdForm.newPassword = ''
     pwdForm.confirmPassword = ''
   } catch (err: any) {
-    pwdError.value = err.data?.message || 'Erreur lors de la modification.'
+    pwdError.value = err.data?.message || t('settings.pwdError')
   } finally {
     pwdLoading.value = false
   }
@@ -305,7 +305,7 @@ const deleteError = ref('')
 
 async function handleDeleteAccount() {
   if (!deletePassword.value) {
-    deleteError.value = 'Mot de passe requis.'
+    deleteError.value = t('settings.deleteRequired')
     return
   }
   deleteError.value = ''
@@ -317,7 +317,7 @@ async function handleDeleteAccount() {
     })
     navigateTo('/')
   } catch (err: any) {
-    deleteError.value = err.data?.message || 'Erreur lors de la suppression.'
+    deleteError.value = err.data?.message || t('settings.deleteError')
   } finally {
     deleteLoading.value = false
   }

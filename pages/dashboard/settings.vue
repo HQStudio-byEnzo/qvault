@@ -137,6 +137,62 @@
       </div>
     </section>
 
+    <!-- Security preferences -->
+    <section class="card space-y-5">
+      <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+        <Icon name="lucide:sliders-horizontal" class="w-5 h-5 text-surface-400" />
+        Parametres de securite
+      </h2>
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="text-sm font-medium text-surface-200">Verrouillage automatique</p>
+            <p class="text-xs text-surface-500">Deconnecte la session apres inactivite.</p>
+          </div>
+          <select v-model="securitySettings.autoLockMinutes" class="input-field max-w-40">
+            <option :value="1">1 min</option>
+            <option :value="5">5 min</option>
+            <option :value="15">15 min</option>
+            <option :value="30">30 min</option>
+            <option :value="0">Desactive</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="text-sm font-medium text-surface-200">Effacement du presse-papiers</p>
+            <p class="text-xs text-surface-500">Rappel local pour vider les secrets copies.</p>
+          </div>
+          <select v-model="securitySettings.clipboardClearSeconds" class="input-field max-w-40">
+            <option :value="15">15 s</option>
+            <option :value="30">30 s</option>
+            <option :value="60">60 s</option>
+            <option :value="0">Desactive</option>
+          </select>
+        </div>
+      </div>
+
+      <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer">
+        <input v-model="securitySettings.hideDecryptedByDefault" type="checkbox" class="mt-1" />
+        <span>
+          Masquer les secrets dechiffres par defaut
+          <span class="block text-xs text-surface-500 mt-0.5">Preparation pour les prochains ecrans de copie sans affichage.</span>
+        </span>
+      </label>
+
+      <div class="flex flex-wrap gap-2 pt-2">
+        <button class="btn-primary" @click="saveSecuritySettings">Enregistrer</button>
+        <button class="btn-secondary" @click="resetMasterOnboarding">Revoir l'onboarding master password</button>
+      </div>
+
+      <div v-if="securitySaved" class="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400">
+        Parametres enregistres.
+      </div>
+    </section>
+
     <!-- Danger zone -->
     <section class="card border-red-500/20 space-y-4">
       <h2 class="text-lg font-semibold text-red-400 flex items-center gap-2">
@@ -195,11 +251,18 @@ const { user, signOut } = useAuthClient()
 const { locale, setLocale, t } = useLang()
 
 const userInfo = ref<any>(null)
+const securitySaved = ref(false)
+const securitySettings = reactive({
+  autoLockMinutes: 5,
+  clipboardClearSeconds: 30,
+  hideDecryptedByDefault: true,
+})
 
 onMounted(async () => {
   try {
     userInfo.value = await $fetch('/api/auth/me')
   } catch {}
+  loadSecuritySettings()
 })
 
 // Change password
@@ -271,5 +334,27 @@ function formatDate(date: string | undefined) {
 
 function handleSignOut() {
   signOut()
+}
+
+function loadSecuritySettings() {
+  securitySettings.autoLockMinutes = Number(localStorage.getItem('kipit.security.autoLockMinutes') || 5)
+  securitySettings.clipboardClearSeconds = Number(localStorage.getItem('kipit.security.clipboardClearSeconds') || 30)
+  securitySettings.hideDecryptedByDefault = localStorage.getItem('kipit.security.hideDecryptedByDefault') !== 'false'
+}
+
+function saveSecuritySettings() {
+  localStorage.setItem('kipit.security.autoLockMinutes', String(securitySettings.autoLockMinutes))
+  localStorage.setItem('kipit.security.clipboardClearSeconds', String(securitySettings.clipboardClearSeconds))
+  localStorage.setItem('kipit.security.hideDecryptedByDefault', String(securitySettings.hideDecryptedByDefault))
+  window.dispatchEvent(new Event('kipit-security-settings-changed'))
+  securitySaved.value = true
+  setTimeout(() => { securitySaved.value = false }, 2000)
+}
+
+function resetMasterOnboarding() {
+  localStorage.removeItem('kipit.masterPasswordOnboarded')
+  localStorage.removeItem('kipit.masterPasswordOnboardingSnoozedUntil')
+  securitySaved.value = true
+  setTimeout(() => { securitySaved.value = false }, 2000)
 }
 </script>

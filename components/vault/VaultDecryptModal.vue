@@ -113,8 +113,23 @@ async function copyDecrypted() {
     await navigator.clipboard.writeText(decryptedValue.value)
     copied.value = true
     setTimeout(() => { copied.value = false }, 2000)
+    scheduleClipboardClear(decryptedValue.value)
   } catch {
     // Fallback
   }
+}
+
+function scheduleClipboardClear(value: string) {
+  const seconds = Number(localStorage.getItem('kipit.security.clipboardClearSeconds') || 30)
+  if (seconds <= 0) return
+
+  setTimeout(async () => {
+    try {
+      const current = await navigator.clipboard.readText()
+      if (current === value) await navigator.clipboard.writeText('')
+    } catch {
+      // Clipboard permissions are browser-dependent.
+    }
+  }, seconds * 1000)
 }
 </script>

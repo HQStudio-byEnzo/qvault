@@ -117,6 +117,8 @@
         </div>
       </Transition>
     </Teleport>
+
+    <SecurityMasterPasswordOnboarding />
   </div>
 </template>
 

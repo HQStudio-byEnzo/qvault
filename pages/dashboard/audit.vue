@@ -1,97 +1,79 @@
 <template>
-  <div class="p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
-    <!-- Header -->
+  <div class="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-white">Audit de sécurité</h1>
-      <p class="text-surface-400 text-sm mt-1">Vérifiez la robustesse de vos mots de passe</p>
+      <h1 class="text-2xl font-bold text-white">Audit de securite</h1>
+      <p class="text-surface-400 text-sm mt-1">Analyse zero-knowledge des risques visibles dans votre coffre</p>
     </div>
 
-    <!-- Overall Health -->
-    <div class="bg-surface-900 border border-surface-700 rounded-xl p-6">
-      <div class="flex items-center gap-4">
-        <div class="relative w-20 h-20">
-          <svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
-            <path
-              class="text-surface-700"
-              stroke="currentColor"
-              stroke-width="3"
-              fill="none"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <path
-              :class="healthColor"
-              stroke="currentColor"
-              stroke-width="3"
-              fill="none"
-              stroke-linecap="round"
-              :stroke-dasharray="`${healthPercentage}, 100`"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-          </svg>
-          <span class="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">
-            {{ healthPercentage }}%
-          </span>
-        </div>
-        <div>
-          <h2 class="text-lg font-semibold text-white">Santé du coffre-fort</h2>
-          <p class="text-sm text-surface-400">
-            {{ strongCount }} fort(s), {{ mediumCount }} moyen(s), {{ weakCount }} faible(s)
-          </p>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="card">
+        <p class="text-xs text-surface-500 mb-2">Score</p>
+        <p class="text-3xl font-bold" :class="scoreColor">{{ securityScore }}%</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-surface-500 mb-2">Alertes hautes</p>
+        <p class="text-3xl font-bold text-red-400">{{ highIssues.length }}</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-surface-500 mb-2">A corriger</p>
+        <p class="text-3xl font-bold text-yellow-400">{{ mediumIssues.length }}</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-surface-500 mb-2">Elements</p>
+        <p class="text-3xl font-bold text-white">{{ items.length }}</p>
       </div>
     </div>
 
-    <!-- Encryption notice -->
     <div class="bg-surface-900 border border-accent-500/20 rounded-xl p-4 flex items-start gap-3">
-      <Icon name="lucide:info" class="w-5 h-5 text-accent-400 mt-0.5 flex-shrink-0" />
+      <Icon name="lucide:shield-check" class="w-5 h-5 text-accent-400 mt-0.5 flex-shrink-0" />
       <p class="text-sm text-surface-400">
-        Password audit only works with previously saved unencrypted passwords. All new passwords are encrypted.
+        L'audit ne dechiffre pas vos secrets. Il inspecte les metadonnees, le format de chiffrement, les doublons visibles et les anciens items non chiffres.
       </p>
     </div>
 
-    <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
       <Icon name="lucide:loader-2" class="w-6 h-6 text-accent-400 animate-spin" />
     </div>
 
-    <!-- No passwords -->
-    <div v-else-if="passwordItems.length === 0" class="text-center py-16">
-      <Icon name="lucide:shield-alert" class="w-12 h-12 text-surface-600 mx-auto mb-4" />
-      <p class="text-surface-400">Aucun mot de passe non chiffré à auditer.</p>
-      <p class="text-sm text-surface-500 mt-1">Seuls les mots de passe non chiffrés peuvent être analysés.</p>
+    <div v-else-if="issues.length === 0" class="text-center py-16">
+      <Icon name="lucide:shield-check" class="w-12 h-12 text-green-500 mx-auto mb-4" />
+      <p class="text-surface-300 font-medium">Aucun risque visible detecte.</p>
+      <p class="text-sm text-surface-500 mt-1">Votre coffre respecte les controles zero-knowledge disponibles.</p>
     </div>
 
-    <!-- Password list -->
     <div v-else class="space-y-3">
       <div
-        v-for="item in auditResults"
-        :key="item.id"
-        class="bg-surface-900 border border-surface-700 rounded-xl p-4 flex items-center justify-between"
+        v-for="issue in issues"
+        :key="issue.key"
+        class="bg-surface-900 border rounded-xl p-4"
+        :class="issue.severity === 'high' ? 'border-red-500/30' : issue.severity === 'medium' ? 'border-yellow-500/30' : 'border-surface-700'"
       >
-        <div class="flex items-center gap-3 min-w-0">
-          <div
-            class="w-10 h-10 rounded-lg flex items-center justify-center"
-            :class="gradeStyles[item.grade].bg"
-          >
-            <Icon name="lucide:key-round" class="w-5 h-5" :class="gradeStyles[item.grade].icon" />
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <div
+              class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+              :class="issue.severity === 'high' ? 'bg-red-500/10' : issue.severity === 'medium' ? 'bg-yellow-500/10' : 'bg-surface-800'"
+            >
+              <Icon :name="issue.icon" class="w-5 h-5" :class="issue.severity === 'high' ? 'text-red-400' : issue.severity === 'medium' ? 'text-yellow-400' : 'text-surface-400'" />
+            </div>
+            <div>
+              <p class="text-sm font-medium text-white">{{ issue.title }}</p>
+              <p class="text-sm text-surface-400 mt-1">{{ issue.description }}</p>
+              <p class="text-xs text-surface-500 mt-2">{{ issue.action }}</p>
+            </div>
           </div>
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-white truncate">{{ item.label }}</p>
-            <p class="text-xs text-surface-500">{{ item.details }}</p>
-          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-medium" :class="issue.severity === 'high' ? 'bg-red-500/10 text-red-400' : issue.severity === 'medium' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-surface-800 text-surface-400'">
+            {{ severityLabel[issue.severity] }}
+          </span>
         </div>
-        <span
-          class="px-3 py-1 rounded-full text-xs font-medium"
-          :class="gradeStyles[item.grade].badge"
-        >
-          {{ item.grade }}
-        </span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { VaultItem } from '~/composables/useVault'
+
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
@@ -99,90 +81,147 @@ definePageMeta({
 
 const { items, loading, fetchItems } = useVault()
 
-// Only audit non-encrypted password items
-const passwordItems = computed(() =>
-  items.value.filter(item => item.type === 'password' && !item.is_encrypted)
-)
+type Severity = 'high' | 'medium' | 'low'
 
-interface AuditResult {
-  id: string
-  label: string
-  grade: 'Fort' | 'Moyen' | 'Faible'
-  score: number
-  details: string
+interface AuditIssue {
+  key: string
+  severity: Severity
+  icon: string
+  title: string
+  description: string
+  action: string
 }
 
-const gradeStyles = {
-  Fort: {
-    bg: 'bg-green-600/20',
-    icon: 'text-green-400',
-    badge: 'bg-green-500/10 text-green-400 border border-green-500/20',
-  },
-  Moyen: {
-    bg: 'bg-yellow-600/20',
-    icon: 'text-yellow-400',
-    badge: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20',
-  },
-  Faible: {
-    bg: 'bg-red-600/20',
-    icon: 'text-red-400',
-    badge: 'bg-red-500/10 text-red-400 border border-red-500/20',
-  },
+const severityLabel: Record<Severity, string> = {
+  high: 'Critique',
+  medium: 'Important',
+  low: 'Info',
 }
 
-function checkPasswordStrength(password: string): { score: number; grade: 'Fort' | 'Moyen' | 'Faible'; details: string } {
-  let score = 0
-  const checks: string[] = []
+const issues = computed<AuditIssue[]>(() => {
+  const result: AuditIssue[] = []
+  const vaultItems = items.value
+  const unencrypted = vaultItems.filter(item => !item.is_encrypted)
+  const invalidEncrypted = vaultItems.filter(item => item.is_encrypted && (!item.iv || !hasEncryptedPayload(item)))
+  const passwordWithoutUrl = vaultItems.filter(item => item.type === 'password' && !item.url)
+  const duplicateUrls = findDuplicates(vaultItems.filter(item => item.url), item => normalizeUrl(item.url || ''))
+  const duplicateLabels = findDuplicates(vaultItems, item => item.label.trim().toLowerCase()).filter(group => group.key)
+  const oldItems = vaultItems.filter(item => daysSince(item.updated_at || item.created_at) >= 180)
 
-  // Length checks
-  if (password.length >= 8) { score += 1; checks.push('8+ car.') }
-  if (password.length >= 12) { score += 1; checks.push('12+ car.') }
-  if (password.length >= 16) { score += 1; checks.push('16+ car.') }
+  if (unencrypted.length) {
+    result.push({
+      key: 'unencrypted',
+      severity: 'high',
+      icon: 'lucide:unlock',
+      title: `${unencrypted.length} element(s) non chiffre(s)`,
+      description: 'Ces anciens items exposent leur payload cote serveur et dans les exports.',
+      action: 'Recreez-les avec un mot de passe maitre puis supprimez les anciennes versions.',
+    })
+  }
 
-  // Character variety
-  if (/[a-z]/.test(password)) { score += 1; checks.push('minuscules') }
-  if (/[A-Z]/.test(password)) { score += 1; checks.push('majuscules') }
-  if (/[0-9]/.test(password)) { score += 1; checks.push('chiffres') }
-  if (/[^a-zA-Z0-9]/.test(password)) { score += 1; checks.push('spéciaux') }
+  if (invalidEncrypted.length) {
+    result.push({
+      key: 'invalid-encrypted',
+      severity: 'high',
+      icon: 'lucide:file-warning',
+      title: `${invalidEncrypted.length} element(s) chiffre(s) semblent corrompus`,
+      description: 'Ils n ont pas de iv ou pas de payload au format salt:ciphertext.',
+      action: 'Exportez un backup, puis remplacez les items concernes par une nouvelle sauvegarde chiffree.',
+    })
+  }
 
-  let grade: 'Fort' | 'Moyen' | 'Faible'
-  if (score >= 6) grade = 'Fort'
-  else if (score >= 4) grade = 'Moyen'
-  else grade = 'Faible'
+  if (passwordWithoutUrl.length) {
+    result.push({
+      key: 'password-missing-url',
+      severity: 'medium',
+      icon: 'lucide:link-2-off',
+      title: `${passwordWithoutUrl.length} mot(s) de passe sans URL`,
+      description: 'Sans URL, l extension ne peut pas les associer automatiquement au bon site.',
+      action: 'Ajoutez le site officiel dans chaque item password.',
+    })
+  }
 
-  return { score, grade, details: checks.join(', ') }
-}
-
-const auditResults = computed<AuditResult[]>(() =>
-  passwordItems.value.map(item => {
-    const { score, grade, details } = checkPasswordStrength(item.payload)
-    return {
-      id: item.id,
-      label: item.label,
-      grade,
-      score,
-      details,
-    }
+  duplicateUrls.forEach(group => {
+    result.push({
+      key: `duplicate-url-${group.key}`,
+      severity: 'medium',
+      icon: 'lucide:copy',
+      title: `${group.items.length} items partagent le site ${group.key}`,
+      description: group.items.map(item => item.label || 'Sans titre').join(', '),
+      action: 'Verifiez que ces doublons sont voulus et supprimez les anciennes versions.',
+    })
   })
-)
 
-const strongCount = computed(() => auditResults.value.filter(r => r.grade === 'Fort').length)
-const mediumCount = computed(() => auditResults.value.filter(r => r.grade === 'Moyen').length)
-const weakCount = computed(() => auditResults.value.filter(r => r.grade === 'Faible').length)
+  duplicateLabels.slice(0, 5).forEach(group => {
+    result.push({
+      key: `duplicate-label-${group.key}`,
+      severity: 'low',
+      icon: 'lucide:tags',
+      title: `${group.items.length} items ont le meme libelle`,
+      description: group.items.map(item => item.type).join(', '),
+      action: 'Renommez-les pour rendre la recherche et les exports plus lisibles.',
+    })
+  })
 
-const healthPercentage = computed(() => {
-  if (auditResults.value.length === 0) return 100
-  const maxScore = 7
-  const totalScore = auditResults.value.reduce((sum, r) => sum + r.score, 0)
-  const maxPossible = auditResults.value.length * maxScore
-  return Math.round((totalScore / maxPossible) * 100)
+  if (oldItems.length) {
+    result.push({
+      key: 'old-items',
+      severity: 'low',
+      icon: 'lucide:calendar-clock',
+      title: `${oldItems.length} element(s) n ont pas ete modifies depuis 180 jours`,
+      description: 'Les vieux secrets meritent une verification reguliere.',
+      action: 'Passez-les en revue et remplacez les mots de passe importants.',
+    })
+  }
+
+  return result
 })
 
-const healthColor = computed(() => {
-  if (healthPercentage.value >= 70) return 'text-green-500'
-  if (healthPercentage.value >= 40) return 'text-yellow-500'
-  return 'text-red-500'
+const highIssues = computed(() => issues.value.filter(issue => issue.severity === 'high'))
+const mediumIssues = computed(() => issues.value.filter(issue => issue.severity === 'medium'))
+
+const securityScore = computed(() => {
+  const penalty = issues.value.reduce((sum, issue) => sum + (issue.severity === 'high' ? 25 : issue.severity === 'medium' ? 12 : 5), 0)
+  return Math.max(0, 100 - penalty)
 })
+
+const scoreColor = computed(() => {
+  if (securityScore.value >= 80) return 'text-green-400'
+  if (securityScore.value >= 55) return 'text-yellow-400'
+  return 'text-red-400'
+})
+
+function hasEncryptedPayload(item: VaultItem) {
+  return typeof item.payload === 'string' && item.payload.split(':').length === 2
+}
+
+function normalizeUrl(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url.toLowerCase()
+  }
+}
+
+function daysSince(date: string | undefined) {
+  if (!date) return 0
+  const timestamp = new Date(date).getTime()
+  if (Number.isNaN(timestamp)) return 0
+  return Math.floor((Date.now() - timestamp) / (24 * 60 * 60 * 1000))
+}
+
+function findDuplicates(itemsToGroup: VaultItem[], getKey: (item: VaultItem) => string) {
+  const groups = new Map<string, VaultItem[]>()
+  itemsToGroup.forEach(item => {
+    const key = getKey(item)
+    if (!key) return
+    groups.set(key, [...(groups.get(key) || []), item])
+  })
+
+  return Array.from(groups.entries())
+    .filter(([, group]) => group.length > 1)
+    .map(([key, group]) => ({ key, items: group }))
+}
 
 onMounted(() => {
   fetchItems()

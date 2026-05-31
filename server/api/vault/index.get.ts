@@ -24,8 +24,8 @@ export default defineEventHandler(async (event) => {
   }
 
   if (search) {
-    sql += ' AND (label LIKE ? OR (is_encrypted = 0 AND payload LIKE ?))'
-    params.push(`%${search}%`, `%${search}%`)
+    sql += ' AND (label LIKE ? OR url LIKE ? OR type LIKE ? OR (is_encrypted = 0 AND payload LIKE ?))'
+    params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`)
   }
 
   sql += ' ORDER BY favorite DESC, created_at DESC'

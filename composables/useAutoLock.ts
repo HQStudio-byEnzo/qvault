@@ -4,9 +4,6 @@
  * Affiche un avertissement 30 secondes avant la déconnexion
  */
 export function useAutoLock() {
-  const INACTIVITY_TIMEOUT = 5 * 60 * 1000 // 5 minutes
-  const WARNING_BEFORE = 30 * 1000 // 30 secondes avant
-
   const { signOut } = useAuthClient()
 
   const showWarning = ref(false)
@@ -16,7 +13,16 @@ export function useAutoLock() {
   let warningTimer: ReturnType<typeof setTimeout> | null = null
   let countdownInterval: ReturnType<typeof setInterval> | null = null
 
+  function getTimeoutMs() {
+    if (!import.meta.client) return 5 * 60 * 1000
+    const minutes = Number(localStorage.getItem('kipit.security.autoLockMinutes') || 5)
+    if (minutes <= 0) return 0
+    return Math.max(1, minutes) * 60 * 1000
+  }
+
   function resetTimers() {
+    const inactivityTimeout = getTimeoutMs()
+
     // Hide warning if shown
     showWarning.value = false
     remainingSeconds.value = 30
@@ -26,10 +32,14 @@ export function useAutoLock() {
     if (warningTimer) clearTimeout(warningTimer)
     if (countdownInterval) clearInterval(countdownInterval)
 
+    if (inactivityTimeout === 0) return
+
+    const warningBefore = Math.min(30 * 1000, Math.max(0, inactivityTimeout - 1000))
+
     // Set warning timer (fires 30s before logout)
     warningTimer = setTimeout(() => {
       showWarning.value = true
-      remainingSeconds.value = 30
+      remainingSeconds.value = Math.ceil(warningBefore / 1000)
 
       // Start countdown
       countdownInterval = setInterval(() => {
@@ -38,12 +48,12 @@ export function useAutoLock() {
           if (countdownInterval) clearInterval(countdownInterval)
         }
       }, 1000)
-    }, INACTIVITY_TIMEOUT - WARNING_BEFORE)
+    }, inactivityTimeout - warningBefore)
 
     // Set logout timer
     inactivityTimer = setTimeout(() => {
       performLogout()
-    }, INACTIVITY_TIMEOUT)
+    }, inactivityTimeout)
   }
 
   function performLogout() {
@@ -60,6 +70,8 @@ export function useAutoLock() {
     events.forEach(event => {
       document.removeEventListener(event, resetTimers)
     })
+    window.removeEventListener('storage', resetTimers)
+    window.removeEventListener('kipit-security-settings-changed', resetTimers)
   }
 
   function init() {
@@ -67,6 +79,8 @@ export function useAutoLock() {
     events.forEach(event => {
       document.addEventListener(event, resetTimers, { passive: true })
     })
+    window.addEventListener('storage', resetTimers)
+    window.addEventListener('kipit-security-settings-changed', resetTimers)
 
     // Start initial timer
     resetTimers()

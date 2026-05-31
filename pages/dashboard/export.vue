@@ -14,11 +14,11 @@
         </div>
         <div>
           <h2 class="text-lg font-semibold text-white">Exporter</h2>
-          <p class="text-sm text-surface-400">Téléchargez tous vos éléments au format JSON</p>
+        <p class="text-sm text-surface-400">Téléchargez un backup JSON complet de votre coffre</p>
         </div>
       </div>
       <p class="text-sm text-surface-500">
-        ⚠️ Les éléments chiffrés seront exportés sous forme chiffrée. Vous aurez besoin de votre mot de passe maître pour les déchiffrer après import.
+        Les secrets restent chiffrés. L'export inclut aussi les URLs, favoris et dates pour restaurer le coffre sans perte de contexte.
       </p>
       <button
         @click="handleExport"
@@ -43,7 +43,7 @@
         </div>
       </div>
       <p class="text-sm text-surface-500">
-        Sélectionnez un fichier JSON précédemment exporté depuis Kipit.
+        Sélectionnez un fichier JSON précédemment exporté depuis Kipit. Les items invalides seront ignorés.
       </p>
       <div class="flex items-center gap-3">
         <label class="btn-primary flex items-center gap-2 cursor-pointer">
@@ -94,15 +94,26 @@ async function handleExport() {
     await fetchItems()
 
     const exportData = {
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
+      app: 'Kipit',
+      counts: {
+        total: items.value.length,
+        links: items.value.filter(item => item.type === 'link').length,
+        passwords: items.value.filter(item => item.type === 'password').length,
+        crypto: items.value.filter(item => item.type === 'crypto').length,
+      },
       items: items.value.map(item => ({
+        id: item.id,
         type: item.type,
         label: item.label,
         payload: item.payload,
         is_encrypted: item.is_encrypted,
         iv: item.iv,
+        url: item.url || null,
         favorite: item.favorite,
+        created_at: item.created_at,
+        updated_at: item.updated_at || null,
       })),
     }
 
@@ -144,16 +155,34 @@ async function handleImport(event: Event) {
 
     for (const item of data.items) {
       try {
-        await $fetch('/api/vault', {
+        if (!isValidImportItem(item)) {
+          failed++
+          continue
+        }
+
+        const created = await $fetch<{ id: string }>('/api/vault', {
           method: 'POST',
           body: {
             type: item.type,
-            label: item.label,
+            label: item.label || '',
             payload: item.payload,
-            is_encrypted: item.is_encrypted,
+            is_encrypted: true,
             iv: item.iv,
+            url: item.url || undefined,
           },
         })
+
+        if (item.favorite) {
+          await $fetch(`/api/vault/${created.id}`, {
+            method: 'PUT',
+            body: {
+              favorite: true,
+              payload: item.payload,
+              iv: item.iv,
+              is_encrypted: true,
+            },
+          })
+        }
         imported++
       } catch {
         failed++
@@ -175,5 +204,16 @@ async function handleImport(event: Event) {
     importing.value = false
     input.value = ''
   }
+}
+
+function isValidImportItem(item: any) {
+  return (
+    item &&
+    ['link', 'password', 'crypto'].includes(item.type) &&
+    typeof item.payload === 'string' &&
+    item.payload.split(':').length === 2 &&
+    typeof item.iv === 'string' &&
+    item.iv.length > 0
+  )
 }
 </script>

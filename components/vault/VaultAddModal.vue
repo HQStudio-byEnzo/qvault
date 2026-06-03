@@ -11,8 +11,26 @@
           </button>
         </div>
 
-        <div v-if="!isUnlocked" class="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-300">
-          Le coffre utilise un seul mot de passe maître. Définis-le dans les paramètres avant d'ajouter ou de chiffrer un élément.
+        <div
+          v-if="needsEncryption && !isUnlocked"
+          class="mb-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-200 space-y-3"
+        >
+          <p>
+            Le coffre utilise un seul mot de passe maître. Entre-le ici pour chiffrer cet élément et déverrouiller la session.
+          </p>
+          <div>
+            <label for="masterPassword" class="block text-xs font-medium text-amber-100 mb-1">
+              Mot de passe maître
+            </label>
+            <input
+              id="masterPassword"
+              v-model="masterPasswordInput"
+              type="password"
+              class="input-field"
+              placeholder="••••••••••••"
+              autocomplete="current-password"
+            />
+          </div>
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-4">
@@ -121,10 +139,11 @@ const emit = defineEmits<{
 }>()
 
 const { addItem, error } = useVault()
-const { isUnlocked } = useMasterPassword()
+const { masterPassword, isUnlocked, setMasterPassword } = useMasterPassword()
 const { generateSeedPhrase } = useSeedGenerator()
 const { t } = useLang()
 const isSubmitting = ref(false)
+const masterPasswordInput = ref('')
 
 const form = reactive({
   type: props.defaultType || 'link' as 'link' | 'password' | 'crypto',
@@ -156,6 +175,8 @@ const payloadPlaceholder = computed(() => {
   }
 })
 
+const needsEncryption = computed(() => form.type !== 'link' || form.encrypt)
+
 watch(
   () => form.type,
   (type) => {
@@ -165,13 +186,20 @@ watch(
 )
 
 async function handleSubmit() {
-  if ((form.type !== 'link' || form.encrypt) && !isUnlocked.value) {
+  const sessionPassword = masterPassword.value || masterPasswordInput.value.trim()
+
+  if (needsEncryption && !sessionPassword) {
+    error.value = "Entrez votre mot de passe maître pour ajouter cet élément."
     return
   }
 
   isSubmitting.value = true
 
   try {
+    if (needsEncryption && sessionPassword && !masterPassword.value) {
+      setMasterPassword(sessionPassword)
+    }
+
     await addItem({
       type: form.type,
       label: form.label,
@@ -179,6 +207,7 @@ async function handleSubmit() {
       shouldEncrypt: form.type === 'link' ? form.encrypt : true,
       url: form.type === 'password' ? form.url : form.type === 'link' ? form.payload : undefined,
     })
+    masterPasswordInput.value = ''
     emit('added')
   } catch {
     // Error is handled by useVault composable

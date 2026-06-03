@@ -111,7 +111,7 @@ export function useVault() {
           is_encrypted: shouldEncrypt,
           payload,
           iv,
-          url: data.url || undefined,
+          url: data.type === 'link' && !shouldEncrypt ? data.url || undefined : undefined,
         },
       })
 

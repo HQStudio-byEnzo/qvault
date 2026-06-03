@@ -22,7 +22,7 @@
         {{ typeLabels[item.type] }} · {{ formatDate(item.created_at) }}
       </p>
       <a
-        v-if="item.url"
+        v-if="item.url && !item.is_encrypted"
         :href="item.url"
         target="_blank"
         rel="noopener noreferrer"

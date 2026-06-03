@@ -65,7 +65,7 @@
 
       <!-- Delete -->
       <button
-        @click="$emit('delete')"
+        @click="$emit('delete', item)"
         class="p-2 rounded-lg hover:bg-surface-700 text-surface-400 hover:text-red-400 transition-colors"
       >
         <Icon name="lucide:trash-2" class="w-4 h-4" />
@@ -83,7 +83,7 @@ const props = defineProps<{
 
 defineEmits<{
   'toggle-favorite': []
-  'delete': []
+  'delete': [item: VaultItem]
   'decrypt': [item: VaultItem]
 }>()
 

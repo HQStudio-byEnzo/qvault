@@ -27,7 +27,7 @@
         :key="item.id"
         :item="item"
         @toggle-favorite="toggleFavorite(item)"
-        @delete="handleDelete(item.id)"
+        @delete="handleDelete(item)"
         @decrypt="handleDecrypt(item)"
       />
     </div>
@@ -52,14 +52,24 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { t } = useLang()
 const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
+const { masterPassword, setMasterPassword } = useMasterPassword()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
 
 const filteredItems = computed(() => items.value.filter(i => i.type === 'link'))
 
 function handleDecrypt(item: any) { decryptTarget.value = item }
-async function handleDelete(id: string) {
-  if (confirm(t('links.confirmDelete'))) await deleteItem(id)
+async function handleDelete(item: any) {
+  if (!confirm(t('links.confirmDelete'))) return
+
+  let secret = masterPassword.value || ''
+  if (item.is_encrypted) {
+    secret = window.prompt('Entrez votre mot de passe maître pour supprimer cet élément.')?.trim() || ''
+    if (!secret) return
+    setMasterPassword(secret)
+  }
+
+  await deleteItem(item, secret)
 }
 
 onMounted(() => fetchItems({ type: 'link' }))

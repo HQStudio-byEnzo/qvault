@@ -214,9 +214,18 @@ export function useVault() {
   /**
    * Supprime un élément
    */
-  async function deleteItem(id: string) {
+  async function deleteItem(item: VaultItem, providedPassword: string = '') {
     try {
-      await $fetch(`/api/vault/${id}`, { method: 'DELETE' })
+      if (item.is_encrypted) {
+        const secret = providedPassword || masterPassword.value
+        if (!secret) {
+          throw new Error('Le mot de passe maître est requis pour supprimer cet élément.')
+        }
+
+        await decryptItem(item, secret)
+      }
+
+      await $fetch(`/api/vault/${item.id}`, { method: 'DELETE' })
       await fetchItems()
       await fetchStats()
     } catch (err: any) {

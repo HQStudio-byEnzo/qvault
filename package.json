@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "generate": "nuxt generate",
     "postinstall": "nuxt prepare",
-    "db:migrate": "wrangler d1 execute kipit-db --local --file=server/database/schema.sql"
+    "db:migrate": "wrangler d1 execute kipit-db --local --file=server/database/schema.sql && wrangler d1 execute kipit-db --local --file=server/database/migrate-terms.sql",
+    "db:migrate:terms": "wrangler d1 execute kipit-db --local --file=server/database/migrate-terms.sql"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.0",

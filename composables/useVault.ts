@@ -34,6 +34,7 @@ export function useVault() {
   const stats = useState<VaultStats | null>('vault-stats', () => null)
   const loading = useState('vault-loading', () => false)
   const error = useState<string | null>('vault-error', () => null)
+  const { masterPassword, setMasterPassword } = useMasterPassword()
 
   const { encrypt, decrypt } = useCrypto()
 
@@ -81,7 +82,6 @@ export function useVault() {
     label: string
     payload: string
     shouldEncrypt: boolean
-    masterPassword?: string
     url?: string
   }) {
     error.value = null
@@ -92,10 +92,12 @@ export function useVault() {
 
     // Chiffrement côté client si demandé
     if (shouldEncrypt) {
-      if (!data.masterPassword) {
-        throw new Error('Mot de passe maitre requis pour chiffrer cet element.')
+      if (!masterPassword.value) {
+        const message = "Déverrouillez votre mot de passe maître dans les paramètres avant d'ajouter un élément chiffré."
+        error.value = message
+        throw new Error(message)
       }
-      const encrypted = await encrypt(data.payload, data.masterPassword)
+      const encrypted = await encrypt(data.payload, masterPassword.value)
       payload = `${encrypted.salt}:${encrypted.ciphertext}`
       iv = encrypted.iv
     }
@@ -127,9 +129,14 @@ export function useVault() {
   /**
    * Déchiffre un élément côté client
    */
-  async function decryptItem(item: VaultItem, masterPassword: string): Promise<string> {
+  async function decryptItem(item: VaultItem, providedPassword: string = ''): Promise<string> {
     if (!item.is_encrypted || !item.iv) {
       return item.payload
+    }
+
+    const secret = providedPassword || masterPassword.value
+    if (!secret) {
+      throw new Error('Déverrouillez votre mot de passe maître pour déchiffrer cet élément.')
     }
 
     // Le payload est stocké sous la forme "salt:ciphertext"
@@ -139,7 +146,45 @@ export function useVault() {
       throw new Error('Format de payload chiffré invalide.')
     }
 
-    return decrypt(ciphertext, item.iv, masterPassword, salt)
+    return decrypt(ciphertext, item.iv, secret, salt)
+  }
+
+  /**
+   * Ré-encrypte tous les éléments chiffrés avec un nouveau mot de passe maître
+   */
+  async function reencryptVault(currentPassword: string | null, newPassword: string) {
+    if (items.value.length === 0) {
+      await fetchItems()
+    }
+
+    const encryptedItems = items.value.filter(item => item.is_encrypted)
+
+    if (encryptedItems.length > 0 && !currentPassword && !masterPassword.value) {
+      throw new Error('Le mot de passe maître actuel est requis pour mettre à jour le coffre.')
+    }
+
+    const sourcePassword = currentPassword || masterPassword.value
+    if (encryptedItems.length > 0 && !sourcePassword) {
+      throw new Error('Le mot de passe maître actuel est requis pour mettre à jour le coffre.')
+    }
+
+    for (const item of encryptedItems) {
+      const plain = await decryptItem(item, sourcePassword || '')
+      const encrypted = await encrypt(plain, newPassword)
+
+      await $fetch(`/api/vault/${item.id}`, {
+        method: 'PUT',
+        body: {
+          payload: `${encrypted.salt}:${encrypted.ciphertext}`,
+          iv: encrypted.iv,
+          is_encrypted: true,
+        },
+      })
+    }
+
+    setMasterPassword(newPassword)
+    await fetchItems()
+    await fetchStats()
   }
 
   /**
@@ -189,6 +234,7 @@ export function useVault() {
     fetchStats,
     addItem,
     decryptItem,
+    reencryptVault,
     updateItem,
     toggleFavorite,
     deleteItem,

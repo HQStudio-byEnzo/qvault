@@ -12,7 +12,7 @@
               <div>
                 <h2 class="text-lg font-semibold text-white">Choisissez votre mot de passe maitre</h2>
                 <p class="text-sm text-surface-400 mt-1">
-                  Il sert uniquement a chiffrer et dechiffrer vos donnees dans ce navigateur. Kipit ne le stocke pas et ne peut pas le recuperer.
+                  Il sert a chiffrer et dechiffrer tout votre coffre dans ce navigateur. Kipit ne le stocke pas et ne peut pas le recuperer.
                 </p>
               </div>
 
@@ -27,7 +27,7 @@
                 </div>
                 <div class="flex items-start gap-2">
                   <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
-                  <span>Vous pouvez le changer pour les nouveaux elements, mais les anciens restent lies au mot de passe utilise lors du chiffrement.</span>
+                  <span>Vous pouvez le modifier dans les parametres; vos elements existants seront rechiffres avec le nouveau mot de passe.</span>
                 </div>
               </div>
 

@@ -137,6 +137,77 @@
       </div>
     </section>
 
+    <!-- Master password -->
+    <section class="card space-y-4">
+      <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+        <Icon name="lucide:key-round" class="w-5 h-5 text-surface-400" />
+        {{ t('settings.masterPwdTitle') }}
+      </h2>
+
+      <p class="text-sm text-surface-400 leading-relaxed">
+        {{ t('settings.masterPwdDesc') }}
+      </p>
+
+      <form @submit.prevent="handleChangeMasterPassword" class="space-y-4">
+        <div>
+          <label for="currentMasterPassword" class="block text-sm font-medium text-surface-300 mb-1">
+            {{ t('settings.masterPwdCurrent') }}
+          </label>
+          <input
+            id="currentMasterPassword"
+            v-model="masterPwdForm.currentPassword"
+            type="password"
+            class="input-field"
+            :placeholder="t('settings.masterPwdCurrentPlaceholder')"
+          />
+        </div>
+        <div>
+          <label for="newMasterPassword" class="block text-sm font-medium text-surface-300 mb-1">
+            {{ t('settings.masterPwdNew') }}
+          </label>
+          <input
+            id="newMasterPassword"
+            v-model="masterPwdForm.newPassword"
+            type="password"
+            required
+            minlength="8"
+            class="input-field"
+            :placeholder="t('settings.masterPwdNewPlaceholder')"
+          />
+        </div>
+        <div>
+          <label for="confirmMasterPassword" class="block text-sm font-medium text-surface-300 mb-1">
+            {{ t('settings.masterPwdConfirm') }}
+          </label>
+          <input
+            id="confirmMasterPassword"
+            v-model="masterPwdForm.confirmPassword"
+            type="password"
+            required
+            class="input-field"
+            :placeholder="t('settings.masterPwdConfirmPlaceholder')"
+          />
+        </div>
+
+        <div v-if="masterPwdError" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+          {{ masterPwdError }}
+        </div>
+        <div v-if="masterPwdSuccess" class="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400">
+          {{ masterPwdSuccess }}
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <button type="submit" :disabled="masterPwdLoading" class="btn-primary">
+            <span v-if="masterPwdLoading">{{ t('settings.masterPwdSaving') }}...</span>
+            <span v-else>{{ t('settings.masterPwdSave') }}</span>
+          </button>
+          <button type="button" @click="lockMasterPassword" class="btn-secondary">
+            {{ t('settings.lockVault') }}
+          </button>
+        </div>
+      </form>
+    </section>
+
     <!-- Security preferences -->
     <section class="card space-y-5">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
@@ -249,9 +320,14 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user, signOut } = useAuthClient()
 const { locale, setLocale, t } = useLang()
+const { fetchItems, reencryptVault } = useVault()
+const { masterPassword, setMasterPassword, clearMasterPassword, isUnlocked } = useMasterPassword()
 
 const userInfo = ref<any>(null)
 const securitySaved = ref(false)
+const masterPwdLoading = ref(false)
+const masterPwdError = ref('')
+const masterPwdSuccess = ref('')
 const securitySettings = reactive({
   autoLockMinutes: 5,
   clipboardClearSeconds: 30,
@@ -263,6 +339,7 @@ onMounted(async () => {
     userInfo.value = await $fetch('/api/auth/me')
   } catch {}
   loadSecuritySettings()
+  await fetchItems()
 })
 
 // Change password
@@ -356,5 +433,41 @@ function resetMasterOnboarding() {
   localStorage.removeItem('kipit.masterPasswordOnboardingSnoozedUntil')
   securitySaved.value = true
   setTimeout(() => { securitySaved.value = false }, 2000)
+}
+
+const masterPwdForm = reactive({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
+
+async function handleChangeMasterPassword() {
+  masterPwdError.value = ''
+  masterPwdSuccess.value = ''
+
+  if (masterPwdForm.newPassword !== masterPwdForm.confirmPassword) {
+    masterPwdError.value = t('settings.masterPwdMismatch')
+    return
+  }
+
+  masterPwdLoading.value = true
+
+  try {
+    await reencryptVault(masterPwdForm.currentPassword || (isUnlocked.value ? masterPassword.value || '' : ''), masterPwdForm.newPassword)
+    setMasterPassword(masterPwdForm.newPassword)
+    masterPwdForm.currentPassword = ''
+    masterPwdForm.newPassword = ''
+    masterPwdForm.confirmPassword = ''
+    masterPwdSuccess.value = t('settings.masterPwdSuccess')
+  } catch (err: any) {
+    masterPwdError.value = err.data?.message || err.message || t('settings.masterPwdError')
+  } finally {
+    masterPwdLoading.value = false
+  }
+}
+
+function lockMasterPassword() {
+  clearMasterPassword()
+  masterPwdSuccess.value = t('settings.masterPwdLocked')
 }
 </script>

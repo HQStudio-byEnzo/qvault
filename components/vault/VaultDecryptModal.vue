@@ -89,6 +89,7 @@ defineEmits<{
 
 const { t } = useLang()
 const { decryptItem } = useVault()
+const { setMasterPassword } = useMasterPassword()
 
 const masterPassword = ref('')
 const decryptedValue = ref('')
@@ -102,6 +103,7 @@ async function handleDecrypt() {
 
   try {
     decryptedValue.value = await decryptItem(props.item, masterPassword.value)
+    setMasterPassword(masterPassword.value)
   } catch (err: any) {
     errorMsg.value = t('vault.decryptError')
   } finally {

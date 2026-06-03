@@ -1,12 +1,9 @@
 <template>
   <Teleport to="body">
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <!-- Backdrop -->
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="$emit('close')"></div>
 
-      <!-- Modal -->
       <div class="relative w-full max-w-md bg-surface-900 border border-surface-700 rounded-2xl p-6 animate-scale-in">
-        <!-- Header -->
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-semibold text-white">{{ t('vault.addTitle') }}</h2>
           <button @click="$emit('close')" class="p-2 rounded-lg hover:bg-surface-800 text-surface-400">
@@ -14,9 +11,11 @@
           </button>
         </div>
 
-        <!-- Form -->
+        <div v-if="!isUnlocked" class="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-300">
+          Le coffre utilise un seul mot de passe maître. Définis-le dans les paramètres avant d'ajouter ou de chiffrer un élément.
+        </div>
+
         <form @submit.prevent="handleSubmit" class="space-y-4">
-          <!-- Type -->
           <div>
             <label class="block text-sm font-medium text-surface-300 mb-2">{{ t('vault.typeLabel') }}</label>
             <div class="grid grid-cols-3 gap-2">
@@ -38,7 +37,6 @@
             </div>
           </div>
 
-          <!-- Label -->
           <div>
             <label for="label" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.labelField') }}</label>
             <input
@@ -50,7 +48,6 @@
             />
           </div>
 
-          <!-- Payload -->
           <div>
             <div class="flex items-center justify-between mb-1">
               <label for="payload" class="block text-sm font-medium text-surface-300">
@@ -75,13 +72,11 @@
             ></textarea>
           </div>
 
-          <!-- URL (only for passwords) -->
           <div v-if="form.type === 'password'">
             <label for="url" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.websiteUrl') }}</label>
             <input id="url" v-model="form.url" type="url" class="input-field" placeholder="https://gmail.com" />
           </div>
 
-          <!-- Encryption -->
           <div class="space-y-2">
             <label class="flex items-center gap-3 text-sm text-surface-300 cursor-pointer">
               <input
@@ -92,33 +87,15 @@
               />
               <span>{{ form.type === 'link' ? 'Chiffrer ce lien (optionnel)' : 'Chiffrement obligatoire' }}</span>
             </label>
-            <div v-if="form.type !== 'link' || form.encrypt">
-              <label for="masterPassword" class="block text-sm font-medium text-surface-300 mb-1">
-                {{ t('vault.masterPwdLabel') }}
-              </label>
-              <input
-                id="masterPassword"
-                v-model="form.masterPassword"
-                type="password"
-                :required="form.type !== 'link' || form.encrypt"
-                class="input-field"
-                :placeholder="t('vault.masterPwdPlaceholder')"
-              />
-              <p class="text-xs text-surface-500 mt-1">
-                {{ t('vault.masterPwdHint') }}
-              </p>
-            </div>
-            <p v-else class="text-xs text-surface-500">
+            <p v-if="form.type === 'link' && !form.encrypt" class="text-xs text-surface-500">
               Ce lien sera stocke en clair pour un acces rapide.
             </p>
           </div>
 
-          <!-- Error -->
           <div v-if="error" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
             {{ error }}
           </div>
 
-          <!-- Submit -->
           <button
             type="submit"
             :disabled="isSubmitting"
@@ -144,6 +121,7 @@ const emit = defineEmits<{
 }>()
 
 const { addItem, error } = useVault()
+const { isUnlocked } = useMasterPassword()
 const { generateSeedPhrase } = useSeedGenerator()
 const { t } = useLang()
 const isSubmitting = ref(false)
@@ -153,7 +131,6 @@ const form = reactive({
   label: '',
   payload: '',
   url: '',
-  masterPassword: '',
   encrypt: props.defaultType === 'link' ? false : true,
 })
 
@@ -183,15 +160,12 @@ watch(
   () => form.type,
   (type) => {
     form.encrypt = type === 'link' ? false : true
-    if (type !== 'link') {
-      form.masterPassword = ''
-    }
   },
   { immediate: true }
 )
 
 async function handleSubmit() {
-  if ((form.type !== 'link' || form.encrypt) && !form.masterPassword) {
+  if ((form.type !== 'link' || form.encrypt) && !isUnlocked.value) {
     return
   }
 
@@ -203,7 +177,6 @@ async function handleSubmit() {
       label: form.label,
       payload: form.payload,
       shouldEncrypt: form.type === 'link' ? form.encrypt : true,
-      masterPassword: form.masterPassword,
       url: form.type === 'password' ? form.url : form.type === 'link' ? form.payload : undefined,
     })
     emit('added')

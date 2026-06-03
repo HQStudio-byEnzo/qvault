@@ -4,6 +4,7 @@
  */
 export function useAuthClient() {
   const { loggedIn, user, session, clear, fetch: fetchSession } = useUserSession()
+  const { clearMasterPassword } = useMasterPassword()
 
   /**
    * Inscription
@@ -14,6 +15,7 @@ export function useAuthClient() {
       body: data,
     })
     await fetchSession()
+    clearMasterPassword()
     return response
   }
 
@@ -26,6 +28,7 @@ export function useAuthClient() {
       body: data,
     })
     await fetchSession()
+    clearMasterPassword()
     return response
   }
 
@@ -34,6 +37,7 @@ export function useAuthClient() {
    */
   async function signOut() {
     await clear()
+    clearMasterPassword()
     navigateTo('/auth/login')
   }
 

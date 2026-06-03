@@ -88,10 +88,13 @@ export function useVault() {
 
     let payload = data.payload
     let iv: string | undefined
-    let salt: string | undefined
+    const shouldEncrypt = data.type === 'link' ? data.shouldEncrypt : true
 
     // Chiffrement côté client si demandé
-    if (data.shouldEncrypt && data.masterPassword) {
+    if (shouldEncrypt) {
+      if (!data.masterPassword) {
+        throw new Error('Mot de passe maitre requis pour chiffrer cet element.')
+      }
       const encrypted = await encrypt(data.payload, data.masterPassword)
       payload = `${encrypted.salt}:${encrypted.ciphertext}`
       iv = encrypted.iv
@@ -103,7 +106,7 @@ export function useVault() {
         body: {
           type: data.type,
           label: data.label,
-          is_encrypted: data.shouldEncrypt,
+          is_encrypted: shouldEncrypt,
           payload,
           iv,
           url: data.url || undefined,

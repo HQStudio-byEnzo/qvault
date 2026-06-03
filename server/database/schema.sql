@@ -35,3 +35,13 @@ CREATE TABLE IF NOT EXISTS vault_items (
 CREATE INDEX IF NOT EXISTS idx_vault_items_user_id ON vault_items(user_id);
 CREATE INDEX IF NOT EXISTS idx_vault_items_user_type ON vault_items(user_id, type);
 CREATE INDEX IF NOT EXISTS idx_vault_items_favorite ON vault_items(user_id, favorite);
+
+-- Legal acceptances
+CREATE TABLE IF NOT EXISTS accepted_terms (
+  user_id TEXT PRIMARY KEY,
+  terms_version TEXT NOT NULL,
+  accepted_at TEXT NOT NULL DEFAULT (datetime('now')),
+  user_agent TEXT,
+  ip_address TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

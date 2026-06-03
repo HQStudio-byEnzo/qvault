@@ -70,12 +70,19 @@
       </form>
 
       <!-- Footer -->
-      <p class="text-center text-sm text-surface-400">
-        {{ t('auth.login.noAccount') }}
-        <NuxtLink to="/auth/register" class="text-accent-400 hover:text-accent-300 font-medium">
-          {{ t('auth.login.createAccount') }}
-        </NuxtLink>
-      </p>
+      <div class="space-y-4">
+        <p class="text-center text-sm text-surface-400">
+          {{ t('auth.login.noAccount') }}
+          <NuxtLink to="/auth/register" class="text-accent-400 hover:text-accent-300 font-medium">
+            {{ t('auth.login.createAccount') }}
+          </NuxtLink>
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-3 text-xs text-surface-500">
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">CGU</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Confidentialite</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Mentions legales</NuxtLink>
+        </div>
+      </div>
     </div>
   </div>
 </template>

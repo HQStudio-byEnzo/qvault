@@ -102,7 +102,7 @@ const severityLabel = computed<Record<Severity, string>>(() => ({
 const issues = computed<AuditIssue[]>(() => {
   const result: AuditIssue[] = []
   const vaultItems = items.value
-  const unencrypted = vaultItems.filter(item => !item.is_encrypted)
+  const unencrypted = vaultItems.filter(item => !item.is_encrypted && item.type !== 'link')
   const invalidEncrypted = vaultItems.filter(item => item.is_encrypted && (!item.iv || !hasEncryptedPayload(item)))
   const passwordWithoutUrl = vaultItems.filter(item => item.type === 'password' && !item.url)
   const duplicateUrls = findDuplicates(vaultItems.filter(item => item.url), item => normalizeUrl(item.url || ''))

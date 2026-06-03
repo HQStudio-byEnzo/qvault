@@ -167,8 +167,8 @@ async function handleImport(event: Event) {
             type: item.type,
             label: item.label || '',
             payload: item.payload,
-            is_encrypted: true,
-            iv: item.iv,
+            is_encrypted: !!item.is_encrypted,
+            iv: item.is_encrypted ? item.iv : null,
             url: item.url || undefined,
           },
         })
@@ -179,8 +179,8 @@ async function handleImport(event: Event) {
             body: {
               favorite: true,
               payload: item.payload,
-              iv: item.iv,
-              is_encrypted: true,
+              iv: item.is_encrypted ? item.iv : null,
+              is_encrypted: !!item.is_encrypted,
             },
           })
         }
@@ -212,9 +212,10 @@ function isValidImportItem(item: any) {
     item &&
     ['link', 'password', 'crypto'].includes(item.type) &&
     typeof item.payload === 'string' &&
-    item.payload.split(':').length === 2 &&
-    typeof item.iv === 'string' &&
-    item.iv.length > 0
+    (
+      (!item.is_encrypted && !item.iv) ||
+      (item.is_encrypted && typeof item.iv === 'string' && item.payload.split(':').length === 2)
+    )
   )
 }
 </script>

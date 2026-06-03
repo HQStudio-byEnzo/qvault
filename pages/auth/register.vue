@@ -69,6 +69,18 @@
           <p class="text-xs text-surface-500 mt-1">{{ t('auth.register.hintDesc') }}</p>
         </div>
 
+        <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer">
+          <input v-model="form.acceptedTerms" type="checkbox" class="mt-1" required />
+          <span class="leading-relaxed">
+            J'accepte les
+            <NuxtLink to="/legal/cgu" class="text-accent-400 hover:text-accent-300">CGU</NuxtLink>,
+            la
+            <NuxtLink to="/legal/confidentialite" class="text-accent-400 hover:text-accent-300">politique de confidentialite</NuxtLink>
+            et les
+            <NuxtLink to="/legal/mentions-legales" class="text-accent-400 hover:text-accent-300">mentions legales</NuxtLink>.
+          </span>
+        </label>
+
         <!-- Error message -->
         <div v-if="errorMsg" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
           {{ errorMsg }}
@@ -85,12 +97,19 @@
       </form>
 
       <!-- Footer -->
-      <p class="text-center text-sm text-surface-400">
-        {{ t('auth.register.hasAccount') }}
-        <NuxtLink to="/auth/login" class="text-accent-400 hover:text-accent-300 font-medium">
-          {{ t('auth.register.login') }}
-        </NuxtLink>
-      </p>
+      <div class="space-y-4">
+        <p class="text-center text-sm text-surface-400">
+          {{ t('auth.register.hasAccount') }}
+          <NuxtLink to="/auth/login" class="text-accent-400 hover:text-accent-300 font-medium">
+            {{ t('auth.register.login') }}
+          </NuxtLink>
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-3 text-xs text-surface-500">
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">CGU</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Confidentialite</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Mentions legales</NuxtLink>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -110,6 +129,7 @@ const form = reactive({
   password: '',
   confirmPassword: '',
   hint: '',
+  acceptedTerms: false,
 })
 
 const isLoading = ref(false)
@@ -136,6 +156,7 @@ async function handleRegister() {
       name: form.name,
       email: form.email,
       password: form.password,
+      acceptedTerms: form.acceptedTerms,
       hint: form.hint,
     })
     navigateTo('/dashboard')

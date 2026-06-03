@@ -118,6 +118,7 @@
       </Transition>
     </Teleport>
 
+    <LegalTermsAcceptanceModal />
     <SecurityMasterPasswordOnboarding />
   </div>
 </template>

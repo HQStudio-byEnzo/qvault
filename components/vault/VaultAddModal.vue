@@ -81,21 +81,35 @@
             <input id="url" v-model="form.url" type="url" class="input-field" placeholder="https://gmail.com" />
           </div>
 
-          <!-- Master password (always required — encryption is mandatory) -->
-          <div>
-            <label for="masterPassword" class="block text-sm font-medium text-surface-300 mb-1">
-              {{ t('vault.masterPwdLabel') }}
+          <!-- Encryption -->
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 text-sm text-surface-300 cursor-pointer">
+              <input
+                v-model="form.encrypt"
+                type="checkbox"
+                :disabled="form.type !== 'link'"
+                class="rounded border-surface-600 text-accent-500 focus:ring-accent-500"
+              />
+              <span>{{ form.type === 'link' ? 'Chiffrer ce lien (optionnel)' : 'Chiffrement obligatoire' }}</span>
             </label>
-            <input
-              id="masterPassword"
-              v-model="form.masterPassword"
-              type="password"
-              required
-              class="input-field"
-              :placeholder="t('vault.masterPwdPlaceholder')"
-            />
-            <p class="text-xs text-surface-500 mt-1">
-              {{ t('vault.masterPwdHint') }}
+            <div v-if="form.type !== 'link' || form.encrypt">
+              <label for="masterPassword" class="block text-sm font-medium text-surface-300 mb-1">
+                {{ t('vault.masterPwdLabel') }}
+              </label>
+              <input
+                id="masterPassword"
+                v-model="form.masterPassword"
+                type="password"
+                :required="form.type !== 'link' || form.encrypt"
+                class="input-field"
+                :placeholder="t('vault.masterPwdPlaceholder')"
+              />
+              <p class="text-xs text-surface-500 mt-1">
+                {{ t('vault.masterPwdHint') }}
+              </p>
+            </div>
+            <p v-else class="text-xs text-surface-500">
+              Ce lien sera stocke en clair pour un acces rapide.
             </p>
           </div>
 
@@ -140,6 +154,7 @@ const form = reactive({
   payload: '',
   url: '',
   masterPassword: '',
+  encrypt: props.defaultType === 'link' ? false : true,
 })
 
 const types = computed(() => [
@@ -164,8 +179,19 @@ const payloadPlaceholder = computed(() => {
   }
 })
 
+watch(
+  () => form.type,
+  (type) => {
+    form.encrypt = type === 'link' ? false : true
+    if (type !== 'link') {
+      form.masterPassword = ''
+    }
+  },
+  { immediate: true }
+)
+
 async function handleSubmit() {
-  if (!form.masterPassword) {
+  if ((form.type !== 'link' || form.encrypt) && !form.masterPassword) {
     return
   }
 
@@ -176,9 +202,9 @@ async function handleSubmit() {
       type: form.type,
       label: form.label,
       payload: form.payload,
-      shouldEncrypt: true,
+      shouldEncrypt: form.type === 'link' ? form.encrypt : true,
       masterPassword: form.masterPassword,
-      url: form.type === 'password' ? form.url : undefined,
+      url: form.type === 'password' ? form.url : form.type === 'link' ? form.payload : undefined,
     })
     emit('added')
   } catch {

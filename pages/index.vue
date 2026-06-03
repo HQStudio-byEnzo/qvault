@@ -362,6 +362,12 @@
           </a>
         </div>
 
+        <div class="flex flex-wrap items-center justify-center gap-3 text-sm text-surface-500">
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">CGU</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Politique de confidentialite</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Mentions legales</NuxtLink>
+        </div>
+
         <!-- Bottom -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-800/50">
           <div class="flex items-center gap-2">

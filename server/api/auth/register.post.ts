@@ -3,12 +3,18 @@
  * Inscription par email/mot de passe
  * Envoie un code de vérification par email
  */
+import { setLegalAcceptance } from '~/server/utils/legal'
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { name, email, password, hint } = body
+  const { name, email, password, hint, acceptedTerms } = body
 
   if (!name || !email || !password) {
     throw createError({ statusCode: 400, message: 'Nom, email et mot de passe requis.' })
+  }
+
+  if (!acceptedTerms) {
+    throw createError({ statusCode: 400, message: "Vous devez accepter les CGU, la politique de confidentialité et les mentions légales." })
   }
 
   if (password.length < 8) {
@@ -37,6 +43,8 @@ export default defineEventHandler(async (event) => {
     sql: "INSERT INTO users (id, name, email, password, email_verified, verification_code, verification_expires, password_hint, created_at) VALUES (?, ?, ?, ?, 0, ?, ?, ?, datetime('now'))",
     args: [id, name, email.toLowerCase(), hashedPassword, code, expires, hint || null],
   })
+
+  await setLegalAcceptance(event, id)
 
   // Envoyer l'email de vérification
   try {

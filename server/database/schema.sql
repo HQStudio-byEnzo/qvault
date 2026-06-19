@@ -1,5 +1,5 @@
 -- ============================================
--- Kipit Database Schema (Turso/LibSQL)
+-- BitLock Database Schema (Turso/LibSQL)
 -- ============================================
 
 -- Table utilisateurs
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS vault_items (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('link', 'password', 'crypto')),
+  type TEXT NOT NULL CHECK (type IN ('link', 'password', 'crypto', 'recovery')),
   label TEXT NOT NULL DEFAULT '',
   is_encrypted INTEGER NOT NULL DEFAULT 0,
   payload TEXT NOT NULL,

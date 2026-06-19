@@ -42,7 +42,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Comfortaa', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       borderRadius: {

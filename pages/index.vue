@@ -6,7 +6,7 @@
         <div class="w-8 h-8 bg-accent-600 rounded-lg flex items-center justify-center">
           <Icon name="lucide:shield" class="w-5 h-5 text-white" />
         </div>
-        <span class="text-lg font-bold text-white tracking-tight">Kipit</span>
+        <span class="text-lg font-bold text-white tracking-tight">BitLock</span><span class="hidden sm:inline text-xs text-surface-500">Security vault</span>
       </div>
 
       <!-- Section nav links (desktop only) -->
@@ -85,6 +85,7 @@
             {{ t('hero.cta') }}
             <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </NuxtLink>
+          <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-8 py-3.5">Générer un mot de passe</NuxtLink>
           <NuxtLink to="/auth/login" class="btn-secondary text-base px-8 py-3.5">
             {{ t('hero.login') }}
           </NuxtLink>
@@ -105,6 +106,11 @@
           <div class="flex items-center gap-1.5">
             <Icon name="lucide:zap" class="w-4 h-4 text-amber-400" />
             <span>{{ t('hero.free') }}</span>
+          </div>
+          <div class="w-1 h-1 rounded-full bg-surface-700"></div>
+          <div class="flex items-center gap-1.5">
+            <Icon name="lucide:ticket-check" class="w-4 h-4 text-purple-400" />
+            <span>Recovery codes</span>
           </div>
         </div>
       </div>
@@ -195,10 +201,10 @@
 
           <div class="card group hover:border-rose-500/30 transition-all duration-300">
             <div class="w-11 h-11 rounded-xl bg-rose-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Icon name="lucide:infinity" class="w-5 h-5 text-rose-400" />
+              <Icon name="lucide:ticket-check" class="w-5 h-5 text-rose-400" />
             </div>
-            <h3 class="font-semibold text-white mb-2">{{ t('features.unlimited.title') }}</h3>
-            <p class="text-sm text-surface-400 leading-relaxed">{{ t('features.unlimited.desc') }}</p>
+            <h3 class="font-semibold text-white mb-2">Recovery codes</h3>
+            <p class="text-sm text-surface-400 leading-relaxed">Importez des fichiers .txt et protégez vos codes de secours GitHub, Google ou cloud dans le coffre chiffré.</p>
           </div>
         </div>
       </div>
@@ -348,11 +354,11 @@
       <div class="max-w-5xl mx-auto space-y-8">
         <!-- Open Source links -->
         <div class="flex flex-col md:flex-row items-center justify-center gap-4">
-          <a href="https://github.com/wave3k/Kipit" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+          <a href="https://github.com/wave3k/BitLock" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
             <Icon name="lucide:github" class="w-4 h-4" />
             Source Code
           </a>
-          <a href="https://github.com/wave3k/Kipit-extension" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+          <a href="https://github.com/wave3k/BitLock-extension" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
             <Icon name="lucide:chrome" class="w-4 h-4" />
             Chrome Extension
           </a>
@@ -374,9 +380,9 @@
             <div class="w-6 h-6 bg-accent-600 rounded-md flex items-center justify-center">
               <Icon name="lucide:shield" class="w-3.5 h-3.5 text-white" />
             </div>
-            <span class="text-sm font-medium text-surface-400">Kipit</span>
+            <span class="text-sm font-medium text-surface-400">BitLock</span>
           </div>
-          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} Kipit — by <span class="text-surface-300 font-medium">RLT Labs</span></p>
+          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">RLT Labs</span></p>
         </div>
       </div>
     </footer>

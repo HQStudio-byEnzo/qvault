@@ -15,7 +15,7 @@ export function useAutoLock() {
 
   function getTimeoutMs() {
     if (!import.meta.client) return 5 * 60 * 1000
-    const minutes = Number(localStorage.getItem('kipit.security.autoLockMinutes') || 5)
+    const minutes = Number(localStorage.getItem('bitlock.security.autoLockMinutes') || 5)
     if (minutes <= 0) return 0
     return Math.max(1, minutes) * 60 * 1000
   }
@@ -71,7 +71,7 @@ export function useAutoLock() {
       document.removeEventListener(event, resetTimers)
     })
     window.removeEventListener('storage', resetTimers)
-    window.removeEventListener('kipit-security-settings-changed', resetTimers)
+    window.removeEventListener('bitlock-security-settings-changed', resetTimers)
   }
 
   function init() {
@@ -80,7 +80,7 @@ export function useAutoLock() {
       document.addEventListener(event, resetTimers, { passive: true })
     })
     window.addEventListener('storage', resetTimers)
-    window.addEventListener('kipit-security-settings-changed', resetTimers)
+    window.addEventListener('bitlock-security-settings-changed', resetTimers)
 
     // Start initial timer
     resetTimers()

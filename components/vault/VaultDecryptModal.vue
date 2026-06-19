@@ -123,7 +123,7 @@ async function copyDecrypted() {
 }
 
 function scheduleClipboardClear(value: string) {
-  const seconds = Number(localStorage.getItem('kipit.security.clipboardClearSeconds') || 30)
+  const seconds = Number(localStorage.getItem('bitlock.security.clipboardClearSeconds') || 30)
   if (seconds <= 0) return
 
   setTimeout(async () => {

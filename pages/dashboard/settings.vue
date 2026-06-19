@@ -414,23 +414,23 @@ function handleSignOut() {
 }
 
 function loadSecuritySettings() {
-  securitySettings.autoLockMinutes = Number(localStorage.getItem('kipit.security.autoLockMinutes') || 5)
-  securitySettings.clipboardClearSeconds = Number(localStorage.getItem('kipit.security.clipboardClearSeconds') || 30)
-  securitySettings.hideDecryptedByDefault = localStorage.getItem('kipit.security.hideDecryptedByDefault') !== 'false'
+  securitySettings.autoLockMinutes = Number(localStorage.getItem('bitlock.security.autoLockMinutes') || 5)
+  securitySettings.clipboardClearSeconds = Number(localStorage.getItem('bitlock.security.clipboardClearSeconds') || 30)
+  securitySettings.hideDecryptedByDefault = localStorage.getItem('bitlock.security.hideDecryptedByDefault') !== 'false'
 }
 
 function saveSecuritySettings() {
-  localStorage.setItem('kipit.security.autoLockMinutes', String(securitySettings.autoLockMinutes))
-  localStorage.setItem('kipit.security.clipboardClearSeconds', String(securitySettings.clipboardClearSeconds))
-  localStorage.setItem('kipit.security.hideDecryptedByDefault', String(securitySettings.hideDecryptedByDefault))
-  window.dispatchEvent(new Event('kipit-security-settings-changed'))
+  localStorage.setItem('bitlock.security.autoLockMinutes', String(securitySettings.autoLockMinutes))
+  localStorage.setItem('bitlock.security.clipboardClearSeconds', String(securitySettings.clipboardClearSeconds))
+  localStorage.setItem('bitlock.security.hideDecryptedByDefault', String(securitySettings.hideDecryptedByDefault))
+  window.dispatchEvent(new Event('bitlock-security-settings-changed'))
   securitySaved.value = true
   setTimeout(() => { securitySaved.value = false }, 2000)
 }
 
 function resetMasterOnboarding() {
-  localStorage.removeItem('kipit.masterPasswordOnboarded')
-  localStorage.removeItem('kipit.masterPasswordOnboardingSnoozedUntil')
+  localStorage.removeItem('bitlock.masterPasswordOnboarded')
+  localStorage.removeItem('bitlock.masterPasswordOnboardingSnoozedUntil')
   securitySaved.value = true
   setTimeout(() => { securitySaved.value = false }, 2000)
 }

@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   const encryptionRequired = current.type !== 'link'
 
   if (encryptionRequired && !nextIsEncrypted) {
-    throw createError({ statusCode: 400, message: 'Les mots de passe et clés crypto doivent rester chiffrés.' })
+    throw createError({ statusCode: 400, message: 'Les mots de passe, recovery codes et clés crypto doivent rester chiffrés.' })
   }
 
   if (nextIsEncrypted) {

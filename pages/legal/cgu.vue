@@ -8,14 +8,14 @@
       </header>
 
       <section class="card space-y-4 leading-relaxed text-surface-300">
-        <p>Bienvenue sur Kipit. En accedant a ce site et en utilisant le service, vous acceptez les presentes CGU.</p>
+        <p>Bienvenue sur BitLock. En accedant a ce site et en utilisant le service, vous acceptez les presentes CGU.</p>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">1. Presentation du service</h2>
-          <p>Kipit est une application de coffre-fort numerique developpee par Enzo Izinga pour le compte du collectif RootLayer. Le service permet de stocker des donnees chiffrees de bout en bout.</p>
+          <p>BitLock est une application de coffre-fort numerique developpee par Enzo Izinga pour le compte du collectif RootLayer. Le service permet de stocker des donnees chiffrees de bout en bout.</p>
         </div>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">2. Zero-knowledge et responsabilite</h2>
-          <p>Vos donnees sont chiffrees localement dans votre navigateur via AES-256-GCM avant tout envoi. Kipit ne stocke jamais votre mot de passe principal ni vos cles de dechiffrement en clair. Si vous perdez ce mot de passe, les donnees restent irrecuperables.</p>
+          <p>Vos donnees sont chiffrees localement dans votre navigateur via AES-256-GCM avant tout envoi. BitLock ne stocke jamais votre mot de passe principal ni vos cles de dechiffrement en clair. Si vous perdez ce mot de passe, les donnees restent irrecuperables.</p>
         </div>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">3. Compte et suppression</h2>
@@ -23,15 +23,15 @@
         </div>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">4. Propriete intellectuelle</h2>
-          <p>Le code source est distribue sous licence MIT. La marque Kipit, le logo, l'interface et le nom de domaine restent la propriete de leurs createurs.</p>
+          <p>Le code source est distribue sous licence MIT. La marque BitLock, le logo, l'interface et le nom de domaine restent la propriete de leurs createurs.</p>
         </div>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">5. Garantie et responsabilite</h2>
-          <p>Le service est fourni en l'etat, sans garantie de disponibilite continue. Kipit ne peut etre tenu responsable d'une perte de donnees causée par un oubli du mot de passe principal ou une mauvaise utilisation locale de l'appareil.</p>
+          <p>Le service est fourni en l'etat, sans garantie de disponibilite continue. BitLock ne peut etre tenu responsable d'une perte de donnees causée par un oubli du mot de passe principal ou une mauvaise utilisation locale de l'appareil.</p>
         </div>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">6. Usage acceptable</h2>
-          <p>Vous vous engagez a ne pas utiliser Kipit a des fins illegales, frauduleuses ou pour nuire a son infrastructure.</p>
+          <p>Vous vous engagez a ne pas utiliser BitLock a des fins illegales, frauduleuses ou pour nuire a son infrastructure.</p>
         </div>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">7. Droit applicable</h2>
@@ -44,5 +44,5 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
-useHead({ title: "Kipit - CGU" })
+useHead({ title: "BitLock - CGU" })
 </script>

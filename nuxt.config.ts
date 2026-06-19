@@ -31,7 +31,7 @@ export default defineNuxtConfig({
     appUrl: process.env.APP_URL || 'http://localhost:3000',
     // Public
     public: {
-      appName: 'Kipit',
+      appName: 'BitLock',
     },
   },
 
@@ -45,11 +45,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Kipit - Votre coffre-fort numérique',
+      title: 'BitLock - Votre coffre-fort numérique',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Kipit - Stockez vos mots de passe, liens et clés crypto en toute sécurité avec un chiffrement zero-knowledge.' },
+        { name: 'description', content: 'BitLock - Stockez vos mots de passe, liens et clés crypto en toute sécurité avec un chiffrement zero-knowledge.' },
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },

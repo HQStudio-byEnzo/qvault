@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /dashboard/
-Disallow: /api/
 
-Sitemap: https://kipit-two.vercel.app/sitemap.xml
+Sitemap: https://bitlock.app/sitemap.xml

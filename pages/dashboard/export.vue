@@ -97,7 +97,7 @@ async function handleExport() {
     const exportData = {
       version: 2,
       exportedAt: new Date().toISOString(),
-      app: 'Kipit',
+      app: 'BitLock',
       counts: {
         total: items.value.length,
         links: items.value.filter(item => item.type === 'link').length,
@@ -122,7 +122,7 @@ async function handleExport() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `kipit-export-${new Date().toISOString().split('T')[0]}.json`
+    a.download = `bitlock-export-${new Date().toISOString().split('T')[0]}.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

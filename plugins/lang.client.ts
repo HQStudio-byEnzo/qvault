@@ -4,7 +4,7 @@
  */
 export default defineNuxtPlugin(() => {
   const locale = useState<string>('locale')
-  const saved = localStorage.getItem('kipit-lang')
+  const saved = localStorage.getItem('bitlock-lang')
   if (saved && (saved === 'fr' || saved === 'en')) {
     locale.value = saved
   }

@@ -29,12 +29,12 @@ export async function sendVerificationEmail(email: string, name: string, code: s
   const resend = getResend()
 
   await resend.emails.send({
-    from: 'Kipit <onboarding@resend.dev>',
+    from: 'BitLock <onboarding@resend.dev>',
     to: email,
-    subject: `${code} — Votre code de vérification Kipit`,
+    subject: `${code} — Votre code de vérification BitLock`,
     html: `
       <div style="font-family: -apple-system, sans-serif; max-width: 400px; margin: 0 auto; padding: 40px 20px;">
-        <h2 style="color: #111; margin-bottom: 8px;">Bienvenue sur Kipit, ${name} !</h2>
+        <h2 style="color: #111; margin-bottom: 8px;">Bienvenue sur BitLock, ${name} !</h2>
         <p style="color: #666; font-size: 15px; line-height: 1.5;">
           Voici votre code de vérification :
         </p>

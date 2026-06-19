@@ -7,7 +7,7 @@
           <div class="w-8 h-8 bg-accent-600 rounded-lg flex items-center justify-center">
             <Icon name="lucide:shield" class="w-5 h-5 text-white" />
           </div>
-          <span class="text-lg font-semibold text-white">Kipit</span>
+          <span class="text-lg font-semibold text-white">BitLock</span>
         </NuxtLink>
       </div>
 
@@ -55,7 +55,7 @@
           <div class="w-7 h-7 bg-accent-600 rounded-lg flex items-center justify-center">
             <Icon name="lucide:shield" class="w-4 h-4 text-white" />
           </div>
-          <span class="font-semibold text-white">Kipit</span>
+          <span class="font-semibold text-white">BitLock</span>
         </div>
         <button @click="signOut" class="p-2 rounded-lg hover:bg-surface-800 text-surface-400">
           <Icon name="lucide:log-out" class="w-5 h-5" />
@@ -135,6 +135,8 @@ const navItems = [
   { to: '/dashboard/links', label: 'sidebar.links', icon: 'lucide:link' },
   { to: '/dashboard/passwords', label: 'sidebar.passwords', icon: 'lucide:key-round' },
   { to: '/dashboard/crypto', label: 'sidebar.crypto', icon: 'lucide:bitcoin' },
+  { to: '/dashboard/recovery-codes', label: 'sidebar.recovery', icon: 'lucide:ticket-check' },
+  { to: '/changelog', label: 'sidebar.changelog', icon: 'lucide:list-plus' },
   { to: '/dashboard/audit', label: 'sidebar.audit', icon: 'lucide:shield-alert' },
   { to: '/dashboard/export', label: 'sidebar.export', icon: 'lucide:download' },
   { to: '/dashboard/settings', label: 'sidebar.settings', icon: 'lucide:settings' },

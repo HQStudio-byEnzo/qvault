@@ -9,8 +9,8 @@ export default defineEventHandler(async (event) => {
 
   const { type, label, is_encrypted = true, payload, iv, url } = body
 
-  if (!type || !['link', 'password', 'crypto'].includes(type)) {
-    throw createError({ statusCode: 400, message: 'Type invalide. Doit être: link, password, ou crypto.' })
+  if (!type || !['link', 'password', 'crypto', 'recovery'].includes(type)) {
+    throw createError({ statusCode: 400, message: 'Type invalide. Doit être: link, password, crypto ou recovery.' })
   }
 
   if (!payload) {
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   const encryptionRequired = type !== 'link'
 
   if (encryptionRequired && !is_encrypted) {
-    throw createError({ statusCode: 400, message: 'Les mots de passe et clés crypto doivent être chiffrés côté client.' })
+    throw createError({ statusCode: 400, message: 'Les mots de passe, recovery codes et clés crypto doivent être chiffrés côté client.' })
   }
 
   if (is_encrypted) {

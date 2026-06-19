@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   let sql = 'SELECT * FROM vault_items WHERE user_id = ?'
   const params: any[] = [session.user.id]
 
-  if (type && ['link', 'password', 'crypto'].includes(type)) {
+  if (type && ['link', 'password', 'crypto', 'recovery'].includes(type)) {
     sql += ' AND type = ?'
     params.push(type)
   }

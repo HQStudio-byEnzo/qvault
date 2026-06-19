@@ -9,7 +9,7 @@
       <section class="card space-y-4 leading-relaxed text-surface-300">
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">1. Editeur du site</h2>
-          <p>Le site Kipit est edite par Enzo Izinga pour le compte du collectif RootLayer. Contact: enzoizinga23@gmail.com.</p>
+          <p>Le site BitLock est edite par Enzo Izinga pour le compte du collectif RootLayer. Contact: enzoizinga23@gmail.com.</p>
         </div>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">2. Hebergeur du site</h2>
@@ -26,5 +26,5 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
-useHead({ title: "Kipit - Mentions legales" })
+useHead({ title: "BitLock - Mentions legales" })
 </script>

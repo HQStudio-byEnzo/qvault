@@ -8,7 +8,7 @@
             <div>
               <h2 class="text-xl font-semibold text-white">Acceptez les documents legaux</h2>
               <p class="text-sm text-surface-400 mt-1">
-                Nous avons mis a jour les conditions de Kipit. Pour continuer, vous devez accepter les CGU, la politique de confidentialite et les mentions legales.
+                Nous avons mis a jour les conditions de BitLock. Pour continuer, vous devez accepter les CGU, la politique de confidentialite et les mentions legales.
               </p>
             </div>
             <div class="w-10 h-10 rounded-lg bg-accent-600/20 flex items-center justify-center flex-shrink-0">
@@ -34,7 +34,7 @@
           <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer mb-6">
             <input v-model="accepted" type="checkbox" class="mt-1" />
             <span class="leading-relaxed">
-              J'ai lu et j'accepte l'ensemble des documents ci-dessus pour continuer a utiliser Kipit.
+              J'ai lu et j'accepte l'ensemble des documents ci-dessus pour continuer a utiliser BitLock.
             </span>
           </label>
 

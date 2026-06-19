@@ -36,7 +36,7 @@
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-surface-300 mb-2">{{ t('vault.typeLabel') }}</label>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button
                 v-for="tp in types"
                 :key="tp.value"
@@ -79,6 +79,13 @@
               >
                 {{ t('vault.generateSeed') }}
               </button>
+              <label
+                v-if="form.type === 'recovery'"
+                class="text-xs px-2 py-1 rounded bg-surface-800 text-surface-300 hover:bg-surface-700 transition-colors cursor-pointer"
+              >
+                Importer .txt
+                <input type="file" accept=".txt,text/plain" class="hidden" @change="importTxt" />
+              </label>
             </div>
             <textarea
               id="payload"
@@ -130,7 +137,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  defaultType?: 'link' | 'password' | 'crypto'
+  defaultType?: 'link' | 'password' | 'crypto' | 'recovery'
 }>()
 
 const emit = defineEmits<{
@@ -146,7 +153,7 @@ const isSubmitting = ref(false)
 const masterPasswordInput = ref('')
 
 const form = reactive({
-  type: props.defaultType || 'link' as 'link' | 'password' | 'crypto',
+  type: props.defaultType || 'link' as 'link' | 'password' | 'crypto' | 'recovery',
   label: '',
   payload: '',
   url: '',
@@ -157,6 +164,7 @@ const types = computed(() => [
   { value: 'link' as const, label: t('vault.typeLink'), icon: 'lucide:link' },
   { value: 'password' as const, label: t('vault.typePassword'), icon: 'lucide:key-round' },
   { value: 'crypto' as const, label: t('vault.typeCrypto'), icon: 'lucide:bitcoin' },
+  { value: 'recovery' as const, label: 'Recovery', icon: 'lucide:ticket-check' },
 ])
 
 const payloadLabel = computed(() => {
@@ -164,6 +172,7 @@ const payloadLabel = computed(() => {
     case 'link': return t('vault.payloadLink')
     case 'password': return t('vault.payloadPassword')
     case 'crypto': return t('vault.payloadCrypto')
+    case 'recovery': return 'Recovery codes'
   }
 })
 
@@ -172,6 +181,7 @@ const payloadPlaceholder = computed(() => {
     case 'link': return t('vault.payloadPlaceholderLink')
     case 'password': return t('vault.payloadPlaceholderPassword')
     case 'crypto': return t('vault.payloadPlaceholderCrypto')
+    case 'recovery': return 'github-recovery-code-1\ngithub-recovery-code-2'
   }
 })
 
@@ -218,5 +228,14 @@ async function handleSubmit() {
 
 function generateSeed() {
   form.payload = generateSeedPhrase()
+}
+
+async function importTxt(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  form.payload = (await file.text()).trim()
+  if (!form.label) form.label = file.name.replace(/\.txt$/i, '')
+  input.value = ''
 }
 </script>

@@ -1,5 +1,5 @@
 {
-  "name": "kipit",
+  "name": "bitlock",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "preview": "nuxt preview",
     "generate": "nuxt generate",
     "postinstall": "nuxt prepare",
-    "db:migrate": "wrangler d1 execute kipit-db --local --file=server/database/schema.sql && wrangler d1 execute kipit-db --local --file=server/database/migrate-terms.sql",
-    "db:migrate:terms": "wrangler d1 execute kipit-db --local --file=server/database/migrate-terms.sql",
+    "db:migrate": "wrangler d1 execute bitlock-db --local --file=server/database/schema.sql && wrangler d1 execute bitlock-db --local --file=server/database/migrate-terms.sql",
+    "db:migrate:terms": "wrangler d1 execute bitlock-db --local --file=server/database/migrate-terms.sql",
     "db:setup:turso": "node scripts/run-turso-sql.mjs server/database/schema.sql",
     "db:migrate:turso:terms": "node scripts/run-turso-sql.mjs server/database/migrate-terms.sql"
   },

@@ -14,7 +14,7 @@
       <div class="prose prose-invert max-w-none space-y-8 text-surface-300">
         <section>
           <h2 class="text-2xl font-bold text-white mb-4">1. Éditeur du site</h2>
-          <p>Le site Kipit est édité par Enzo Izinga, agissant en tant que particulier pour le compte du collectif RootLayer.</p>
+          <p>Le site BitLock est édité par Enzo Izinga, agissant en tant que particulier pour le compte du collectif RootLayer.</p>
           <ul class="list-disc list-inside space-y-2 ml-4">
             <li><strong>Contact :</strong> <a href="mailto:enzoizinga23@gmail.com" class="text-accent-400 hover:text-accent-300">enzoizinga23@gmail.com</a></li>
           </ul>

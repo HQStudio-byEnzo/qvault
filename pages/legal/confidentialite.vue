@@ -8,7 +8,7 @@
       </header>
 
       <section class="card space-y-4 leading-relaxed text-surface-300">
-        <p>La protection de vos donnees personnelles et le respect de votre vie privee sont au coeur de Kipit.</p>
+        <p>La protection de vos donnees personnelles et le respect de votre vie privee sont au coeur de BitLock.</p>
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-white">1. Responsable du traitement</h2>
           <p>Enzo Izinga agit pour le compte du collectif RootLayer. Contact: enzoizinga23@gmail.com.</p>
@@ -44,5 +44,5 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
-useHead({ title: "Kipit - Politique de confidentialite" })
+useHead({ title: "BitLock - Politique de confidentialite" })
 </script>

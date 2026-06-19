@@ -1,8 +1,8 @@
-# Kipit - Zero-Knowledge Digital Vault
+# BitLock - Zero-Knowledge Digital Vault
 
-Kipit is a free, open-source digital vault that stores your links, passwords, and crypto keys with client-side zero-knowledge encryption.
+BitLock is a free, open-source digital vault that stores your links, passwords, and crypto keys with client-side zero-knowledge encryption.
 
-**Live:** [kipit-two.vercel.app](https://kipit-two.vercel.app)
+**Live:** [bitlock-two.vercel.app](https://bitlock-two.vercel.app)
 
 ## Features
 
@@ -90,7 +90,7 @@ RESEND_API_KEY=re_xxxxx (optional, for email verification)
 
 ## Chrome Extension
 
-See [Kipit-extension](https://github.com/wave3k/Kipit-extension) for the browser extension.
+See [BitLock-extension](https://github.com/wave3k/BitLock-extension) for the browser extension.
 
 ## License
 

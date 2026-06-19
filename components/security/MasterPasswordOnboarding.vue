@@ -12,7 +12,7 @@
               <div>
                 <h2 class="text-lg font-semibold text-white">Choisissez votre mot de passe maitre</h2>
                 <p class="text-sm text-surface-400 mt-1">
-                  Il sert a chiffrer et dechiffrer tout votre coffre dans ce navigateur. Kipit ne le stocke pas et ne peut pas le recuperer.
+                  Il sert a chiffrer et dechiffrer tout votre coffre dans ce navigateur. BitLock ne le stocke pas et ne peut pas le recuperer.
                 </p>
               </div>
 
@@ -33,7 +33,7 @@
 
               <label class="flex items-start gap-2 text-sm text-surface-300 cursor-pointer">
                 <input v-model="understood" type="checkbox" class="mt-1" />
-                <span>Je comprends que Kipit ne peut pas recuperer mon mot de passe maitre.</span>
+                <span>Je comprends que BitLock ne peut pas recuperer mon mot de passe maitre.</span>
               </label>
 
               <div class="flex flex-col sm:flex-row gap-2 pt-2">
@@ -57,19 +57,19 @@ const visible = ref(false)
 const understood = ref(false)
 
 onMounted(() => {
-  const done = localStorage.getItem('kipit.masterPasswordOnboarded') === 'true'
-  const snoozedUntil = Number(localStorage.getItem('kipit.masterPasswordOnboardingSnoozedUntil') || 0)
+  const done = localStorage.getItem('bitlock.masterPasswordOnboarded') === 'true'
+  const snoozedUntil = Number(localStorage.getItem('bitlock.masterPasswordOnboardingSnoozedUntil') || 0)
   visible.value = !done && Date.now() > snoozedUntil
 })
 
 function complete() {
-  localStorage.setItem('kipit.masterPasswordOnboarded', 'true')
-  localStorage.removeItem('kipit.masterPasswordOnboardingSnoozedUntil')
+  localStorage.setItem('bitlock.masterPasswordOnboarded', 'true')
+  localStorage.removeItem('bitlock.masterPasswordOnboardingSnoozedUntil')
   visible.value = false
 }
 
 function remindLater() {
-  localStorage.setItem('kipit.masterPasswordOnboardingSnoozedUntil', String(Date.now() + 24 * 60 * 60 * 1000))
+  localStorage.setItem('bitlock.masterPasswordOnboardingSnoozedUntil', String(Date.now() + 24 * 60 * 60 * 1000))
   visible.value = false
 }
 </script>

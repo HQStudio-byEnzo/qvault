@@ -5,7 +5,7 @@
 export interface VaultItem {
   id: string
   user_id: string
-  type: 'link' | 'password' | 'crypto'
+  type: 'link' | 'password' | 'crypto' | 'recovery' | 'recovery'
   label: string
   is_encrypted: boolean
   payload: string
@@ -24,6 +24,7 @@ export interface VaultStats {
     links: number
     passwords: number
     crypto: number
+    recovery: number
     favorites: number
     total: number
   }
@@ -78,7 +79,7 @@ export function useVault() {
    * Si shouldEncrypt=true, le chiffrement est effectué côté client avant envoi
    */
   async function addItem(data: {
-    type: 'link' | 'password' | 'crypto'
+    type: 'link' | 'password' | 'crypto' | 'recovery' | 'recovery'
     label: string
     payload: string
     shouldEncrypt: boolean

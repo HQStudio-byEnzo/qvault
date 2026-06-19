@@ -30,13 +30,13 @@ export default defineEventHandler(async (event) => {
   const user = result.rows[0] as any
 
   // Vérifier le mot de passe actuel
-  const valid = await verifyPassword(currentPassword, user.password)
+  const valid = await verifyUserPassword(currentPassword, user.password)
   if (!valid) {
     throw createError({ statusCode: 401, message: 'Mot de passe actuel incorrect.' })
   }
 
   // Mettre à jour
-  const hashedNew = await hashPassword(newPassword)
+  const hashedNew = await hashUserPassword(newPassword)
   await db.execute({
     sql: 'UPDATE users SET password = ? WHERE id = ?',
     args: [hashedNew, session.user.id],

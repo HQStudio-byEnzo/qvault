@@ -5,7 +5,7 @@
 export interface VaultItem {
   id: string
   user_id: string
-  type: 'link' | 'password' | 'crypto' | 'recovery' | 'recovery'
+  type: 'link' | 'password' | 'crypto' | 'recovery'
   label: string
   is_encrypted: boolean
   payload: string
@@ -79,7 +79,7 @@ export function useVault() {
    * Si shouldEncrypt=true, le chiffrement est effectué côté client avant envoi
    */
   async function addItem(data: {
-    type: 'link' | 'password' | 'crypto' | 'recovery' | 'recovery'
+    type: 'link' | 'password' | 'crypto' | 'recovery'
     label: string
     payload: string
     shouldEncrypt: boolean
@@ -112,7 +112,11 @@ export function useVault() {
           is_encrypted: shouldEncrypt,
           payload,
           iv,
-          url: data.type === 'link' && !shouldEncrypt ? data.url || undefined : undefined,
+          url: data.type === 'password'
+            ? data.url || undefined
+            : data.type === 'link' && !shouldEncrypt
+              ? data.url || undefined
+              : undefined,
         },
       })
 
@@ -154,9 +158,8 @@ export function useVault() {
    * Ré-encrypte tous les éléments chiffrés avec un nouveau mot de passe maître
    */
   async function reencryptVault(currentPassword: string | null, newPassword: string) {
-    if (items.value.length === 0) {
-      await fetchItems()
-    }
+    // Always load the complete vault; the shared state may currently contain a filtered view.
+    await fetchItems()
 
     const encryptedItems = items.value.filter(item => item.is_encrypted)
 
@@ -169,19 +172,24 @@ export function useVault() {
       throw new Error('Le mot de passe maître actuel est requis pour mettre à jour le coffre.')
     }
 
+    // Prepare every replacement before writing anything. A wrong current password
+    // therefore cannot modify only part of the vault.
+    const replacements = []
     for (const item of encryptedItems) {
       const plain = await decryptItem(item, sourcePassword || '')
       const encrypted = await encrypt(plain, newPassword)
 
-      await $fetch(`/api/vault/${item.id}`, {
-        method: 'PUT',
-        body: {
-          payload: `${encrypted.salt}:${encrypted.ciphertext}`,
-          iv: encrypted.iv,
-          is_encrypted: true,
-        },
+      replacements.push({
+        id: item.id,
+        payload: `${encrypted.salt}:${encrypted.ciphertext}`,
+        iv: encrypted.iv,
       })
     }
+
+    await $fetch('/api/vault/rotate-encryption', {
+      method: 'POST',
+      body: { items: replacements },
+    })
 
     setMasterPassword(newPassword)
     await fetchItems()

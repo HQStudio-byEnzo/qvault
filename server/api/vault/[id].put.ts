@@ -65,6 +65,10 @@ export default defineEventHandler(async (event) => {
     updates.push('favorite = ?')
     params.push(body.favorite ? 1 : 0)
   }
+  if (body.url !== undefined) {
+    updates.push('url = ?')
+    params.push(body.url || null)
+  }
 
   if (updates.length === 0) {
     throw createError({ statusCode: 400, message: 'Aucune modification fournie.' })

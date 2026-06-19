@@ -8,6 +8,7 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "generate": "nuxt generate",
+    "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare",
     "db:migrate": "wrangler d1 execute bitlock-db --local --file=server/database/schema.sql && wrangler d1 execute bitlock-db --local --file=server/database/migrate-terms.sql",
     "db:migrate:terms": "wrangler d1 execute bitlock-db --local --file=server/database/migrate-terms.sql",
@@ -22,7 +23,6 @@
     "bcryptjs": "^3.0.3",
     "nuxt": "^3.15.0",
     "nuxt-auth-utils": "^0.5.29",
-    "resend": "^6.12.3",
     "vue": "^3.5.0",
     "vue-router": "^4.5.0"
   },
@@ -33,6 +33,7 @@
     "nitro-cloudflare-dev": "^0.1.0",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.7.0",
-    "wrangler": "^3.99.0"
+    "vue-tsc": "^3.3.5",
+    "wrangler": "^4.103.0"
   }
 }

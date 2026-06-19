@@ -103,6 +103,7 @@ async function handleExport() {
         links: items.value.filter(item => item.type === 'link').length,
         passwords: items.value.filter(item => item.type === 'password').length,
         crypto: items.value.filter(item => item.type === 'crypto').length,
+        recovery: items.value.filter(item => item.type === 'recovery').length,
       },
       items: items.value.map(item => ({
         id: item.id,
@@ -210,7 +211,7 @@ async function handleImport(event: Event) {
 function isValidImportItem(item: any) {
   return (
     item &&
-    ['link', 'password', 'crypto'].includes(item.type) &&
+    ['link', 'password', 'crypto', 'recovery'].includes(item.type) &&
     typeof item.payload === 'string' &&
     (
       (!item.is_encrypted && !item.iv) ||

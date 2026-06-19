@@ -94,6 +94,7 @@ const typeLabels = computed(() => ({
   link: t('vault.typeLink'),
   password: t('vault.typePassword'),
   crypto: t('vault.typeCrypto'),
+  recovery: 'Recovery',
 }))
 
 const typeStyles = computed(() => {

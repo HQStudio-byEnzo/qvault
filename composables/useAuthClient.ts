@@ -9,7 +9,7 @@ export function useAuthClient() {
   /**
    * Inscription
    */
-  async function signUp(data: { name: string; email: string; password: string; acceptedTerms: boolean }) {
+  async function signUp(data: { name: string; email: string; password: string; hint?: string; acceptedTerms: boolean }) {
     const response = await $fetch<{ user: any }>('/api/auth/register', {
       method: 'POST',
       body: data,

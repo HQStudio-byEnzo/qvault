@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
   // Trouver l'utilisateur
   const result = await db.execute({
-    sql: 'SELECT id, name, email, password, email_verified, created_at FROM users WHERE email = ?',
+    sql: 'SELECT id, name, email, password, created_at FROM users WHERE email = ?',
     args: [email.toLowerCase()],
   })
 
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   const user = result.rows[0] as any
 
   // Vérifier le mot de passe
-  const valid = await verifyPassword(password, user.password)
+  const valid = await verifyUserPassword(password, user.password)
   if (!valid) {
     throw createError({ statusCode: 401, message: 'Email ou mot de passe incorrect.' })
   }
@@ -36,13 +36,11 @@ export default defineEventHandler(async (event) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      emailVerified: user.email_verified === 1,
       created_at: user.created_at,
     },
   })
 
   return {
     user: { id: user.id, name: user.name, email: user.email },
-    needsVerification: user.email_verified !== 1,
   }
 })

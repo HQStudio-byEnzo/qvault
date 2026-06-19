@@ -1,9 +1,8 @@
 /**
  * POST /api/auth/register
  * Inscription par email/mot de passe
- * Envoie un code de vérification par email
  */
-import { setLegalAcceptance } from '~/server/utils/legal'
+import { LEGAL_TERMS_VERSION } from '~/server/utils/legal'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -33,36 +32,31 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, message: 'Un compte existe déjà avec cet email.' })
   }
 
-  // Créer l'utilisateur (non vérifié)
+  // Créer l'utilisateur et enregistrer son acceptation dans une transaction.
   const id = crypto.randomUUID()
-  const hashedPassword = await hashPassword(password)
-  const code = generateVerificationCode()
-  const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString() // 15 min
+  const hashedPassword = await hashUserPassword(password)
 
-  await db.execute({
-    sql: "INSERT INTO users (id, name, email, password, email_verified, verification_code, verification_expires, password_hint, created_at) VALUES (?, ?, ?, ?, 0, ?, ?, ?, datetime('now'))",
-    args: [id, name, email.toLowerCase(), hashedPassword, code, expires, hint || null],
-  })
+  await db.batch([
+    {
+      sql: "INSERT INTO users (id, name, email, password, password_hint, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))",
+      args: [id, name, email.toLowerCase(), hashedPassword, hint || null],
+    },
+    {
+      sql: `INSERT INTO accepted_terms (user_id, terms_version, accepted_at, user_agent, ip_address)
+            VALUES (?, ?, datetime('now'), ?, ?)`,
+      args: [
+        id,
+        LEGAL_TERMS_VERSION,
+        getRequestHeader(event, 'user-agent') || null,
+        getRequestIP(event) || null,
+      ],
+    },
+  ], 'write')
 
-  await setLegalAcceptance(event, id)
-
-  // Envoyer l'email de vérification
-  try {
-    const config = useRuntimeConfig()
-    if (!config.resendApiKey) {
-      console.error('RESEND_API_KEY non configurée !')
-    } else {
-      await sendVerificationEmail(email.toLowerCase(), name, code)
-      console.log('Email envoyé à', email.toLowerCase())
-    }
-  } catch (err: any) {
-    console.error('Erreur envoi email:', err?.message || err)
-  }
-
-  // Créer la session (mais marquer comme non vérifié)
+  // Créer la session.
   await setUserSession(event, {
-    user: { id, name, email: email.toLowerCase(), emailVerified: false, created_at: new Date().toISOString() },
+    user: { id, name, email: email.toLowerCase(), created_at: new Date().toISOString() },
   })
 
-  return { user: { id, name, email: email.toLowerCase() }, needsVerification: true }
+  return { user: { id, name, email: email.toLowerCase() } }
 })

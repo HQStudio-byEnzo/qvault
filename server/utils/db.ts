@@ -13,8 +13,8 @@ export function useDB(event?: H3Event) {
   const config = useRuntimeConfig()
 
   dbClient = createClient({
-    url: config.tursoDbUrl,
-    authToken: config.tursoDbToken,
+    url: String(config.tursoDbUrl),
+    authToken: config.tursoDbToken ? String(config.tursoDbToken) : undefined,
   })
 
   return dbClient

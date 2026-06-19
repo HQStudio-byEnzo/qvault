@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const user = result.rows[0] as any
-  const valid = await verifyPassword(password, user.password)
+  const valid = await verifyUserPassword(password, user.password)
   if (!valid) {
     throw createError({ statusCode: 401, message: 'Mot de passe incorrect.' })
   }

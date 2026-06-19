@@ -56,7 +56,6 @@ npm run build
 NUXT_SESSION_PASSWORD=your-secret-at-least-32-characters-long
 TURSO_DB_URL=libsql://your-db.turso.io
 TURSO_DB_TOKEN=your-token
-RESEND_API_KEY=re_xxxxx (optional, for email verification)
 ```
 
 ## Project Structure

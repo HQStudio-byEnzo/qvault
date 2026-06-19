@@ -12,7 +12,7 @@ export function useCrypto() {
    * Dérive une clé AES-256 à partir d'un mot de passe maître et d'un sel
    * Utilise PBKDF2 avec 100 000 itérations de SHA-256
    */
-  async function deriveKey(masterPassword: string, salt: Uint8Array): Promise<CryptoKey> {
+  async function deriveKey(masterPassword: string, salt: BufferSource): Promise<CryptoKey> {
     const encoder = new TextEncoder()
     
     // Importer le mot de passe comme clé brute
@@ -69,10 +69,10 @@ export function useCrypto() {
     const usedSalt = salt || generateSalt()
     const iv = generateIV()
     
-    const key = await deriveKey(masterPassword, usedSalt)
+    const key = await deriveKey(masterPassword, toArrayBuffer(usedSalt))
 
     const encrypted = await crypto.subtle.encrypt(
-      { name: 'AES-GCM', iv },
+      { name: 'AES-GCM', iv: toArrayBuffer(iv) },
       key,
       encoder.encode(plaintext)
     )
@@ -122,13 +122,17 @@ export function useCrypto() {
   /**
    * Convertit une string Base64 en Uint8Array
    */
-  function base64ToArrayBuffer(base64: string): Uint8Array {
+  function base64ToArrayBuffer(base64: string): ArrayBuffer {
     const binary = atob(base64)
     const bytes = new Uint8Array(binary.length)
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i)
     }
-    return bytes
+    return bytes.buffer
+  }
+
+  function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+    return new Uint8Array(bytes).buffer
   }
 
   return {

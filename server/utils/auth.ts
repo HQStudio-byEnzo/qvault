@@ -4,14 +4,14 @@ import type { H3Event } from 'h3'
 /**
  * Hash un mot de passe avec bcrypt
  */
-export async function hashPassword(password: string): Promise<string> {
+export async function hashUserPassword(password: string): Promise<string> {
   return hash(password, 12)
 }
 
 /**
  * Vérifie un mot de passe contre son hash
  */
-export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function verifyUserPassword(password: string, hashedPassword: string): Promise<boolean> {
   return compare(password, hashedPassword)
 }
 
@@ -29,5 +29,5 @@ export async function requireAuth(event: H3Event) {
     })
   }
 
-  return session
+  return session as typeof session & { user: NonNullable<typeof session.user> }
 }

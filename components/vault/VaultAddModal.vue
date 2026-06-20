@@ -15,12 +15,10 @@
           v-if="needsEncryption && !isUnlocked"
           class="mb-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-200 space-y-3"
         >
-          <p>
-            The vault uses a single master password. Enter it here to encrypt this item and unlock the session.
-          </p>
+          <p>{{ t('vault.masterPwdNotice') }}</p>
           <div>
             <label for="masterPassword" class="block text-xs font-medium text-amber-100 mb-1">
-              Master password
+              {{ t('vault.masterPwdLabel') }}
             </label>
             <input
               id="masterPassword"
@@ -83,7 +81,7 @@
                 v-if="form.type === 'recovery'"
                 class="text-xs px-2 py-1 rounded bg-surface-800 text-surface-300 hover:bg-surface-700 transition-colors cursor-pointer"
               >
-                Import .txt
+                {{ t('vault.importTxt') }}
                 <input type="file" accept=".txt,text/plain" class="hidden" @change="importTxt" />
               </label>
             </div>
@@ -110,10 +108,10 @@
                 :disabled="form.type !== 'link'"
                 class="rounded border-surface-600 text-accent-500 focus:ring-accent-500"
               />
-              <span>{{ form.type === 'link' ? 'Encrypt this link (optional)' : 'Encryption required' }}</span>
+              <span>{{ form.type === 'link' ? t('vault.encryptThisLink') : t('vault.encryptionRequired') }}</span>
             </label>
             <p v-if="form.type === 'link' && !form.encrypt" class="text-xs text-surface-500">
-              This link will be stored in plain text for faster access.
+              {{ t('vault.linkPlainTextNotice') }}
             </p>
           </div>
 
@@ -164,7 +162,7 @@ const types = computed(() => [
   { value: 'link' as const, label: t('vault.typeLink'), icon: 'lucide:link' },
   { value: 'password' as const, label: t('vault.typePassword'), icon: 'lucide:key-round' },
   { value: 'crypto' as const, label: t('vault.typeCrypto'), icon: 'lucide:bitcoin' },
-  { value: 'recovery' as const, label: 'Recovery code', icon: 'lucide:ticket-check' },
+  { value: 'recovery' as const, label: t('vault.typeRecovery'), icon: 'lucide:ticket-check' },
 ])
 
 const payloadLabel = computed(() => {
@@ -172,7 +170,7 @@ const payloadLabel = computed(() => {
     case 'link': return t('vault.payloadLink')
     case 'password': return t('vault.payloadPassword')
     case 'crypto': return t('vault.payloadCrypto')
-    case 'recovery': return 'Recovery codes'
+    case 'recovery': return t('vault.payloadRecovery')
   }
 })
 
@@ -181,7 +179,7 @@ const payloadPlaceholder = computed(() => {
     case 'link': return t('vault.payloadPlaceholderLink')
     case 'password': return t('vault.payloadPlaceholderPassword')
     case 'crypto': return t('vault.payloadPlaceholderCrypto')
-    case 'recovery': return 'github-recovery-code-1\ngithub-recovery-code-2'
+    case 'recovery': return t('vault.payloadPlaceholderRecovery')
   }
 })
 
@@ -199,7 +197,7 @@ async function handleSubmit() {
   const sessionPassword = masterPassword.value || masterPasswordInput.value.trim()
 
   if (needsEncryption && !sessionPassword) {
-    error.value = 'Enter your master password to add this item.'
+    error.value = t('vault.needMasterPasswordToAdd')
     return
   }
 

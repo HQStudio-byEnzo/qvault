@@ -87,14 +87,14 @@ defineEmits<{
   'decrypt': [item: VaultItem]
 }>()
 
-const { t } = useLang()
+const { t, locale } = useLang()
 const copied = ref(false)
 
 const typeLabels = computed(() => ({
   link: t('vault.typeLink'),
   password: t('vault.typePassword'),
   crypto: t('vault.typeCrypto'),
-  recovery: 'Recovery code',
+  recovery: t('sidebar.recovery'),
 }))
 
 const typeStyles = computed(() => {
@@ -113,7 +113,7 @@ const typeStyles = computed(() => {
 })
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-US', {
+  return new Date(date).toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

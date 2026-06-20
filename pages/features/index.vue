@@ -2,11 +2,9 @@
   <div class="min-h-screen bg-surface-950 text-white">
     <main class="max-w-6xl mx-auto px-6 py-16 space-y-10">
       <header class="max-w-3xl space-y-4">
-        <p class="text-sm uppercase tracking-[0.24em] text-accent-300">Features</p>
-        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">Everything BitLock does, in one place.</h1>
-        <p class="text-surface-400 text-lg leading-relaxed">
-          Each feature has its own dedicated page so the landing page can stay readable while the product details stay discoverable.
-        </p>
+        <p class="text-sm uppercase tracking-[0.24em] text-accent-300">{{ t('nav.features') }}</p>
+        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">{{ t('featuresIndex.title') }}</h1>
+        <p class="text-surface-400 text-lg leading-relaxed">{{ t('featuresIndex.subtitle') }}</p>
       </header>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -33,9 +31,10 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
+const { t } = useLang()
 useSeoMeta({
-  title: 'Features - BitLock',
-  description: 'A clear overview of BitLock features, with dedicated pages for each capability.',
+  title: t('featuresIndex.seoTitle'),
+  description: t('featuresIndex.seoDesc'),
 })
 
 const { features } = useFeatureCatalog()

@@ -47,7 +47,7 @@
             required
             minlength="8"
             class="input-field"
-            placeholder="Minimum 8 characters"
+            :placeholder="t('settings.newPwdPlaceholder')"
           />
         </div>
 
@@ -72,11 +72,11 @@
         <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer">
           <input v-model="form.acceptedTerms" type="checkbox" class="mt-1" required />
           <span class="leading-relaxed">
-            I accept the
-            <NuxtLink to="/legal/cgu" class="text-accent-400 hover:text-accent-300">Terms of Use</NuxtLink>,
-            <NuxtLink to="/legal/confidentialite" class="text-accent-400 hover:text-accent-300">Privacy Policy</NuxtLink>,
-            and
-            <NuxtLink to="/legal/mentions-legales" class="text-accent-400 hover:text-accent-300">Legal notice</NuxtLink>.
+            {{ t('auth.register.acceptPrefix') }}
+            <NuxtLink to="/legal/cgu" class="text-accent-400 hover:text-accent-300">{{ t('footer.terms') }}</NuxtLink>,
+            <NuxtLink to="/legal/confidentialite" class="text-accent-400 hover:text-accent-300">{{ t('footer.privacy') }}</NuxtLink>,
+            {{ t('auth.register.acceptAnd') }}
+            <NuxtLink to="/legal/mentions-legales" class="text-accent-400 hover:text-accent-300">{{ t('footer.legalNotice') }}</NuxtLink>.
           </span>
         </label>
 
@@ -104,9 +104,9 @@
           </NuxtLink>
         </p>
         <div class="flex flex-wrap items-center justify-center gap-3 text-xs text-surface-500">
-          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">Terms of Use</NuxtLink>
-          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Privacy Policy</NuxtLink>
-          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Legal notice</NuxtLink>
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">{{ t('footer.terms') }}</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">{{ t('footer.privacy') }}</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">{{ t('footer.legalNotice') }}</NuxtLink>
         </div>
       </div>
     </div>

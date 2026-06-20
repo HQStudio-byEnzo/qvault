@@ -38,8 +38,8 @@
                 </NuxtLink>
               </div>
               <div class="border-t border-surface-800 p-3 flex items-center gap-2">
-                <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary flex-1 text-center text-sm">Password generator</NuxtLink>
-                <NuxtLink to="/changelog" class="btn-secondary text-sm">Changelog</NuxtLink>
+                <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary flex-1 text-center text-sm">{{ t('hero.passwordGenerator') }}</NuxtLink>
+                <NuxtLink to="/changelog" class="btn-secondary text-sm">{{ t('nav.changelog') }}</NuxtLink>
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@
             {{ t('hero.cta') }}
             <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </NuxtLink>
-          <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-8 py-3.5">Password generator</NuxtLink>
+          <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-8 py-3.5">{{ t('hero.passwordGenerator') }}</NuxtLink>
           <NuxtLink to="/auth/login" class="btn-secondary text-base px-8 py-3.5">
             {{ t('hero.login') }}
           </NuxtLink>
@@ -131,12 +131,12 @@
         <div class="flex items-center justify-center gap-6 pt-8 text-sm text-surface-500">
           <div class="flex items-center gap-1.5">
             <Icon name="lucide:shield-check" class="w-4 h-4 text-green-400" />
-            <span>AES-256-GCM</span>
+            <span>{{ t('trust.aes') }}</span>
           </div>
           <div class="w-1 h-1 rounded-full bg-surface-700"></div>
           <div class="flex items-center gap-1.5">
             <Icon name="lucide:eye-off" class="w-4 h-4 text-accent-400" />
-            <span>Zero-Knowledge</span>
+            <span>{{ t('trust.zeroKnowledge') }}</span>
           </div>
           <div class="w-1 h-1 rounded-full bg-surface-700"></div>
           <div class="flex items-center gap-1.5">
@@ -146,7 +146,7 @@
           <div class="w-1 h-1 rounded-full bg-surface-700"></div>
           <div class="flex items-center gap-1.5">
             <Icon name="lucide:ticket-check" class="w-4 h-4 text-purple-400" />
-            <span>Recovery codes</span>
+            <span>{{ t('trust.recoveryCodes') }}</span>
           </div>
         </div>
       </div>
@@ -357,22 +357,22 @@
         <div class="flex flex-col md:flex-row items-center justify-center gap-4">
           <a href="https://github.com/wave3k/BitLock" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
             <Icon name="lucide:github" class="w-4 h-4" />
-            Source Code
+            {{ t('footer.sourceCode') }}
           </a>
           <a href="https://github.com/wave3k/BitLock-extension" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
             <Icon name="lucide:chrome" class="w-4 h-4" />
-            Chrome Extension
+            {{ t('footer.chromeExtension') }}
           </a>
           <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
             <Icon name="lucide:message-circle" class="w-4 h-4" />
-            Discord
+            {{ t('footer.discord') }}
           </a>
         </div>
 
         <div class="flex flex-wrap items-center justify-center gap-3 text-sm text-surface-500">
-          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">Terms of Use</NuxtLink>
-          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Privacy Policy</NuxtLink>
-          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Legal notice</NuxtLink>
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">{{ t('footer.terms') }}</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">{{ t('footer.privacy') }}</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">{{ t('footer.legalNotice') }}</NuxtLink>
         </div>
 
         <!-- Bottom -->

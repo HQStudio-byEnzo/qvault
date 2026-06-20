@@ -6,17 +6,17 @@
           <Icon name="lucide:shield" class="w-6 h-6 text-accent-300" />
           BitLock
         </NuxtLink>
-        <NuxtLink to="/auth/register" class="btn-primary">Create a vault</NuxtLink>
+        <NuxtLink to="/auth/register" class="btn-primary">{{ t('generator.cta') }}</NuxtLink>
       </div>
     </header>
     <main class="max-w-5xl mx-auto px-6 py-16 grid lg:grid-cols-[1fr_380px] gap-10">
       <section>
-        <p class="text-accent-300 font-medium mb-3">Free tool, no sign-in required</p>
-        <h1 class="text-4xl md:text-6xl font-semibold tracking-tight mb-5">Secure password generator</h1>
-        <p class="text-surface-300 text-lg leading-relaxed mb-8">Generate a strong password locally for your accounts. BitLock never receives the generated password.</p>
+        <p class="text-accent-300 font-medium mb-3">{{ t('generator.badge') }}</p>
+        <h1 class="text-4xl md:text-6xl font-semibold tracking-tight mb-5">{{ t('generator.title') }}</h1>
+        <p class="text-surface-300 text-lg leading-relaxed mb-8">{{ t('generator.desc') }}</p>
         <div class="card p-6 space-y-6">
           <div>
-            <label class="text-sm text-surface-400">Generated password</label>
+            <label class="text-sm text-surface-400">{{ t('generator.generatedLabel') }}</label>
             <div class="mt-2 flex gap-2">
               <input :value="password" readonly class="input-field font-mono text-lg" />
               <button class="btn-secondary" @click="copyPassword"><Icon name="lucide:copy" class="w-5 h-5" /></button>
@@ -24,11 +24,11 @@
           </div>
           <div class="grid sm:grid-cols-2 gap-4">
             <label class="space-y-2">
-              <span class="text-sm text-surface-300">Length: {{ options.length }}</span>
+              <span class="text-sm text-surface-300">{{ t('generator.length') }}: {{ options.length }}</span>
               <input v-model.number="options.length" type="range" min="12" max="64" class="w-full" />
             </label>
             <div class="rounded-xl border border-surface-700 p-4">
-              <p class="text-sm text-surface-400">Estimated entropy</p>
+              <p class="text-sm text-surface-400">{{ t('generator.entropy') }}</p>
               <p class="text-2xl font-semibold text-emerald-300">{{ passwordEntropy }} bits</p>
             </div>
           </div>
@@ -38,17 +38,17 @@
               <span>{{ option.label }}</span>
             </label>
           </div>
-          <button class="btn-primary w-full py-3" @click="regenerate">Generate a new password</button>
-          <p v-if="copied" class="text-sm text-emerald-300">Copied to clipboard.</p>
+          <button class="btn-primary w-full py-3" @click="regenerate">{{ t('generator.generate') }}</button>
+          <p v-if="copied" class="text-sm text-emerald-300">{{ t('generator.copied') }}</p>
         </div>
       </section>
       <aside class="card p-6 h-fit space-y-4">
-        <h2 class="text-xl font-semibold">Best practices</h2>
+        <h2 class="text-xl font-semibold">{{ t('generator.bestPractices') }}</h2>
         <ul class="space-y-3 text-sm text-surface-300">
-          <li>Use at least 16 characters for sensitive accounts.</li>
-          <li>Never reuse the same password.</li>
-          <li>Store credentials in an encrypted vault.</li>
-          <li>Enable two-factor authentication and save your recovery codes.</li>
+          <li>{{ t('generator.practice1') }}</li>
+          <li>{{ t('generator.practice2') }}</li>
+          <li>{{ t('generator.practice3') }}</li>
+          <li>{{ t('generator.practice4') }}</li>
         </ul>
       </aside>
     </main>
@@ -57,18 +57,19 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
-useSeoMeta({ title: 'Free password generator - BitLock', description: 'Create a strong password locally, offline, and without sending anything to a server.' })
+const { t } = useLang()
+useSeoMeta({ title: t('generator.seoTitle'), description: t('generator.seoDesc') })
 const { generatePassword, entropy } = usePasswordGenerator()
 const options = reactive({ length: 24, uppercase: true, lowercase: true, numbers: true, symbols: true, avoidAmbiguous: true })
 const password = ref('')
 const copied = ref(false)
-const toggles = [
-  { key: 'uppercase' as const, label: 'Uppercase letters' },
-  { key: 'lowercase' as const, label: 'Lowercase letters' },
-  { key: 'numbers' as const, label: 'Numbers' },
-  { key: 'symbols' as const, label: 'Symbols' },
-  { key: 'avoidAmbiguous' as const, label: 'Avoid ambiguous characters' },
-]
+const toggles = computed(() => [
+  { key: 'uppercase' as const, label: t('generator.uppercase') },
+  { key: 'lowercase' as const, label: t('generator.lowercase') },
+  { key: 'numbers' as const, label: t('generator.numbers') },
+  { key: 'symbols' as const, label: t('generator.symbols') },
+  { key: 'avoidAmbiguous' as const, label: t('generator.avoidAmbiguous') },
+])
 const passwordEntropy = computed(() => entropy(password.value, options))
 function regenerate() { password.value = generatePassword(options) }
 async function copyPassword() { await navigator.clipboard.writeText(password.value); copied.value = true; setTimeout(() => { copied.value = false }, 1600) }

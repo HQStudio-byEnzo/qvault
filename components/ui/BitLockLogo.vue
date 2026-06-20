@@ -69,20 +69,6 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
-  size?: number
-  showWordmark?: boolean
-  label?: string
-  tagline?: string
-  variant?: 'default' | 'mono'
-}>(), {
-  size: 40,
-  showWordmark: false,
-  label: 'BitLock logo',
-  tagline: 'Security vault',
-  variant: 'default',
-})
-
 const props = withDefaults(defineProps<{
   size?: number
   showWordmark?: boolean
@@ -97,8 +83,9 @@ const props = withDefaults(defineProps<{
   variant: 'default',
 })
 
-const gradientId = `bitlock-gradient-${Math.random().toString(36).slice(2, 8)}`
-const fillId = `bitlock-fill-${Math.random().toString(36).slice(2, 8)}`
+const uid = typeof useId === 'function' ? useId() : Math.random().toString(36).slice(2, 8)
+const gradientId = `bitlock-gradient-${uid}`
+const fillId = `bitlock-fill-${uid}`
 const fillStart = computed(() => props.variant === 'mono' ? '#FFFFFF' : 'rgba(255,255,255,0.95)')
 const fillEnd = computed(() => props.variant === 'mono' ? '#E5E7EB' : 'rgba(255,255,255,0.82)')
 const dotFill = computed(() => props.variant === 'mono' ? '#111827' : '#0F172A')

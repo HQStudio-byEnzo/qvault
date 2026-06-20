@@ -3,10 +3,7 @@
     <header class="sticky top-0 z-40 border-b border-white/10 bg-surface-950/75 backdrop-blur-2xl">
       <div class="section-shell max-w-7xl py-4 flex items-center justify-between gap-4">
         <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
-          <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-accent-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-950/30">
-            <Icon name="lucide:shield" class="w-5 h-5 text-white" />
-          </div>
-          <span class="hidden sm:inline">BitLock</span>
+          <BitLockLogo :size="40" show-wordmark tagline="Security vault" />
         </NuxtLink>
         <NuxtLink to="/auth/register" class="btn-primary">{{ t('generator.cta') }}</NuxtLink>
       </div>

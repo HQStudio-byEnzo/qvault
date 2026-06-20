@@ -1,30 +1,31 @@
 <template>
   <div class="section-shell max-w-7xl py-10 md:py-16 space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold text-white">{{ t('audit.title') }}</h1>
-      <p class="text-surface-400 text-sm mt-1">{{ t('audit.subtitle') }}</p>
-    </div>
+    <section class="hero-panel space-y-3">
+      <p class="eyebrow">{{ t('sidebar.audit') }}</p>
+      <h1 class="text-3xl md:text-4xl font-semibold tracking-tight text-white">{{ t('audit.title') }}</h1>
+      <p class="text-surface-300 text-base md:text-lg max-w-3xl leading-relaxed">{{ t('audit.subtitle') }}</p>
+    </section>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="card">
+      <div class="glass-panel p-5">
         <p class="text-xs text-surface-500 mb-2">{{ t('audit.score') }}</p>
         <p class="text-3xl font-bold" :class="scoreColor">{{ securityScore }}%</p>
       </div>
-      <div class="card">
+      <div class="glass-panel p-5">
         <p class="text-xs text-surface-500 mb-2">{{ t('audit.highAlerts') }}</p>
         <p class="text-3xl font-bold text-red-400">{{ highIssues.length }}</p>
       </div>
-      <div class="card">
+      <div class="glass-panel p-5">
         <p class="text-xs text-surface-500 mb-2">{{ t('audit.toFix') }}</p>
         <p class="text-3xl font-bold text-yellow-400">{{ mediumIssues.length }}</p>
       </div>
-      <div class="card">
+      <div class="glass-panel p-5">
         <p class="text-xs text-surface-500 mb-2">{{ t('audit.elements') }}</p>
         <p class="text-3xl font-bold text-white">{{ items.length }}</p>
       </div>
     </div>
 
-    <div class="bg-surface-900 border border-accent-500/20 rounded-xl p-4 flex items-start gap-3">
+    <div class="glass-panel p-4 flex items-start gap-3 border-accent-500/20 bg-accent-500/5">
       <Icon name="lucide:shield-check" class="w-5 h-5 text-accent-400 mt-0.5 flex-shrink-0" />
       <p class="text-sm text-surface-400">
         {{ t('audit.notice') }}
@@ -45,13 +46,13 @@
       <div
         v-for="issue in issues"
         :key="issue.key"
-        class="bg-surface-900 border rounded-xl p-4"
+        class="glass-panel p-4"
         :class="issue.severity === 'high' ? 'border-red-500/30' : issue.severity === 'medium' ? 'border-yellow-500/30' : 'border-surface-700'"
       >
         <div class="flex items-start justify-between gap-4">
           <div class="flex items-start gap-3">
             <div
-              class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+              class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
               :class="issue.severity === 'high' ? 'bg-red-500/10' : issue.severity === 'medium' ? 'bg-yellow-500/10' : 'bg-surface-800'"
             >
               <Icon :name="issue.icon" class="w-5 h-5" :class="issue.severity === 'high' ? 'text-red-400' : issue.severity === 'medium' ? 'text-yellow-400' : 'text-surface-400'" />

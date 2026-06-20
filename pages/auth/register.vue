@@ -3,9 +3,7 @@
     <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center">
         <NuxtLink to="/" class="inline-flex items-center gap-3 mb-6">
-          <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-accent-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-950/30">
-            <Icon name="lucide:shield" class="w-6 h-6 text-white" />
-          </div>
+          <BitLockLogo :size="48" />
         </NuxtLink>
         <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('auth.register.title') }}</h1>
         <p class="text-sm text-surface-400 mt-3">{{ t('auth.register.subtitle') }}</p>

@@ -3,10 +3,7 @@
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 lg:px-12 backdrop-blur-xl bg-surface-950/80 border-b border-surface-800/50">
       <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 bg-accent-600 rounded-lg flex items-center justify-center">
-          <Icon name="lucide:shield" class="w-5 h-5 text-white" />
-        </div>
-        <span class="text-lg font-bold text-white tracking-tight">BitLock</span><span class="hidden sm:inline text-xs text-surface-500">Security vault</span>
+        <BitLockLogo :size="40" show-wordmark tagline="Security vault" />
       </div>
 
       <!-- Desktop navigation -->
@@ -428,9 +425,7 @@
         <!-- Bottom -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-800/50">
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 bg-accent-600 rounded-md flex items-center justify-center">
-              <Icon name="lucide:shield" class="w-3.5 h-3.5 text-white" />
-            </div>
+            <BitLockLogo :size="28" />
             <span class="text-sm font-medium text-surface-400">BitLock</span>
           </div>
           <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">RLT Labs</span></p>

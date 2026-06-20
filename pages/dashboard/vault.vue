@@ -1,19 +1,21 @@
 <template>
   <div class="section-shell max-w-7xl py-10 md:py-16 space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-white">{{ t('vault.title') }}</h1>
-        <p class="text-surface-400 text-sm mt-1">{{ t('vault.subtitle') }}</p>
+    <section class="hero-panel space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div class="max-w-2xl">
+          <p class="eyebrow">{{ t('sidebar.vault') }}</p>
+          <h1 class="mt-3 text-3xl md:text-4xl font-semibold tracking-tight text-white">{{ t('vault.title') }}</h1>
+          <p class="text-surface-300 text-base md:text-lg mt-3 leading-relaxed">{{ t('vault.subtitle') }}</p>
+        </div>
+        <button @click="showAddModal = true" class="btn-primary inline-flex items-center gap-2 self-start">
+          <Icon name="lucide:plus" class="w-4 h-4" />
+          {{ t('vault.add') }}
+        </button>
       </div>
-      <button @click="showAddModal = true" class="btn-primary flex items-center gap-2">
-        <Icon name="lucide:plus" class="w-4 h-4" />
-        {{ t('vault.add') }}
-      </button>
-    </div>
+    </section>
 
     <!-- Filters -->
-    <div class="flex flex-col gap-3">
+    <div class="glass-panel p-4 md:p-5 space-y-3">
       <div class="relative flex-1">
         <Icon name="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
         <input
@@ -28,11 +30,11 @@
           v-for="filter in filters"
           :key="filter.value"
           @click="activeFilter = filter.value"
-          class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+          class="px-3 py-2 rounded-2xl text-sm font-medium transition-colors border"
           :class="[
             activeFilter === filter.value
-              ? 'bg-accent-600 text-white'
-              : 'bg-surface-800 text-surface-400 hover:text-surface-200'
+              ? 'bg-accent-600 text-white border-accent-500/30'
+              : 'bg-white/[0.03] text-surface-400 border-white/10 hover:text-surface-200 hover:border-white/20'
           ]"
         >
           {{ filter.label }}
@@ -43,7 +45,7 @@
           v-for="chip in searchChips"
           :key="chip.query"
           @click="searchQuery = chip.query"
-          class="px-2.5 py-1 rounded-md text-xs bg-surface-800 text-surface-400 hover:text-surface-200 hover:bg-surface-700 transition-colors"
+          class="px-2.5 py-1 rounded-full text-xs bg-white/[0.03] text-surface-400 border border-white/10 hover:text-surface-200 hover:border-white/20 transition-colors"
         >
           {{ chip.label }}
         </button>
@@ -61,7 +63,7 @@
       <p class="text-sm text-surface-500 mt-1">{{ items.length === 0 ? t('vault.emptyHint') : t('vault.noResultHint') }}</p>
     </div>
 
-    <div v-else class="space-y-2">
+    <div v-else class="space-y-3">
       <VaultItemCard
         v-for="item in visibleItems"
         :key="item.id"

@@ -1,12 +1,13 @@
 <template>
   <div class="section-shell max-w-4xl py-10 md:py-16 space-y-8">
-    <div>
-      <h1 class="text-2xl font-bold text-white">{{ t('settings.title') }}</h1>
-      <p class="text-surface-400 text-sm mt-1">{{ t('settings.subtitle') }}</p>
-    </div>
+    <section class="hero-panel space-y-3">
+      <p class="eyebrow">{{ t('sidebar.settings') }}</p>
+      <h1 class="text-3xl md:text-4xl font-semibold tracking-tight text-white">{{ t('settings.title') }}</h1>
+      <p class="text-surface-300 text-base md:text-lg max-w-2xl leading-relaxed">{{ t('settings.subtitle') }}</p>
+    </section>
 
     <!-- Account section -->
-    <section class="card space-y-4">
+    <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:user" class="w-5 h-5 text-surface-400" />
         {{ t('settings.account') }}
@@ -29,7 +30,7 @@
     </section>
 
     <!-- Change password section -->
-    <section class="card space-y-4">
+    <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:key-round" class="w-5 h-5 text-surface-400" />
         {{ t('settings.changePwd') }}
@@ -71,10 +72,10 @@
           />
         </div>
 
-        <div v-if="pwdError" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+        <div v-if="pwdError" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
           {{ pwdError }}
         </div>
-        <div v-if="pwdSuccess" class="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400">
+        <div v-if="pwdSuccess" class="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-sm text-green-400">
           {{ pwdSuccess }}
         </div>
 
@@ -88,7 +89,7 @@
 
 
     <!-- Language section -->
-    <section class="card space-y-4">
+    <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:globe" class="w-5 h-5 text-surface-400" />
         {{ t('settings.language') }}
@@ -112,7 +113,7 @@
     </section>
 
     <!-- Support -->
-    <section class="card space-y-4">
+    <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:message-circle" class="w-5 h-5 text-surface-400" />
         {{ t('settings.support') }}
@@ -130,7 +131,7 @@
         <Icon name="lucide:shield" class="w-5 h-5 text-surface-400" />
         {{ t('settings.security') }}
       </h2>
-      <div class="p-4 rounded-lg bg-surface-800 border border-surface-700">
+      <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
         <p class="text-sm text-surface-400 leading-relaxed">
           {{ t('settings.securityDesc') }}
         </p>
@@ -138,7 +139,7 @@
     </section>
 
     <!-- Master password -->
-    <section class="card space-y-4">
+    <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:key-round" class="w-5 h-5 text-surface-400" />
         {{ t('settings.masterPwdTitle') }}
@@ -189,10 +190,10 @@
           />
         </div>
 
-        <div v-if="masterPwdError" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+        <div v-if="masterPwdError" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
           {{ masterPwdError }}
         </div>
-        <div v-if="masterPwdSuccess" class="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400">
+        <div v-if="masterPwdSuccess" class="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-sm text-green-400">
           {{ masterPwdSuccess }}
         </div>
 
@@ -209,7 +210,7 @@
     </section>
 
     <!-- Security preferences -->
-    <section class="card space-y-5">
+    <section class="glass-panel p-5 md:p-6 space-y-5">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
         <Icon name="lucide:sliders-horizontal" class="w-5 h-5 text-surface-400" />
         {{ t('settings.securityPrefs') }}

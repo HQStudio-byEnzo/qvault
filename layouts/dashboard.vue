@@ -9,13 +9,7 @@
     <aside class="hidden lg:flex w-72 flex-col border-r border-white/10 bg-surface-950/80 backdrop-blur-xl relative z-10">
       <div class="h-20 flex items-center px-6 border-b border-white/10">
         <NuxtLink to="/dashboard" class="flex items-center gap-3 group">
-          <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-accent-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-950/30">
-            <Icon name="lucide:shield" class="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <p class="text-base font-semibold text-white tracking-tight">BitLock</p>
-            <p class="text-xs text-surface-500">Private workspace</p>
-          </div>
+          <BitLockLogo :size="42" show-wordmark tagline="Private workspace" />
         </NuxtLink>
       </div>
 
@@ -84,13 +78,7 @@
           <button @click="mobileMenuOpen = true" class="p-2 rounded-xl hover:bg-white/5 text-surface-300 border border-transparent hover:border-white/10 transition-colors">
             <Icon name="lucide:menu" class="w-5 h-5" />
           </button>
-          <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-accent-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-950/30">
-            <Icon name="lucide:shield" class="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <span class="block font-semibold text-white leading-none">BitLock</span>
-            <span class="block text-[11px] text-surface-500">Private workspace</span>
-          </div>
+          <BitLockLogo :size="34" show-wordmark tagline="Private workspace" />
         </div>
         <button @click="signOut" class="p-2 rounded-xl hover:bg-white/5 text-surface-300 border border-transparent hover:border-white/10 transition-colors">
           <Icon name="lucide:log-out" class="w-5 h-5" />

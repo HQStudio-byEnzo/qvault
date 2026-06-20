@@ -55,37 +55,7 @@
             </div>
           </div>
 
-        </div>
-
-        <div class="flex flex-col gap-4 min-h-full">
           <div class="glass-panel p-5">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.healthTitle') }}</p>
-                <p class="mt-1 text-sm text-surface-300">{{ t('dash.healthDesc') }}</p>
-              </div>
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-accent-500/20 border border-white/10 flex items-center justify-center">
-                <Icon name="lucide:shield-check" class="w-5 h-5 text-emerald-300" />
-              </div>
-            </div>
-
-            <div class="mt-5 space-y-3">
-              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
-                <span class="text-sm text-surface-300">{{ t('dash.healthEncrypted') }}</span>
-                <span class="text-sm font-semibold text-white">{{ encryptedItems }}</span>
-              </div>
-              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
-                <span class="text-sm text-surface-300">{{ t('dash.healthUnencrypted') }}</span>
-                <span class="text-sm font-semibold text-white">{{ unencryptedItems }}</span>
-              </div>
-              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
-                <span class="text-sm text-surface-300">{{ t('dash.healthRecovery') }}</span>
-                <span class="text-sm font-semibold text-white">{{ stats?.counts.recovery || 0 }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="glass-panel p-5 flex-1 min-h-[320px]">
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.quick') }}</p>
@@ -96,7 +66,7 @@
               </NuxtLink>
             </div>
 
-            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
               <NuxtLink to="/dashboard/links" class="feature-tile flex items-center gap-3 min-h-[96px]">
                 <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
                   <Icon name="lucide:link" class="w-5 h-5 text-blue-300" />
@@ -153,6 +123,37 @@
               </NuxtLink>
             </div>
           </div>
+
+        </div>
+
+        <div class="flex flex-col gap-4 min-h-full">
+          <div class="glass-panel p-5">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.healthTitle') }}</p>
+                <p class="mt-1 text-sm text-surface-300">{{ t('dash.healthDesc') }}</p>
+              </div>
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-accent-500/20 border border-white/10 flex items-center justify-center">
+                <Icon name="lucide:shield-check" class="w-5 h-5 text-emerald-300" />
+              </div>
+            </div>
+
+            <div class="mt-5 space-y-3">
+              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
+                <span class="text-sm text-surface-300">{{ t('dash.healthEncrypted') }}</span>
+                <span class="text-sm font-semibold text-white">{{ encryptedItems }}</span>
+              </div>
+              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
+                <span class="text-sm text-surface-300">{{ t('dash.healthUnencrypted') }}</span>
+                <span class="text-sm font-semibold text-white">{{ unencryptedItems }}</span>
+              </div>
+              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
+                <span class="text-sm text-surface-300">{{ t('dash.healthRecovery') }}</span>
+                <span class="text-sm font-semibold text-white">{{ stats?.counts.recovery || 0 }}</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

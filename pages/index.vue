@@ -428,7 +428,7 @@
             <BitLockLogo :size="28" />
             <span class="text-sm font-medium text-surface-400">BitLock</span>
           </div>
-          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">RLT Labs</span></p>
+          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">Tensor Team</span></p>
         </div>
       </div>
     </footer>

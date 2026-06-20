@@ -1,14 +1,17 @@
 <template>
   <div class="inline-flex items-center gap-3">
     <div
-      class="rounded-2xl overflow-hidden shrink-0 shadow-lg shadow-emerald-950/30 border border-white/10 bg-surface-900"
+      class="rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-emerald-950/30 border border-white/10"
+      :class="variant === 'mono'
+        ? 'bg-white/10'
+        : 'bg-gradient-to-br from-emerald-500 to-accent-600'"
       :style="{ width: `${size}px`, height: `${size}px` }"
       aria-hidden="true"
     >
-      <img
-        :src="variant === 'mono' ? '/bitlock-mark-mono.svg' : '/bitlock-mark.svg'"
-        alt=""
-        class="block w-full h-full object-cover"
+      <Icon
+        name="lucide:shield"
+        :class="variant === 'mono' ? 'text-white' : 'text-white'"
+        :style="{ width: `${Math.max(14, Math.round(size * 0.55))}px`, height: `${Math.max(14, Math.round(size * 0.55))}px` }"
       />
     </div>
 

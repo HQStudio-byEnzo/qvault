@@ -12,7 +12,7 @@
       <div class="prose prose-invert max-w-none space-y-8 text-surface-300">
         <section>
           <h2 class="text-2xl font-semibold text-white mb-4">1. Website publisher</h2>
-          <p>BitLock is published by Enzo Izinga, acting as an individual on behalf of the RootLayer collective.</p>
+          <p>BitLock is published by Enzo Izinga, acting as an individual on behalf of Tensor Team.</p>
           <ul class="list-disc list-inside space-y-2 ml-4">
             <li><strong>Contact:</strong> <a href="mailto:enzoizinga23@gmail.com" class="text-accent-400 hover:text-accent-300">enzoizinga23@gmail.com</a></li>
           </ul>

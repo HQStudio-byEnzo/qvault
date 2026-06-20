@@ -427,7 +427,7 @@
         <!-- Bottom -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-800/50">
           <div class="flex items-center gap-2">
-            <BitLockLogo :size="28" />
+            <span class="text-lg font-bold tracking-tight text-white">BitLock</span>
           </div>
           <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">Tensor Team</span></p>
         </div>

@@ -88,7 +88,7 @@
         </div>
       </div>
 
-      <div class="glass-panel p-5 md:p-6">
+      <div class="glass-panel p-5 md:p-6 mt-6 md:mt-8">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.quick') }}</p>

@@ -2,8 +2,8 @@
   <div class="min-h-screen flex items-center justify-center px-4 py-10">
     <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center">
-        <NuxtLink to="/" class="inline-flex items-center gap-3 justify-center mb-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 shadow-[0_18px_50px_-26px_rgba(0,0,0,0.75)]">
-          <BitLockLogo :size="52" show-wordmark tagline="Security vault" />
+        <NuxtLink to="/" class="inline-flex items-center justify-center mb-6">
+          <BitLockLogo :size="64" show-wordmark tagline="Security vault" />
         </NuxtLink>
         <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('auth.register.title') }}</h1>
         <p class="text-sm text-surface-400 mt-3">{{ t('auth.register.subtitle') }}</p>

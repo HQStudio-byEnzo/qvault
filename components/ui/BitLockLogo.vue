@@ -22,7 +22,7 @@
         </defs>
         <path
           d="M12 2.45L19.55 5.35V11.25C19.55 16.28 16.17 20.72 12 21.55C7.83 20.72 4.45 16.28 4.45 11.25V5.35L12 2.45Z"
-          fill="url(#bitlock-shield-gradient)"
+          :fill="`url(#${gradientId})`"
           fill-opacity="0.22"
         />
         <path

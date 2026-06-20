@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col bg-surface-950 overflow-hidden scroll-smooth">
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center justify-between gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/90 border-b border-surface-800/60">
-      <NuxtLink to="/" class="group inline-flex items-center gap-3 shrink-0 min-w-0 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 shadow-[0_18px_50px_-26px_rgba(0,0,0,0.75)]">
+      <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0">
         <BitLockLogo :size="46" show-wordmark tagline="Security vault" />
       </NuxtLink>
 
@@ -96,9 +96,7 @@
       <div class="section-shell max-w-7xl relative">
         <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-8 items-center">
           <div class="space-y-8 animate-fade-in">
-            <div class="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 shadow-[0_18px_50px_-26px_rgba(0,0,0,0.75)]">
-              <BitLockLogo :size="52" show-wordmark tagline="Security vault" />
-            </div>
+            <BitLockLogo :size="52" show-wordmark tagline="Security vault" />
 
             <div class="flex flex-wrap items-center gap-3">
               <span class="eyebrow">{{ t('hero.badge') }}</span>

@@ -9,7 +9,7 @@
     <aside class="hidden lg:flex w-72 flex-col border-r border-white/10 bg-surface-950/80 backdrop-blur-xl relative z-10">
       <div class="h-20 flex items-center px-6 border-b border-white/10">
         <NuxtLink to="/dashboard" class="flex items-center gap-3 group">
-          <BitLockLogo :size="44" show-wordmark tagline="Private workspace" />
+          <BitLockLogo :size="44" />
         </NuxtLink>
       </div>
 
@@ -78,7 +78,7 @@
           <button @click="mobileMenuOpen = true" class="p-2 rounded-xl hover:bg-white/5 text-surface-300 border border-transparent hover:border-white/10 transition-colors">
             <Icon name="lucide:menu" class="w-5 h-5" />
           </button>
-          <BitLockLogo :size="36" show-wordmark tagline="Private workspace" />
+          <BitLockLogo :size="36" />
         </div>
         <button @click="signOut" class="p-2 rounded-xl hover:bg-white/5 text-surface-300 border border-transparent hover:border-white/10 transition-colors">
           <Icon name="lucide:log-out" class="w-5 h-5" />

@@ -3,9 +3,9 @@
     <Transition name="fade">
       <div v-if="visible" class="fixed inset-0 z-[80] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-lg bg-surface-900 border border-surface-700 rounded-xl p-6 shadow-2xl">
+        <div class="relative w-full max-w-lg glass-panel p-5 md:p-6 shadow-2xl">
           <div class="flex items-start gap-4">
-            <div class="w-11 h-11 rounded-lg bg-accent-600/20 flex items-center justify-center flex-shrink-0">
+            <div class="w-11 h-11 rounded-2xl bg-accent-600/20 flex items-center justify-center flex-shrink-0 border border-white/10">
               <Icon name="lucide:key-round" class="w-5 h-5 text-accent-400" />
             </div>
             <div class="space-y-3">

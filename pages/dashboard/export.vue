@@ -1,15 +1,13 @@
 <template>
-  <div class="p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
-    <!-- Header -->
+  <div class="section-shell max-w-4xl py-10 md:py-16 space-y-6">
     <div>
       <h1 class="text-2xl font-bold text-white">{{ t('export.title') }}</h1>
       <p class="text-surface-400 text-sm mt-1">{{ t('export.subtitle') }}</p>
     </div>
 
-    <!-- Export Section -->
-    <div class="bg-surface-900 border border-surface-700 rounded-xl p-6 space-y-4">
+    <div class="glass-panel p-5 md:p-6 space-y-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-accent-600/20 flex items-center justify-center">
+        <div class="w-10 h-10 rounded-2xl bg-accent-600/20 flex items-center justify-center border border-white/10">
           <Icon name="lucide:download" class="w-5 h-5 text-accent-400" />
         </div>
         <div>
@@ -20,21 +18,16 @@
       <p class="text-sm text-surface-500">
         {{ t('export.exportNotice') }}
       </p>
-      <button
-        @click="handleExport"
-        :disabled="exporting"
-        class="btn-primary flex items-center gap-2"
-      >
+      <button @click="handleExport" :disabled="exporting" class="btn-primary flex items-center gap-2">
         <Icon name="lucide:download" class="w-4 h-4" />
         <span v-if="exporting">{{ t('export.exporting') }}</span>
         <span v-else>{{ t('export.exportBtn') }}</span>
       </button>
     </div>
 
-    <!-- Import Section -->
-    <div class="bg-surface-900 border border-surface-700 rounded-xl p-6 space-y-4">
+    <div class="glass-panel p-5 md:p-6 space-y-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-green-600/20 flex items-center justify-center">
+        <div class="w-10 h-10 rounded-2xl bg-green-600/20 flex items-center justify-center border border-white/10">
           <Icon name="lucide:upload" class="w-5 h-5 text-green-400" />
         </div>
         <div>
@@ -45,7 +38,7 @@
       <p class="text-sm text-surface-500">
         {{ t('export.importNotice') }}
       </p>
-      <div class="flex items-center gap-3">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
         <label class="btn-primary flex items-center gap-2 cursor-pointer">
           <Icon name="lucide:upload" class="w-4 h-4" />
           <span v-if="importing">{{ t('export.importing') }}</span>
@@ -61,13 +54,13 @@
       </div>
 
       <!-- Import result -->
-      <div v-if="importResult" class="p-3 rounded-lg text-sm" :class="importResult.success ? 'bg-green-500/10 border border-green-500/20 text-green-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'">
+      <div v-if="importResult" class="p-3 rounded-xl text-sm" :class="importResult.success ? 'bg-green-500/10 border border-green-500/20 text-green-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'">
         {{ importResult.message }}
       </div>
     </div>
 
     <!-- Error -->
-    <div v-if="error" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+    <div v-if="error" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
       {{ error }}
     </div>
   </div>

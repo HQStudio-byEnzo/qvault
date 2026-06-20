@@ -1,18 +1,17 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4">
-    <div class="w-full max-w-sm space-y-8 animate-fade-in">
-      <!-- Header -->
+  <div class="min-h-screen flex items-center justify-center px-4 py-10">
+    <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center">
-        <NuxtLink to="/" class="inline-flex items-center gap-2 mb-6">
-          <div class="w-10 h-10 bg-accent-600 rounded-xl flex items-center justify-center">
+        <NuxtLink to="/" class="inline-flex items-center gap-3 mb-6">
+          <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-accent-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-950/30">
             <Icon name="lucide:shield" class="w-6 h-6 text-white" />
           </div>
         </NuxtLink>
-        <h1 class="text-2xl font-bold text-white">{{ t('auth.login.title') }}</h1>
-        <p class="text-sm text-surface-400 mt-2">{{ t('auth.login.subtitle') }}</p>
+        <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('auth.login.title') }}</h1>
+        <p class="text-sm text-surface-400 mt-3">{{ t('auth.login.subtitle') }}</p>
       </div>
 
-      <!-- Form -->
+      <div class="glass-panel p-6 md:p-8">
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div>
           <label for="email" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.login.email') }}</label>
@@ -49,13 +48,13 @@
           </button>
         </div>
 
-        <div v-if="hintResult || hintMessage" class="p-3 rounded-lg bg-accent-500/10 border border-accent-500/20 text-sm text-accent-300">
+        <div v-if="hintResult || hintMessage" class="p-3 rounded-xl bg-accent-500/10 border border-accent-500/20 text-sm text-accent-300">
           <span v-if="hintResult">{{ hintResult }}</span>
           <span v-else>{{ hintMessage }}</span>
         </div>
 
         <!-- Error message -->
-        <div v-if="errorMsg" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+        <div v-if="errorMsg" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
           {{ errorMsg }}
         </div>
 
@@ -68,6 +67,7 @@
           <span v-else>{{ t('auth.login.btn') }}</span>
         </button>
       </form>
+      </div>
 
       <!-- Footer -->
       <div class="space-y-4">

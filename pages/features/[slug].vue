@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-surface-950 text-white">
-    <main v-if="feature" class="max-w-6xl mx-auto px-6 py-16 grid lg:grid-cols-[1.2fr_0.8fr] gap-10">
+    <main v-if="feature" class="section-shell max-w-7xl py-10 md:py-16 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-10">
       <section class="space-y-6">
         <NuxtLink to="/features" class="inline-flex items-center gap-2 text-sm text-accent-300 hover:text-accent-200">
           <Icon name="lucide:arrow-left" class="w-4 h-4" />
@@ -31,15 +31,15 @@
         <div class="card space-y-4">
           <h2 class="text-lg font-semibold">{{ t('featuresIndex.relatedActions') }}</h2>
           <div class="flex flex-col gap-3">
-            <NuxtLink v-if="feature.slug === 'recovery'" to="/dashboard/recovery-codes" class="btn-primary text-center">{{ t('featuresIndex.openRecoveryCodes') }}</NuxtLink>
-            <NuxtLink v-else to="/auth/register" class="btn-primary text-center">{{ t('featuresIndex.createVault') }}</NuxtLink>
-            <NuxtLink v-if="feature.slug === 'passwords'" to="/generateur-mot-de-passe" class="btn-secondary text-center">{{ t('featuresIndex.useGenerator') }}</NuxtLink>
+            <NuxtLink v-if="feature.slug === 'recovery'" to="/dashboard/recovery-codes" class="btn-primary text-center w-full">{{ t('featuresIndex.openRecoveryCodes') }}</NuxtLink>
+            <NuxtLink v-else to="/auth/register" class="btn-primary text-center w-full">{{ t('featuresIndex.createVault') }}</NuxtLink>
+            <NuxtLink v-if="feature.slug === 'passwords'" to="/generateur-mot-de-passe" class="btn-secondary text-center w-full">{{ t('featuresIndex.useGenerator') }}</NuxtLink>
           </div>
         </div>
       </aside>
     </main>
 
-    <main v-else class="max-w-4xl mx-auto px-6 py-16">
+    <main v-else class="section-shell max-w-4xl py-10 md:py-16">
       <NuxtLink to="/features" class="inline-flex items-center gap-2 text-sm text-accent-300 hover:text-accent-200">
         <Icon name="lucide:arrow-left" class="w-4 h-4" />
         {{ t('featuresIndex.back') }}

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
+  <div class="section-shell max-w-7xl py-10 md:py-16 space-y-6">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-white">{{ t('links.title') }}</h1>

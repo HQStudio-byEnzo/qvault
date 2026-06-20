@@ -3,17 +3,17 @@
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="$emit('close')"></div>
 
-      <div class="relative w-full max-w-md bg-surface-900 border border-surface-700 rounded-2xl p-6 animate-scale-in">
+      <div class="relative w-full max-w-md glass-panel p-5 md:p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-semibold text-white">{{ t('vault.addTitle') }}</h2>
-          <button @click="$emit('close')" class="p-2 rounded-lg hover:bg-surface-800 text-surface-400">
+          <button @click="$emit('close')" class="p-2 rounded-xl hover:bg-white/5 text-surface-300">
             <Icon name="lucide:x" class="w-5 h-5" />
           </button>
         </div>
 
         <div
           v-if="needsEncryption && !isUnlocked"
-          class="mb-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-200 space-y-3"
+          class="mb-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-sm text-amber-200 space-y-3"
         >
           <p>{{ t('vault.masterPwdNotice') }}</p>
           <div>
@@ -40,7 +40,7 @@
                 :key="tp.value"
                 type="button"
                 @click="form.type = tp.value"
-                class="p-3 rounded-lg border text-center transition-all text-sm"
+                class="p-3 rounded-2xl border text-center transition-all text-sm"
                 :class="[
                   form.type === tp.value
                     ? 'border-accent-500 bg-accent-500/10 text-accent-300'
@@ -115,7 +115,7 @@
             </p>
           </div>
 
-          <div v-if="error" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+          <div v-if="error" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
             {{ error }}
           </div>
 

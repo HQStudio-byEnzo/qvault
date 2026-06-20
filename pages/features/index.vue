@@ -1,13 +1,13 @@
 <template>
   <div class="min-h-screen bg-surface-950 text-white">
-    <main class="max-w-6xl mx-auto px-6 py-16 space-y-10">
+    <main class="section-shell max-w-7xl py-10 md:py-16 space-y-10">
       <header class="max-w-3xl space-y-4">
-        <p class="text-sm uppercase tracking-[0.24em] text-accent-300">{{ t('nav.features') }}</p>
+        <p class="eyebrow">{{ t('nav.features') }}</p>
         <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">{{ t('featuresIndex.title') }}</h1>
-        <p class="text-surface-400 text-lg leading-relaxed">{{ t('featuresIndex.subtitle') }}</p>
+        <p class="text-surface-300 text-lg leading-relaxed">{{ t('featuresIndex.subtitle') }}</p>
       </header>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
         <NuxtLink
           v-for="feature in features"
           :key="feature.slug"
@@ -15,7 +15,7 @@
           class="card-hover block"
         >
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center" :class="feature.badgeClass">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" :class="feature.badgeClass">
               <Icon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
             </div>
             <div class="space-y-2">

@@ -5,14 +5,14 @@
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="$emit('close')"></div>
 
       <!-- Modal -->
-      <div class="relative w-full max-w-md bg-surface-900 border border-surface-700 rounded-2xl p-6 animate-scale-in">
+      <div class="relative w-full max-w-md glass-panel p-5 md:p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-semibold text-white flex items-center gap-2">
             <Icon name="lucide:unlock" class="w-5 h-5 text-accent-400" />
             {{ t('vault.decrypt') }}
           </h2>
-          <button @click="$emit('close')" class="p-2 rounded-lg hover:bg-surface-800 text-surface-400">
+          <button @click="$emit('close')" class="p-2 rounded-xl hover:bg-white/5 text-surface-300">
             <Icon name="lucide:x" class="w-5 h-5" />
           </button>
         </div>
@@ -39,7 +39,7 @@
               />
             </div>
 
-            <div v-if="errorMsg" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+            <div v-if="errorMsg" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
               {{ errorMsg }}
             </div>
 
@@ -52,7 +52,7 @@
 
         <!-- Decrypted result -->
         <div v-else class="space-y-4">
-          <div class="p-4 rounded-lg bg-surface-800 border border-surface-700">
+          <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
             <p class="text-xs text-surface-500 mb-2">{{ t('vault.decryptedContent') }}</p>
             <p class="text-sm text-surface-100 font-mono break-all whitespace-pre-wrap">{{ decryptedValue }}</p>
           </div>

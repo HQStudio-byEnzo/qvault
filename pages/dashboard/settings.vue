@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 lg:p-8 max-w-3xl mx-auto space-y-8">
+  <div class="section-shell max-w-4xl py-10 md:py-16 space-y-8">
     <div>
       <h1 class="text-2xl font-bold text-white">{{ t('settings.title') }}</h1>
       <p class="text-surface-400 text-sm mt-1">{{ t('settings.subtitle') }}</p>

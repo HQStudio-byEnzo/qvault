@@ -2,7 +2,7 @@
   <div class="min-h-screen flex items-center justify-center px-4 py-10">
     <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center">
-        <NuxtLink to="/" class="inline-flex items-center gap-3 mb-6">
+        <NuxtLink to="/" class="inline-flex items-center justify-center mb-6">
           <BitLockLogo :size="56" show-wordmark tagline="Security vault" />
         </NuxtLink>
         <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('auth.login.title') }}</h1>

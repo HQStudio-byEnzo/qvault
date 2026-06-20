@@ -3,7 +3,7 @@
     <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center">
         <NuxtLink to="/" class="inline-flex items-center justify-center mb-6">
-          <BitLockLogo :size="64" />
+          <span class="text-3xl md:text-4xl font-bold tracking-tight text-white">BitLock</span>
         </NuxtLink>
         <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('auth.login.title') }}</h1>
         <p class="text-sm text-surface-400 mt-3">{{ t('auth.login.subtitle') }}</p>

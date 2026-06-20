@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center justify-between gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/90 border-b border-surface-800/60">
       <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0">
-        <BitLockLogo :size="46" />
+        <span class="text-xl font-bold tracking-tight text-white">BitLock</span>
       </NuxtLink>
 
       <!-- Desktop navigation -->
@@ -96,7 +96,7 @@
       <div class="section-shell max-w-7xl relative">
         <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-8 items-center">
           <div class="space-y-8 animate-fade-in">
-            <BitLockLogo :size="52" />
+            <span class="text-2xl md:text-3xl font-bold tracking-tight text-white">BitLock</span>
 
             <div class="flex flex-wrap items-center gap-3">
               <span class="eyebrow">{{ t('hero.badge') }}</span>

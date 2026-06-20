@@ -96,6 +96,10 @@
       <div class="section-shell max-w-7xl relative">
         <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-8 items-center">
           <div class="space-y-8 animate-fade-in">
+            <div class="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 shadow-[0_18px_50px_-26px_rgba(0,0,0,0.75)]">
+              <BitLockLogo :size="52" show-wordmark tagline="Security vault" />
+            </div>
+
             <div class="flex flex-wrap items-center gap-3">
               <span class="eyebrow">{{ t('hero.badge') }}</span>
               <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs text-surface-300">
@@ -233,104 +237,244 @@
       </div>
     </section>
 
-    <!-- Features Preview -->
-    <section id="features" class="px-6 lg:px-12 py-24 border-t border-surface-800/50">
-      <div class="max-w-7xl mx-auto">
+    <!-- Features -->
+    <section id="features" class="px-6 lg:px-12 py-24 bg-surface-900/30 border-t border-surface-800/50 scroll-mt-28">
+      <div class="max-w-5xl mx-auto">
         <div class="text-center mb-16">
-          <span class="eyebrow mb-3 inline-flex">{{ t('nav.features') }}</span>
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('featuresIndex.title') }}</h2>
-          <p class="text-surface-400 max-w-2xl mx-auto">{{ t('featuresIndex.subtitle') }}</p>
+          <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">{{ t('features.title') }}</h2>
+          <p class="text-surface-400 max-w-lg mx-auto">{{ t('features.subtitle') }}</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <NuxtLink
             v-for="feature in features"
             :key="feature.slug"
             :to="`/features/${feature.slug}`"
-            class="group card-hover rounded-[28px] border border-white/10 bg-white/[0.03] p-6 flex flex-col gap-5"
+            class="card-hover group block hover:border-surface-700"
           >
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/10" :class="feature.badgeClass">
-              <Icon :name="feature.icon" class="w-6 h-6" :class="feature.iconClass" />
+            <div class="w-11 h-11 rounded-xl mb-4 flex items-center justify-center transition-transform group-hover:scale-110" :class="feature.badgeClass">
+              <Icon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
             </div>
-            <div class="space-y-3">
-              <h3 class="text-xl font-semibold text-white">{{ feature.title }}</h3>
-              <p class="text-sm text-surface-400 leading-relaxed">{{ feature.summary }}</p>
-            </div>
+            <h3 class="font-semibold text-white mb-2">{{ feature.title }}</h3>
+            <p class="text-sm text-surface-400 leading-relaxed">{{ feature.summary }}</p>
           </NuxtLink>
         </div>
       </div>
     </section>
+
+    <!-- Security section -->
+    <section id="security" class="px-6 lg:px-12 py-24 border-t border-surface-800/50 scroll-mt-28">
+      <div class="max-w-4xl mx-auto">
+        <div class="card p-8 md:p-12 border-accent-500/20 bg-gradient-to-br from-accent-900/10 to-surface-900">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-xs font-medium text-green-400 mb-4">
+                <Icon name="lucide:shield-check" class="w-3 h-3" />
+                {{ t('security.badge') }}
+              </div>
+              <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">{{ t('security.title') }}</h2>
+              <p class="text-surface-400 leading-relaxed">
+                {{ t('security.desc') }}
+              </p>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-800/50 border border-surface-700/50">
+                <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
+                <span class="text-sm text-surface-200">{{ t('security.aes') }}</span>
+              </div>
+              <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-800/50 border border-surface-700/50">
+                <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
+                <span class="text-sm text-surface-200">{{ t('security.pbkdf2') }}</span>
+              </div>
+              <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-800/50 border border-surface-700/50">
+                <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
+                <span class="text-sm text-surface-200">{{ t('security.client') }}</span>
+              </div>
+              <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-800/50 border border-surface-700/50">
+                <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
+                <span class="text-sm text-surface-200">{{ t('security.open') }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section id="reviews" class="px-6 lg:px-12 py-24 border-t border-surface-800/50 scroll-mt-28">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">{{ t('reviews.title') }}</h2>
+          <p class="text-surface-400 max-w-lg mx-auto">{{ t('reviews.subtitle') }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="card">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-400">★★★★★</span>
+            </div>
+            <p class="text-sm text-surface-300 leading-relaxed mb-4">"{{ t('reviews.review1.text') }}"</p>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-bold text-blue-400">K</div>
+              <div>
+                <p class="text-xs font-medium text-surface-200">Kevin M.</p>
+                <p class="text-xs text-surface-500">{{ t('reviews.review1.role') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-400">★★★★★</span>
+            </div>
+            <p class="text-sm text-surface-300 leading-relaxed mb-4">"{{ t('reviews.review2.text') }}"</p>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-bold text-orange-400">S</div>
+              <div>
+                <p class="text-xs font-medium text-surface-200">Sarah L.</p>
+                <p class="text-xs text-surface-500">{{ t('reviews.review2.role') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-400">★★★★★</span>
+            </div>
+            <p class="text-sm text-surface-300 leading-relaxed mb-4">"{{ t('reviews.review3.text') }}"</p>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-accent-500/20 flex items-center justify-center text-xs font-bold text-accent-400">D</div>
+              <div>
+                <p class="text-xs font-medium text-surface-200">David N.</p>
+                <p class="text-xs text-surface-500">{{ t('reviews.review3.role') }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="px-6 lg:px-12 py-24 bg-surface-900/30 border-t border-surface-800/50 scroll-mt-28">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('faq.title') }}</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div
+            v-for="i in 6"
+            :key="i"
+            class="card overflow-hidden"
+          >
+            <button
+              class="w-full flex items-center justify-between gap-4 p-5 text-left"
+              @click="toggleFaq(i)"
+            >
+              <span class="font-medium text-white text-sm md:text-base">{{ t(`faq.q${i}`) }}</span>
+              <Icon
+                name="lucide:chevron-down"
+                class="w-5 h-5 text-surface-400 flex-shrink-0 transition-transform duration-200"
+                :class="{ 'rotate-180': openFaq === i }"
+              />
+            </button>
+            <div
+              v-show="openFaq === i"
+              class="px-5 pb-5 -mt-1"
+            >
+              <p class="text-sm text-surface-400 leading-relaxed">{{ t(`faq.a${i}`) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="px-6 lg:px-12 py-24 border-t border-surface-800/50 scroll-mt-28">
+      <div class="max-w-3xl mx-auto text-center space-y-6">
+        <h2 class="text-3xl md:text-4xl font-bold text-white">{{ t('contact.title') }}</h2>
+        <p class="text-surface-400 text-lg">{{ t('contact.desc') }}</p>
+        <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="group btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">
+          <Icon name="lucide:message-circle" class="w-5 h-5" />
+          {{ t('contact.btn') }}
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="px-6 lg:px-12 py-12 border-t border-surface-800/50">
+      <div class="max-w-5xl mx-auto space-y-8">
+        <!-- Open Source links -->
+        <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+          <a href="https://github.com/wave3k/BitLock" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+            <Icon name="lucide:github" class="w-4 h-4" />
+            {{ t('footer.sourceCode') }}
+          </a>
+          <a href="https://github.com/wave3k/BitLock-extension" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+            <Icon name="lucide:chrome" class="w-4 h-4" />
+            {{ t('footer.chromeExtension') }}
+          </a>
+          <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+            <Icon name="lucide:message-circle" class="w-4 h-4" />
+            {{ t('footer.discord') }}
+          </a>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 text-sm text-surface-500">
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">{{ t('footer.terms') }}</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">{{ t('footer.privacy') }}</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">{{ t('footer.legalNotice') }}</NuxtLink>
+        </div>
+
+        <!-- Bottom -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-800/50">
+          <div class="flex items-center gap-2">
+            <BitLockLogo :size="28" />
+            <span class="text-sm font-medium text-surface-400">BitLock</span>
+          </div>
+          <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">Tensor Team</span></p>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'default' })
+definePageMeta({
+  layout: 'default',
+})
 
 const { t } = useLang()
-const { user, loggedIn, signOut } = useAuthClient()
+const { loggedIn, user } = useUserSession()
+const { features } = useFeatureCatalog()
 const showUserMenu = ref(false)
+const featuredFeatures = computed(() => features.value.slice(0, 3))
 
-const features = [
-  {
-    slug: 'links',
-    title: t('features.links.title'),
-    summary: t('features.links.summary'),
-    icon: 'lucide:link',
-    badgeClass: 'bg-blue-500/10',
-    iconClass: 'text-blue-300',
-  },
-  {
-    slug: 'passwords',
-    title: t('features.passwords.title'),
-    summary: t('features.passwords.summary'),
-    icon: 'lucide:key-round',
-    badgeClass: 'bg-amber-500/10',
-    iconClass: 'text-amber-300',
-  },
-  {
-    slug: 'crypto',
-    title: t('features.crypto.title'),
-    summary: t('features.crypto.summary'),
-    icon: 'lucide:bitcoin',
-    badgeClass: 'bg-orange-500/10',
-    iconClass: 'text-orange-300',
-  },
-  {
-    slug: 'recovery-codes',
-    title: t('features.recoveryCodes.title'),
-    summary: t('features.recoveryCodes.summary'),
-    icon: 'lucide:badge-alert',
-    badgeClass: 'bg-pink-500/10',
-    iconClass: 'text-pink-300',
-  },
-  {
-    slug: 'seed-phrases',
-    title: t('features.seedPhrases.title'),
-    summary: t('features.seedPhrases.summary'),
-    icon: 'lucide:wallet-cards',
-    badgeClass: 'bg-purple-500/10',
-    iconClass: 'text-purple-300',
-  },
-  {
-    slug: 'audit',
-    title: t('features.audit.title'),
-    summary: t('features.audit.summary'),
-    icon: 'lucide:shield-check',
-    badgeClass: 'bg-emerald-500/10',
-    iconClass: 'text-emerald-300',
-  },
-]
+const openFaq = ref<number | null>(null)
 
-const featuredFeatures = computed(() => features.slice(0, 3))
+function toggleFaq(index: number) {
+  openFaq.value = openFaq.value === index ? null : index
+}
 
 const navLinks = [
-  { id: 'features', label: 'nav.features' },
-  { id: 'how', label: 'how.title' },
+  { id: 'security', label: 'nav.security' },
+  { id: 'reviews', label: 'nav.reviews' },
+  { id: 'faq', label: 'nav.faq' },
+  { id: 'contact', label: 'nav.contact' },
 ]
 
 async function handleLogout() {
   showUserMenu.value = false
-  await signOut()
-  navigateTo('/')
+  await $fetch('/api/auth/logout', { method: 'POST' })
+  window.location.reload()
 }
+
+function closeMenu(e: Event) {
+  if (showUserMenu.value) showUserMenu.value = false
+}
+
+onMounted(() => {
+  window.scrollTo(0, 0)
+  document.addEventListener('click', closeMenu)
+})
 </script>

@@ -9,7 +9,9 @@
     <aside class="hidden lg:flex w-72 flex-col border-r border-white/10 bg-surface-950/80 backdrop-blur-xl relative z-10">
       <div class="h-20 flex items-center px-6 border-b border-white/10">
         <NuxtLink to="/dashboard" class="flex items-center gap-3 group">
-          <BitLockLogo :size="42" show-wordmark tagline="Private workspace" />
+          <div class="rounded-3xl border border-white/10 bg-white/[0.04] shadow-lg shadow-black/20 px-3 py-2.5">
+            <BitLockLogo :size="48" show-wordmark tagline="Private workspace" />
+          </div>
         </NuxtLink>
       </div>
 
@@ -97,7 +99,7 @@
               </div>
               <nav class="space-y-2">
                 <NuxtLink
-                  v-for="item in navItems"
+                  v-for="item in mainNavItems"
                   :key="item.to"
                   :to="item.to"
                   class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-surface-300 hover:text-white hover:bg-white/[0.05] transition-colors border border-transparent hover:border-white/10"
@@ -170,16 +172,18 @@ const route = useRoute()
 const mobileMenuOpen = ref(false)
 const { showWarning, remainingSeconds, resetTimers } = useAutoLock()
 
-const navItems = [
+const mainNavItems = [
   { to: '/dashboard', label: 'sidebar.dashboard', icon: 'lucide:layout-dashboard' },
   { to: '/dashboard/vault', label: 'sidebar.vault', icon: 'lucide:vault' },
+  { to: '/dashboard/password-generator', label: 'sidebar.passwordGenerator', icon: 'lucide:wand-sparkles' },
   { to: '/dashboard/links', label: 'sidebar.links', icon: 'lucide:link' },
   { to: '/dashboard/passwords', label: 'sidebar.passwords', icon: 'lucide:key-round' },
 ]
 
 const securityNavItems = [
   { to: '/dashboard/crypto', label: 'sidebar.crypto', icon: 'lucide:bitcoin' },
-  { to: '/dashboard/recovery-codes', label: 'sidebar.recovery', icon: 'lucide:ticket-check' },
+  { to: '/dashboard/seed-generator', label: 'sidebar.seedGenerator', icon: 'lucide:hash' },
+  { to: '/dashboard/recovery-codes', label: 'sidebar.recoveryCode', icon: 'lucide:ticket-check' },
   { to: '/dashboard/audit', label: 'sidebar.audit', icon: 'lucide:shield-alert' },
   { to: '/dashboard/export', label: 'sidebar.export', icon: 'lucide:download' },
   { to: '/dashboard/settings', label: 'sidebar.settings', icon: 'lucide:settings' },

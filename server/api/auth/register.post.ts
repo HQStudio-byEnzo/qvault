@@ -6,7 +6,7 @@ import { LEGAL_TERMS_VERSION } from '~/server/utils/legal'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { name, email, password, hint, acceptedTerms } = body
+  const { name, email, password, acceptedTerms } = body
 
   if (!name || !email || !password) {
     throw createError({ statusCode: 400, message: 'Nom, email et mot de passe requis.' })
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
   await db.batch([
     {
       sql: "INSERT INTO users (id, name, email, password, password_hint, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))",
-      args: [id, name, email.toLowerCase(), hashedPassword, hint || null],
+      args: [id, name, email.toLowerCase(), hashedPassword, null],
     },
     {
       sql: `INSERT INTO accepted_terms (user_id, terms_version, accepted_at, user_agent, ip_address)

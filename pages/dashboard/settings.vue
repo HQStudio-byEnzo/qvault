@@ -202,7 +202,7 @@
             <span v-if="masterPwdLoading">{{ t('settings.masterPwdSaving') }}...</span>
             <span v-else>{{ t('settings.masterPwdSave') }}</span>
           </button>
-          <button type="button" @click="lockMasterPassword" class="btn-secondary">
+          <button type="button" @click="handleLockVault" class="btn-secondary">
             {{ t('settings.lockVault') }}
           </button>
         </div>
@@ -412,6 +412,11 @@ function formatDate(date: string | undefined) {
 
 function handleSignOut() {
   signOut()
+}
+
+function handleLockVault() {
+  clearMasterPassword()
+  navigateTo('/auth/locked?reason=manual')
 }
 
 function loadSecuritySettings() {

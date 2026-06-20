@@ -3,7 +3,7 @@
     <section class="hero-panel space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div class="max-w-2xl">
-          <p class="eyebrow">{{ t('sidebar.recovery') }}</p>
+          <p class="eyebrow">{{ t('sidebar.recoveryCode') }}</p>
           <h1 class="mt-3 text-3xl md:text-4xl font-semibold tracking-tight text-white">{{ t('recovery.title') }}</h1>
           <p class="text-surface-300 text-base md:text-lg mt-3 leading-relaxed">{{ t('recovery.desc') }}</p>
         </div>

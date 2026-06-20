@@ -60,12 +60,6 @@
           />
         </div>
 
-        <div>
-          <label for="hint" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.hint') }}</label>
-          <input id="hint" v-model="form.hint" type="text" class="input-field" :placeholder="t('auth.register.hintPlaceholder')" />
-          <p class="text-xs text-surface-500 mt-1">{{ t('auth.register.hintDesc') }}</p>
-        </div>
-
         <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer">
           <input v-model="form.acceptedTerms" type="checkbox" class="mt-1" required />
           <span class="leading-relaxed">
@@ -125,7 +119,6 @@ const form = reactive({
   email: '',
   password: '',
   confirmPassword: '',
-  hint: '',
   acceptedTerms: false,
 })
 
@@ -154,7 +147,6 @@ async function handleRegister() {
       email: form.email,
       password: form.password,
       acceptedTerms: form.acceptedTerms,
-      hint: form.hint,
     })
     navigateTo('/dashboard')
   } catch (err: any) {

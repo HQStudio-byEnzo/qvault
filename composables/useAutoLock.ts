@@ -1,10 +1,10 @@
 /**
  * Composable pour le verrouillage automatique après inactivité
- * Déconnecte l'utilisateur après 5 minutes d'inactivité
- * Affiche un avertissement 30 secondes avant la déconnexion
+ * Vide le mot de passe maître puis redirige vers l'écran de déverrouillage
+ * Affiche un avertissement 30 secondes avant le verrouillage
  */
 export function useAutoLock() {
-  const { signOut } = useAuthClient()
+  const { clearMasterPassword } = useMasterPassword()
 
   const showWarning = ref(false)
   const remainingSeconds = ref(30)
@@ -58,7 +58,8 @@ export function useAutoLock() {
 
   function performLogout() {
     cleanup()
-    signOut()
+    clearMasterPassword()
+    navigateTo('/auth/locked?reason=timeout')
   }
 
   function cleanup() {

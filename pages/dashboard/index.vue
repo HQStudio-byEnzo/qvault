@@ -66,7 +66,7 @@
               </NuxtLink>
             </div>
 
-            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
               <NuxtLink to="/dashboard/links" class="feature-tile flex items-center gap-3 min-h-[96px]">
                 <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
                   <Icon name="lucide:link" class="w-5 h-5 text-blue-300" />
@@ -85,6 +85,15 @@
                   <p class="text-xs text-surface-500">{{ t('sidebar.passwords') }}</p>
                 </div>
               </NuxtLink>
+              <NuxtLink to="/dashboard/password-generator" class="feature-tile flex items-center gap-3 min-h-[96px]">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                  <Icon name="lucide:wand-sparkles" class="w-5 h-5 text-emerald-300" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-white">{{ t('sidebar.passwordGenerator') }}</p>
+                  <p class="text-xs text-surface-500">{{ t('dashboardGenerator.saveDesc') }}</p>
+                </div>
+              </NuxtLink>
               <NuxtLink to="/dashboard/crypto" class="feature-tile flex items-center gap-3 min-h-[96px]">
                 <div class="w-10 h-10 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
                   <Icon name="lucide:bitcoin" class="w-5 h-5 text-orange-300" />
@@ -101,6 +110,15 @@
                 <div class="min-w-0">
                   <p class="text-sm font-medium text-white">{{ t('sidebar.audit') }}</p>
                   <p class="text-xs text-surface-500">{{ t('audit.notice') }}</p>
+                </div>
+              </NuxtLink>
+              <NuxtLink to="/dashboard/seed-generator" class="feature-tile flex items-center gap-3 min-h-[96px]">
+                <div class="w-10 h-10 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+                  <Icon name="lucide:hash" class="w-5 h-5 text-violet-300" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-white">{{ t('sidebar.seedGenerator') }}</p>
+                  <p class="text-xs text-surface-500">{{ t('seedGenerator.saveDesc') }}</p>
                 </div>
               </NuxtLink>
             </div>

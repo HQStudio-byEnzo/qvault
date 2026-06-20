@@ -57,7 +57,7 @@
 
         </div>
 
-        <div class="space-y-4">
+        <div class="flex flex-col gap-4 min-h-full">
           <div class="glass-panel p-5">
             <div class="flex items-center justify-between gap-3">
               <div>
@@ -85,7 +85,7 @@
             </div>
           </div>
 
-          <div class="glass-panel p-5">
+          <div class="glass-panel p-5 flex-1 min-h-[320px]">
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.quick') }}</p>

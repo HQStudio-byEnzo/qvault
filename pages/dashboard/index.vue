@@ -55,6 +55,75 @@
             </div>
           </div>
 
+          <div class="glass-panel p-5 md:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.quick') }}</p>
+                <p class="mt-1 text-sm text-surface-300">{{ t('dash.overview') }}</p>
+              </div>
+              <NuxtLink to="/dashboard/vault" class="hidden sm:inline-flex btn-secondary text-sm px-3 py-2">
+                {{ t('dash.openVault') }}
+              </NuxtLink>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 auto-rows-fr">
+              <NuxtLink to="/dashboard/links" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
+                <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <Icon name="lucide:link" class="w-5 h-5 text-blue-300" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-white">{{ t('dash.addLink') }}</p>
+                  <p class="text-xs text-surface-500">{{ t('sidebar.links') }}</p>
+                </div>
+              </NuxtLink>
+              <NuxtLink to="/dashboard/passwords" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
+                <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                  <Icon name="lucide:key-round" class="w-5 h-5 text-amber-300" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-white">{{ t('dash.addPassword') }}</p>
+                  <p class="text-xs text-surface-500">{{ t('sidebar.passwords') }}</p>
+                </div>
+              </NuxtLink>
+              <NuxtLink to="/dashboard/password-generator" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                  <Icon name="lucide:wand-sparkles" class="w-5 h-5 text-emerald-300" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-white">{{ t('sidebar.passwordGenerator') }}</p>
+                  <p class="text-xs text-surface-500">{{ t('dashboardGenerator.saveDesc') }}</p>
+                </div>
+              </NuxtLink>
+              <NuxtLink to="/dashboard/crypto" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
+                <div class="w-10 h-10 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                  <Icon name="lucide:bitcoin" class="w-5 h-5 text-orange-300" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-white">{{ t('dash.addCrypto') }}</p>
+                  <p class="text-xs text-surface-500">{{ t('sidebar.crypto') }}</p>
+                </div>
+              </NuxtLink>
+              <NuxtLink to="/dashboard/audit" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
+                <div class="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+                  <Icon name="lucide:shield-alert" class="w-5 h-5 text-rose-300" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-white">{{ t('sidebar.audit') }}</p>
+                  <p class="text-xs text-surface-500">{{ t('audit.notice') }}</p>
+                </div>
+              </NuxtLink>
+              <NuxtLink to="/dashboard/seed-generator" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
+                <div class="w-10 h-10 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+                  <Icon name="lucide:hash" class="w-5 h-5 text-violet-300" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-white">{{ t('sidebar.seedGenerator') }}</p>
+                  <p class="text-xs text-surface-500">{{ t('seedGenerator.saveDesc') }}</p>
+                </div>
+              </NuxtLink>
+            </div>
+          </div>
+
         </div>
 
         <div class="flex flex-col gap-4 min-h-full">
@@ -85,75 +154,6 @@
             </div>
           </div>
 
-        </div>
-      </div>
-
-      <div class="glass-panel p-5 md:p-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.quick') }}</p>
-            <p class="mt-1 text-sm text-surface-300">{{ t('dash.overview') }}</p>
-          </div>
-          <NuxtLink to="/dashboard/vault" class="hidden sm:inline-flex btn-secondary text-sm px-3 py-2">
-            {{ t('dash.openVault') }}
-          </NuxtLink>
-        </div>
-
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 auto-rows-fr">
-          <NuxtLink to="/dashboard/links" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-              <Icon name="lucide:link" class="w-5 h-5 text-blue-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('dash.addLink') }}</p>
-              <p class="text-xs text-surface-500">{{ t('sidebar.links') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/passwords" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-              <Icon name="lucide:key-round" class="w-5 h-5 text-amber-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('dash.addPassword') }}</p>
-              <p class="text-xs text-surface-500">{{ t('sidebar.passwords') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/password-generator" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-              <Icon name="lucide:wand-sparkles" class="w-5 h-5 text-emerald-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('sidebar.passwordGenerator') }}</p>
-              <p class="text-xs text-surface-500">{{ t('dashboardGenerator.saveDesc') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/crypto" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-              <Icon name="lucide:bitcoin" class="w-5 h-5 text-orange-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('dash.addCrypto') }}</p>
-              <p class="text-xs text-surface-500">{{ t('sidebar.crypto') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/audit" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
-              <Icon name="lucide:shield-alert" class="w-5 h-5 text-rose-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('sidebar.audit') }}</p>
-              <p class="text-xs text-surface-500">{{ t('audit.notice') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/seed-generator" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-              <Icon name="lucide:hash" class="w-5 h-5 text-violet-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('sidebar.seedGenerator') }}</p>
-              <p class="text-xs text-surface-500">{{ t('seedGenerator.saveDesc') }}</p>
-            </div>
-          </NuxtLink>
         </div>
       </div>
     </section>

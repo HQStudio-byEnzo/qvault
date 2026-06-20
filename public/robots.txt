@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bitlock.app/sitemap.xml
+Sitemap: https://bitlock-two.vercel.app/sitemap.xml

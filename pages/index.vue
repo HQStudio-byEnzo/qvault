@@ -90,63 +90,113 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="relative flex-1 flex items-center justify-center px-6 pt-32 pb-20 lg:pt-36 lg:pb-32">
-      <!-- Background effects -->
+    <section class="relative pt-28 lg:pt-32 pb-20 lg:pb-24">
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-accent-600/8 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-accent-500/5 rounded-full blur-[100px]"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 h-[700px] w-[900px] rounded-full bg-accent-600/10 blur-[140px]"></div>
+        <div class="absolute bottom-0 left-1/4 h-[420px] w-[420px] rounded-full bg-emerald-500/10 blur-[120px]"></div>
       </div>
 
-      <div class="relative max-w-4xl text-center space-y-8 animate-fade-in">
-        <!-- Badge -->
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent-500/20 bg-accent-500/5 text-xs font-medium text-accent-300">
-          <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-          {{ t('hero.badge') }}
-        </div>
+      <div class="section-shell max-w-7xl relative">
+        <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-8 items-center">
+          <div class="space-y-8 animate-fade-in">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="eyebrow">{{ t('hero.badge') }}</span>
+              <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs text-surface-300">
+                <Icon name="lucide:shield-check" class="w-3.5 h-3.5 text-emerald-300" />
+                {{ t('trust.zeroKnowledge') }}
+              </span>
+            </div>
 
-        <!-- Title -->
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
-          {{ t('hero.title1') }}<br>
-          <span class="bg-gradient-to-r from-accent-400 to-emerald-300 bg-clip-text text-transparent">{{ t('hero.title2') }}</span>
-        </h1>
+            <div class="space-y-4 max-w-3xl">
+              <h1 class="text-5xl md:text-6xl xl:text-7xl font-semibold tracking-tight text-white leading-[0.98]">
+                {{ t('hero.title1') }}<br>
+                <span class="bg-gradient-to-r from-white via-emerald-200 to-accent-300 bg-clip-text text-transparent">{{ t('hero.title2') }}</span>
+              </h1>
 
-        <!-- Subtitle -->
-        <p class="text-lg md:text-xl text-surface-400 max-w-2xl mx-auto leading-relaxed">
-          {{ t('hero.subtitle') }}
-        </p>
+              <p class="text-lg md:text-xl text-surface-300 max-w-2xl leading-relaxed">
+                {{ t('hero.subtitle') }}
+              </p>
+            </div>
 
-        <!-- CTA -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <NuxtLink to="/auth/register" class="group btn-primary text-base px-8 py-3.5 flex items-center gap-2">
-            {{ t('hero.cta') }}
-            <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </NuxtLink>
-          <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-8 py-3.5">{{ t('hero.passwordGenerator') }}</NuxtLink>
-          <NuxtLink to="/auth/login" class="btn-secondary text-base px-8 py-3.5">
-            {{ t('hero.login') }}
-          </NuxtLink>
-        </div>
+            <div class="flex flex-col sm:flex-row flex-wrap gap-3">
+              <NuxtLink to="/auth/register" class="group btn-primary text-base px-7 py-3.5 inline-flex items-center justify-center gap-2">
+                {{ t('hero.cta') }}
+                <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </NuxtLink>
+              <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-7 py-3.5 inline-flex items-center justify-center">{{ t('hero.passwordGenerator') }}</NuxtLink>
+              <NuxtLink to="/auth/login" class="btn-secondary text-base px-7 py-3.5 inline-flex items-center justify-center">
+                {{ t('hero.login') }}
+              </NuxtLink>
+            </div>
 
-        <!-- Social proof -->
-        <div class="flex items-center justify-center gap-6 pt-8 text-sm text-surface-500">
-          <div class="flex items-center gap-1.5">
-            <Icon name="lucide:shield-check" class="w-4 h-4 text-green-400" />
-            <span>{{ t('trust.aes') }}</span>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div class="metric-tile">
+                <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('trust.aes') }}</p>
+                <p class="mt-2 text-sm text-white">{{ t('security.aes') }}</p>
+              </div>
+              <div class="metric-tile">
+                <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('nav.features') }}</p>
+                <p class="mt-2 text-sm text-white">{{ features.length }} {{ t('featuresIndex.whatYouGet') }}</p>
+              </div>
+              <div class="metric-tile">
+                <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('dash.recovery') }}</p>
+                <p class="mt-2 text-sm text-white">{{ t('trust.recoveryCodes') }}</p>
+              </div>
+              <div class="metric-tile">
+                <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('hero.free') }}</p>
+                <p class="mt-2 text-sm text-white">{{ t('features.unlimited.title') }}</p>
+              </div>
+            </div>
           </div>
-          <div class="w-1 h-1 rounded-full bg-surface-700"></div>
-          <div class="flex items-center gap-1.5">
-            <Icon name="lucide:eye-off" class="w-4 h-4 text-accent-400" />
-            <span>{{ t('trust.zeroKnowledge') }}</span>
-          </div>
-          <div class="w-1 h-1 rounded-full bg-surface-700"></div>
-          <div class="flex items-center gap-1.5">
-            <Icon name="lucide:zap" class="w-4 h-4 text-amber-400" />
-            <span>{{ t('hero.free') }}</span>
-          </div>
-          <div class="w-1 h-1 rounded-full bg-surface-700"></div>
-          <div class="flex items-center gap-1.5">
-            <Icon name="lucide:ticket-check" class="w-4 h-4 text-purple-400" />
-            <span>{{ t('trust.recoveryCodes') }}</span>
+
+          <div class="relative">
+            <div class="hero-panel relative overflow-hidden">
+              <div class="absolute inset-0 pointer-events-none">
+                <div class="absolute top-0 right-0 h-40 w-40 rounded-full bg-emerald-500/10 blur-[80px]"></div>
+              </div>
+              <div class="relative space-y-5">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.18em] text-surface-500">{{ t('dash.title') }}</p>
+                    <p class="mt-1 text-sm text-surface-300">{{ t('dash.overview') }}</p>
+                  </div>
+                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-accent-500/20 border border-white/10 flex items-center justify-center">
+                    <Icon name="lucide:shield-check" class="w-5 h-5 text-emerald-300" />
+                  </div>
+                </div>
+
+                <div class="space-y-3">
+                  <div
+                    v-for="feature in featuredFeatures"
+                    :key="feature.slug"
+                    class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                  >
+                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center border border-white/10" :class="feature.badgeClass">
+                      <Icon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-medium text-white">{{ feature.title }}</p>
+                      <p class="text-xs text-surface-400 truncate">{{ feature.summary }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                  <div class="metric-tile">
+                    <p class="text-xs text-surface-500">{{ t('dash.links') }}</p>
+                    <p class="mt-1 text-xl font-semibold text-white">∞</p>
+                  </div>
+                  <div class="metric-tile">
+                    <p class="text-xs text-surface-500">{{ t('dash.passwords') }}</p>
+                    <p class="mt-1 text-xl font-semibold text-white">∞</p>
+                  </div>
+                  <div class="metric-tile">
+                    <p class="text-xs text-surface-500">{{ t('dash.crypto') }}</p>
+                    <p class="mt-1 text-xl font-semibold text-white">∞</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -399,6 +449,7 @@ const { t } = useLang()
 const { loggedIn, user } = useUserSession()
 const { features } = useFeatureCatalog()
 const showUserMenu = ref(false)
+const featuredFeatures = computed(() => features.value.slice(0, 3))
 
 const openFaq = ref<number | null>(null)
 

@@ -35,10 +35,26 @@ export default defineEventHandler(async (event) => {
 
   const id = crypto.randomUUID()
 
-  await db.execute({
-    sql: "INSERT INTO vault_items (id, user_id, type, label, is_encrypted, payload, iv, url, favorite, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), datetime('now'))",
-    args: [id, session.user.id, type, label || '', is_encrypted ? 1 : 0, payload, iv || null, url || null],
-  })
+  try {
+    await db.execute({
+      sql: "INSERT INTO vault_items (id, user_id, type, label, is_encrypted, payload, iv, url, favorite, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), datetime('now'))",
+      args: [id, session.user.id, type, label || '', is_encrypted ? 1 : 0, payload, iv || null, url || null],
+    })
+  } catch (error: any) {
+    const message = String(error?.message || error || '')
+
+    if (message.includes('SQLITE_CONSTRAINT') || message.includes('CHECK constraint failed')) {
+      throw createError({
+        statusCode: 500,
+        message: 'Vault schema migration is required before saving recovery codes. Please refresh and try again.',
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: message || 'Failed to save vault item.',
+    })
+  }
 
   return { id, message: 'Élément ajouté avec succès.' }
 })

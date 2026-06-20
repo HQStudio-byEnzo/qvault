@@ -77,10 +77,26 @@ export default defineEventHandler(async (event) => {
   updates.push("updated_at = datetime('now')")
   params.push(id, session.user.id)
 
-  await db.execute({
-    sql: `UPDATE vault_items SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
-    args: params,
-  })
+  try {
+    await db.execute({
+      sql: `UPDATE vault_items SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
+      args: params,
+    })
+  } catch (error: any) {
+    const message = String(error?.message || error || '')
+
+    if (message.includes('SQLITE_CONSTRAINT') || message.includes('CHECK constraint failed')) {
+      throw createError({
+        statusCode: 500,
+        message: 'Vault schema migration is required before updating recovery codes. Please refresh and try again.',
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: message || 'Failed to update vault item.',
+    })
+  }
 
   return { message: 'Élément mis à jour.' }
 })

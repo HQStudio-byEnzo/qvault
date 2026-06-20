@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="10" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#34D399"/>
+      <stop offset="0.55" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="fg" x1="16" y1="14" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E5E7EB"/>
+    </linearGradient>
+    <linearGradient id="text" x1="72" y1="14" x2="224" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#CBD5E1"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M32 6.5L49.5 14.5V31.8C49.5 42.8 42.3 52.6 32 57.5C21.7 52.6 14.5 42.8 14.5 31.8V14.5L32 6.5Z" fill="url(#bg)" fill-opacity=".18" stroke="url(#bg)" stroke-width="2.2" transform="translate(4 4) scale(.8)"/>
+  <path d="M25.5 27.6V23.5C25.5 19.9 28.4 17 32 17C35.6 17 38.5 19.9 38.5 23.5V27.6" stroke="url(#fg)" stroke-width="2.2" stroke-linecap="round" transform="translate(4 4) scale(.8)"/>
+  <rect x="20.8" y="27.5" width="22.4" height="18.2" rx="5.2" fill="url(#fg)" stroke="url(#bg)" stroke-width="1.8" transform="translate(4 4) scale(.8)"/>
+  <circle cx="30.8" cy="33.4" r="2.1" fill="#0F172A"/>
+  <path d="M30.8 35.4V38" stroke="#0F172A" stroke-width="1.8" stroke-linecap="round"/>
+
+  <path
+    d="M72 19.5C72 17.6 73.5 16 75.4 16H81.6C85.7 16 88.8 17.1 90.8 19.2C92.2 20.7 92.9 22.6 92.9 24.8C92.9 27.6 91.6 29.7 89.1 31.1C92.9 32.1 94.9 34.8 94.9 39C94.9 42 93.9 44.3 91.8 46C89.7 47.7 86.7 48.5 82.8 48.5H75.4C73.5 48.5 72 47 72 45.1V19.5Z"
+    fill="url(#text)"
+  />
+  <path d="M80.3 22.5V30.2H83.4C84.8 30.2 85.9 29.9 86.6 29.2C87.3 28.6 87.6 27.7 87.6 26.6C87.6 25.5 87.3 24.6 86.6 24C85.9 23.1 84.8 22.5 83.4 22.5H80.3Z" fill="#0B1220" fill-opacity=".9"/>
+  <path d="M80.3 33.6V42H83.8C85.3 42 86.5 41.6 87.3 40.9C88.1 40.2 88.4 39.2 88.4 38C88.4 36.8 88.1 35.9 87.3 35.2C86.5 34.3 85.3 33.6 83.8 33.6H80.3Z" fill="#0B1220" fill-opacity=".9"/>
+  <path d="M98.4 17.5H104.1V48H98.4V17.5Z" fill="url(#text)"/>
+  <path d="M110 17.5H115.7V42.8H127.5V48H110V17.5Z" fill="url(#text)"/>
+  <path d="M132.7 17.5H138.4V48H132.7V17.5Z" fill="url(#text)"/>
+  <path d="M147.4 17.5H153.2V33.4L160.6 17.5H166.9L158.8 33.9L167.5 48H161L153.2 35.1V48H147.4V17.5Z" fill="url(#text)"/>
+  <path d="M172.7 17.5H179.4L187 48H181.1L179.6 42.4H172.5L171 48H165.1L172.7 17.5ZM173.8 37.8H178.3L176 27.8L173.8 37.8Z" fill="url(#text)"/>
+  <path d="M193.8 17.5H199.5V42.8H211.3V48H193.8V17.5Z" fill="url(#text)"/>
+  <path d="M217.7 17.5H223.4V48H217.7V17.5Z" fill="url(#text)"/>
+  <path d="M230.5 17.5H236.2V42.8H248V48H230.5V17.5Z" fill="url(#text)"/>
+</svg>

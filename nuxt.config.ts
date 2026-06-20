@@ -48,9 +48,14 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'BitLock - Stockez vos mots de passe, liens et clés crypto en toute sécurité avec un chiffrement zero-knowledge.' },
+        { name: 'msvalidate.01', content: '842C8AAF4BA073BCBCECB73484564C3F' },
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'shortcut icon', href: '/favicon.svg' },
+        { rel: 'mask-icon', href: '/bitlock-mark-mono.svg', color: '#34d399' },
+        { rel: 'apple-touch-icon', href: '/bitlock-mark.svg' },
+        { rel: 'preload', as: 'image', href: '/bitlock-wordmark.svg' },
       ],
       script: [
         { src: 'https://www.googletagmanager.com/gtag/js?id=G-0NFS7ZKX4Y', async: true },

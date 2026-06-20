@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 lg:px-12 backdrop-blur-xl bg-surface-950/80 border-b border-surface-800/50">
       <div class="flex items-center gap-2.5">
-        <BitLockLogo :size="40" show-wordmark tagline="Security vault" />
+        <BitLockLogo :size="52" show-wordmark tagline="Security vault" />
       </div>
 
       <!-- Desktop navigation -->

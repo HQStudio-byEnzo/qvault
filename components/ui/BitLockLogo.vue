@@ -1,5 +1,5 @@
 <template>
-  <div class="inline-flex items-center gap-3 select-none">
+  <div class="inline-flex items-center gap-4 select-none">
     <div
       class="rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-emerald-950/35 border border-white/10 bg-gradient-to-br from-emerald-500 via-emerald-400 to-accent-600"
       :style="{ width: `${size}px`, height: `${size}px` }"
@@ -29,8 +29,8 @@
     </div>
 
     <div v-if="showWordmark" class="leading-tight">
-      <p class="text-base font-semibold tracking-tight text-white">BitLock</p>
-      <p class="text-[11px] text-surface-500">{{ tagline }}</p>
+      <p class="text-lg font-semibold tracking-tight text-white">BitLock</p>
+      <p class="text-xs text-surface-400">{{ tagline }}</p>
     </div>
   </div>
 </template>

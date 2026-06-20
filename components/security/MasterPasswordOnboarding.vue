@@ -10,38 +10,38 @@
             </div>
             <div class="space-y-3">
               <div>
-                <h2 class="text-lg font-semibold text-white">Choisissez votre mot de passe maitre</h2>
+                <h2 class="text-lg font-semibold text-white">Choose your master password</h2>
                 <p class="text-sm text-surface-400 mt-1">
-                  Il sert a chiffrer et dechiffrer tout votre coffre dans ce navigateur. BitLock ne le stocke pas et ne peut pas le recuperer.
+                  It encrypts and decrypts your entire vault in this browser. BitLock does not store it and cannot recover it.
                 </p>
               </div>
 
               <div class="grid gap-2 text-sm text-surface-300">
                 <div class="flex items-start gap-2">
                   <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
-                  <span>Utilisez une phrase longue et unique, differente du mot de passe de connexion.</span>
+                  <span>Use a long, unique passphrase that is different from your login password.</span>
                 </div>
                 <div class="flex items-start gap-2">
                   <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
-                  <span>Gardez-la dans un endroit sur: perdre ce mot de passe rend les secrets illisibles.</span>
+                  <span>Keep it somewhere safe: losing this password makes your secrets unreadable forever.</span>
                 </div>
                 <div class="flex items-start gap-2">
                   <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
-                  <span>Vous pouvez le modifier dans les parametres; vos elements existants seront rechiffres avec le nouveau mot de passe.</span>
+                  <span>You can change it later in settings; existing items will be re-encrypted with the new password.</span>
                 </div>
               </div>
 
               <label class="flex items-start gap-2 text-sm text-surface-300 cursor-pointer">
                 <input v-model="understood" type="checkbox" class="mt-1" />
-                <span>Je comprends que BitLock ne peut pas recuperer mon mot de passe maitre.</span>
+                <span>I understand that BitLock cannot recover my master password.</span>
               </label>
 
               <div class="flex flex-col sm:flex-row gap-2 pt-2">
                 <button :disabled="!understood" class="btn-primary" @click="complete">
-                  Continuer
+                  Continue
                 </button>
                 <button class="btn-secondary" @click="remindLater">
-                  Me le rappeler plus tard
+                  Remind me later
                 </button>
               </div>
             </div>

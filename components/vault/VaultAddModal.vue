@@ -16,11 +16,11 @@
           class="mb-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-200 space-y-3"
         >
           <p>
-            Le coffre utilise un seul mot de passe maître. Entre-le ici pour chiffrer cet élément et déverrouiller la session.
+            The vault uses a single master password. Enter it here to encrypt this item and unlock the session.
           </p>
           <div>
             <label for="masterPassword" class="block text-xs font-medium text-amber-100 mb-1">
-              Mot de passe maître
+              Master password
             </label>
             <input
               id="masterPassword"
@@ -83,7 +83,7 @@
                 v-if="form.type === 'recovery'"
                 class="text-xs px-2 py-1 rounded bg-surface-800 text-surface-300 hover:bg-surface-700 transition-colors cursor-pointer"
               >
-                Importer .txt
+                Import .txt
                 <input type="file" accept=".txt,text/plain" class="hidden" @change="importTxt" />
               </label>
             </div>
@@ -110,10 +110,10 @@
                 :disabled="form.type !== 'link'"
                 class="rounded border-surface-600 text-accent-500 focus:ring-accent-500"
               />
-              <span>{{ form.type === 'link' ? 'Chiffrer ce lien (optionnel)' : 'Chiffrement obligatoire' }}</span>
+              <span>{{ form.type === 'link' ? 'Encrypt this link (optional)' : 'Encryption required' }}</span>
             </label>
             <p v-if="form.type === 'link' && !form.encrypt" class="text-xs text-surface-500">
-              Ce lien sera stocke en clair pour un acces rapide.
+              This link will be stored in plain text for faster access.
             </p>
           </div>
 
@@ -164,7 +164,7 @@ const types = computed(() => [
   { value: 'link' as const, label: t('vault.typeLink'), icon: 'lucide:link' },
   { value: 'password' as const, label: t('vault.typePassword'), icon: 'lucide:key-round' },
   { value: 'crypto' as const, label: t('vault.typeCrypto'), icon: 'lucide:bitcoin' },
-  { value: 'recovery' as const, label: 'Recovery', icon: 'lucide:ticket-check' },
+  { value: 'recovery' as const, label: 'Recovery code', icon: 'lucide:ticket-check' },
 ])
 
 const payloadLabel = computed(() => {
@@ -199,7 +199,7 @@ async function handleSubmit() {
   const sessionPassword = masterPassword.value || masterPasswordInput.value.trim()
 
   if (needsEncryption && !sessionPassword) {
-    error.value = "Entrez votre mot de passe maître pour ajouter cet élément."
+    error.value = 'Enter your master password to add this item.'
     return
   }
 

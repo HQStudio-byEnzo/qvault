@@ -6,9 +6,9 @@
         <div class="relative w-full max-w-2xl bg-surface-900 border border-surface-700 rounded-xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
           <div class="flex items-start justify-between gap-4 mb-6">
             <div>
-              <h2 class="text-xl font-semibold text-white">Acceptez les documents legaux</h2>
+              <h2 class="text-xl font-semibold text-white">Accept the legal documents</h2>
               <p class="text-sm text-surface-400 mt-1">
-                Nous avons mis a jour les conditions de BitLock. Pour continuer, vous devez accepter les CGU, la politique de confidentialite et les mentions legales.
+                We have updated BitLock's legal terms. To continue, you must accept the Terms of Use, Privacy Policy, and Legal Notice.
               </p>
             </div>
             <div class="w-10 h-10 rounded-lg bg-accent-600/20 flex items-center justify-center flex-shrink-0">
@@ -18,15 +18,15 @@
 
           <div class="grid gap-3 mb-6">
             <NuxtLink to="/legal/cgu" class="flex items-center justify-between gap-3 p-4 rounded-lg bg-surface-800 border border-surface-700 hover:border-surface-600 transition-colors">
-              <span class="text-sm font-medium text-surface-200">CGU</span>
+              <span class="text-sm font-medium text-surface-200">Terms of Use</span>
               <Icon name="lucide:arrow-up-right" class="w-4 h-4 text-surface-500" />
             </NuxtLink>
             <NuxtLink to="/legal/confidentialite" class="flex items-center justify-between gap-3 p-4 rounded-lg bg-surface-800 border border-surface-700 hover:border-surface-600 transition-colors">
-              <span class="text-sm font-medium text-surface-200">Politique de confidentialite</span>
+              <span class="text-sm font-medium text-surface-200">Privacy Policy</span>
               <Icon name="lucide:arrow-up-right" class="w-4 h-4 text-surface-500" />
             </NuxtLink>
             <NuxtLink to="/legal/mentions-legales" class="flex items-center justify-between gap-3 p-4 rounded-lg bg-surface-800 border border-surface-700 hover:border-surface-600 transition-colors">
-              <span class="text-sm font-medium text-surface-200">Mentions legales</span>
+              <span class="text-sm font-medium text-surface-200">Legal notice</span>
               <Icon name="lucide:arrow-up-right" class="w-4 h-4 text-surface-500" />
             </NuxtLink>
           </div>
@@ -34,17 +34,17 @@
           <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer mb-6">
             <input v-model="accepted" type="checkbox" class="mt-1" />
             <span class="leading-relaxed">
-              J'ai lu et j'accepte l'ensemble des documents ci-dessus pour continuer a utiliser BitLock.
+              I have read and accept all of the above documents to continue using BitLock.
             </span>
           </label>
 
           <div class="flex flex-col sm:flex-row gap-2">
             <button class="btn-primary" :disabled="!accepted || saving" @click="accept">
-              <span v-if="saving">Validation...</span>
-              <span v-else>Accepter et continuer</span>
+              <span v-if="saving">Validating...</span>
+              <span v-else>Accept and continue</span>
             </button>
             <button class="btn-secondary" @click="logout">
-              Se deconnecter
+              Sign out
             </button>
           </div>
 
@@ -82,7 +82,7 @@ async function accept() {
     visible.value = false
     window.location.reload()
   } catch (err: any) {
-    error.value = err.data?.message || 'Impossible de valider les documents.'
+    error.value = err.data?.message || 'Unable to validate the documents.'
   } finally {
     saving.value = false
   }

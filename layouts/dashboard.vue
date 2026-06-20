@@ -136,7 +136,6 @@ const navItems = [
   { to: '/dashboard/passwords', label: 'sidebar.passwords', icon: 'lucide:key-round' },
   { to: '/dashboard/crypto', label: 'sidebar.crypto', icon: 'lucide:bitcoin' },
   { to: '/dashboard/recovery-codes', label: 'sidebar.recovery', icon: 'lucide:ticket-check' },
-  { to: '/changelog', label: 'sidebar.changelog', icon: 'lucide:list-plus' },
   { to: '/dashboard/audit', label: 'sidebar.audit', icon: 'lucide:shield-alert' },
   { to: '/dashboard/export', label: 'sidebar.export', icon: 'lucide:download' },
   { to: '/dashboard/settings', label: 'sidebar.settings', icon: 'lucide:settings' },

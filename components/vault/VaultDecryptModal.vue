@@ -20,7 +20,7 @@
         <!-- Not yet decrypted -->
         <div v-if="!decryptedValue" class="space-y-4">
           <p class="text-sm text-surface-400">
-            {{ t('vault.decryptPrompt') }} « <strong class="text-surface-200">{{ item.label || t('vault.untitled') }}</strong> ».
+            {{ t('vault.decryptPrompt') }} "<strong class="text-surface-200">{{ item.label || t('vault.untitled') }}</strong>".
           </p>
 
           <form @submit.prevent="handleDecrypt" class="space-y-4">

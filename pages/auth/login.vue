@@ -22,7 +22,7 @@
             type="email"
             required
             class="input-field"
-            placeholder="vous@exemple.com"
+            placeholder="you@example.com"
           />
         </div>
 
@@ -78,9 +78,9 @@
           </NuxtLink>
         </p>
         <div class="flex flex-wrap items-center justify-center gap-3 text-xs text-surface-500">
-          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">CGU</NuxtLink>
-          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Confidentialite</NuxtLink>
-          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Mentions legales</NuxtLink>
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">Terms of Use</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Privacy Policy</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Legal notice</NuxtLink>
         </div>
       </div>
     </div>

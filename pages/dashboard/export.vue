@@ -195,7 +195,7 @@ async function handleImport(event: Event) {
 
     importResult.value = {
       success: true,
-      message: `${t('export.importSuccess')} : ${imported} element(s)${failed > 0 ? `, ${failed} error(s)` : ''}.`,
+      message: `${t('export.importSuccess')}: ${imported} item(s)${failed > 0 ? `, ${failed} error(s)` : ''}.`,
     }
   } catch (err: any) {
     importResult.value = {

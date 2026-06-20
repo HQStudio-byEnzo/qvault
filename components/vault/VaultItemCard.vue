@@ -39,7 +39,7 @@
         v-if="item.is_encrypted"
         @click="$emit('decrypt', item)"
         class="p-2 rounded-lg hover:bg-surface-700 text-surface-400 hover:text-accent-400 transition-colors"
-        title="Déchiffrer"
+        :title="t('vault.decrypt')"
       >
         <Icon name="lucide:eye" class="w-4 h-4" />
       </button>
@@ -49,7 +49,7 @@
         v-else
         @click="copyPayload"
         class="p-2 rounded-lg hover:bg-surface-700 text-surface-400 hover:text-green-400 transition-colors"
-        :title="copied ? 'Copié !' : 'Copier'"
+        :title="copied ? t('vault.copied') : t('vault.copy')"
       >
         <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" class="w-4 h-4" />
       </button>
@@ -94,7 +94,7 @@ const typeLabels = computed(() => ({
   link: t('vault.typeLink'),
   password: t('vault.typePassword'),
   crypto: t('vault.typeCrypto'),
-  recovery: 'Recovery',
+  recovery: 'Recovery code',
 }))
 
 const typeStyles = computed(() => {
@@ -105,13 +105,15 @@ const typeStyles = computed(() => {
       return { bg: 'bg-amber-500/10', icon: 'lucide:key-round', text: 'text-amber-400' }
     case 'crypto':
       return { bg: 'bg-orange-500/10', icon: 'lucide:bitcoin', text: 'text-orange-400' }
+    case 'recovery':
+      return { bg: 'bg-rose-500/10', icon: 'lucide:ticket-check', text: 'text-rose-400' }
     default:
       return { bg: 'bg-surface-700', icon: 'lucide:file', text: 'text-surface-400' }
   }
 })
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('fr-FR', {
+  return new Date(date).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

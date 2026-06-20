@@ -99,14 +99,14 @@
           class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
           :class="locale === 'fr' ? 'bg-accent-600 text-white' : 'bg-surface-800 text-surface-400 border border-surface-700 hover:border-surface-600'"
         >
-          🇫🇷 Français
+          French
         </button>
         <button
           @click="setLocale('en')"
           class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
           :class="locale === 'en' ? 'bg-accent-600 text-white' : 'bg-surface-800 text-surface-400 border border-surface-700 hover:border-surface-600'"
         >
-          🇬🇧 English
+          English
         </button>
       </div>
     </section>

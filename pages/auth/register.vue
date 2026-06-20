@@ -34,7 +34,7 @@
             type="email"
             required
             class="input-field"
-            placeholder="vous@exemple.com"
+            placeholder="you@example.com"
           />
         </div>
 
@@ -47,7 +47,7 @@
             required
             minlength="8"
             class="input-field"
-            placeholder="Minimum 8 caractères"
+            placeholder="Minimum 8 characters"
           />
         </div>
 
@@ -72,12 +72,11 @@
         <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer">
           <input v-model="form.acceptedTerms" type="checkbox" class="mt-1" required />
           <span class="leading-relaxed">
-            J'accepte les
-            <NuxtLink to="/legal/cgu" class="text-accent-400 hover:text-accent-300">CGU</NuxtLink>,
-            la
-            <NuxtLink to="/legal/confidentialite" class="text-accent-400 hover:text-accent-300">politique de confidentialite</NuxtLink>
-            et les
-            <NuxtLink to="/legal/mentions-legales" class="text-accent-400 hover:text-accent-300">mentions legales</NuxtLink>.
+            I accept the
+            <NuxtLink to="/legal/cgu" class="text-accent-400 hover:text-accent-300">Terms of Use</NuxtLink>,
+            <NuxtLink to="/legal/confidentialite" class="text-accent-400 hover:text-accent-300">Privacy Policy</NuxtLink>,
+            and
+            <NuxtLink to="/legal/mentions-legales" class="text-accent-400 hover:text-accent-300">Legal notice</NuxtLink>.
           </span>
         </label>
 
@@ -105,9 +104,9 @@
           </NuxtLink>
         </p>
         <div class="flex flex-wrap items-center justify-center gap-3 text-xs text-surface-500">
-          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">CGU</NuxtLink>
-          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Confidentialite</NuxtLink>
-          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Mentions legales</NuxtLink>
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">Terms of Use</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Privacy Policy</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Legal notice</NuxtLink>
         </div>
       </div>
     </div>

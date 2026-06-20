@@ -9,8 +9,41 @@
         <span class="text-lg font-bold text-white tracking-tight">BitLock</span><span class="hidden sm:inline text-xs text-surface-500">Security vault</span>
       </div>
 
-      <!-- Section nav links (desktop only) -->
-      <div class="hidden lg:flex items-center gap-1">
+      <!-- Desktop navigation -->
+      <div class="hidden lg:flex items-center gap-2">
+        <div class="relative group">
+          <NuxtLink
+            to="/features"
+            class="px-3 py-1.5 rounded-full text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800/60 transition-all inline-flex items-center gap-1.5"
+          >
+            {{ t('nav.features') }}
+            <Icon name="lucide:chevron-down" class="w-4 h-4" />
+          </NuxtLink>
+          <div class="absolute left-0 top-full pt-3 w-[340px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
+            <div class="rounded-2xl border border-surface-700 bg-surface-900/95 shadow-2xl overflow-hidden">
+              <div class="p-3">
+                <NuxtLink
+                  v-for="feature in features"
+                  :key="feature.slug"
+                  :to="`/features/${feature.slug}`"
+                  class="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-surface-800 transition-colors"
+                >
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center" :class="feature.badgeClass">
+                    <Icon :name="feature.icon" class="w-4 h-4" :class="feature.iconClass" />
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium text-white">{{ feature.title }}</p>
+                    <p class="text-xs text-surface-400 truncate">{{ feature.summary }}</p>
+                  </div>
+                </NuxtLink>
+              </div>
+              <div class="border-t border-surface-800 p-3 flex items-center gap-2">
+                <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary flex-1 text-center text-sm">Password generator</NuxtLink>
+                <NuxtLink to="/changelog" class="btn-secondary text-sm">Changelog</NuxtLink>
+              </div>
+            </div>
+          </div>
+        </div>
         <a
           v-for="link in navLinks"
           :key="link.id"
@@ -19,6 +52,9 @@
         >
           {{ t(link.label) }}
         </a>
+        <NuxtLink to="/changelog" class="px-3 py-1.5 rounded-full text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800/60 transition-all">
+          {{ t('nav.changelog') }}
+        </NuxtLink>
       </div>
 
       <div class="flex items-center gap-3">
@@ -85,7 +121,7 @@
             {{ t('hero.cta') }}
             <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </NuxtLink>
-          <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-8 py-3.5">Générer un mot de passe</NuxtLink>
+          <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-8 py-3.5">Password generator</NuxtLink>
           <NuxtLink to="/auth/login" class="btn-secondary text-base px-8 py-3.5">
             {{ t('hero.login') }}
           </NuxtLink>
@@ -154,58 +190,23 @@
     <section id="features" class="px-6 lg:px-12 py-24 bg-surface-900/30 border-t border-surface-800/50 scroll-mt-28">
       <div class="max-w-5xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('features.title') }}</h2>
+          <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">{{ t('features.title') }}</h2>
           <p class="text-surface-400 max-w-lg mx-auto">{{ t('features.subtitle') }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="card group hover:border-blue-500/30 transition-all duration-300">
-            <div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Icon name="lucide:link" class="w-5 h-5 text-blue-400" />
+          <NuxtLink
+            v-for="feature in features"
+            :key="feature.slug"
+            :to="`/features/${feature.slug}`"
+            class="card-hover group block hover:border-surface-700"
+          >
+            <div class="w-11 h-11 rounded-xl mb-4 flex items-center justify-center transition-transform group-hover:scale-110" :class="feature.badgeClass">
+              <Icon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
             </div>
-            <h3 class="font-semibold text-white mb-2">{{ t('features.links.title') }}</h3>
-            <p class="text-sm text-surface-400 leading-relaxed">{{ t('features.links.desc') }}</p>
-          </div>
-
-          <div class="card group hover:border-amber-500/30 transition-all duration-300">
-            <div class="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Icon name="lucide:key-round" class="w-5 h-5 text-amber-400" />
-            </div>
-            <h3 class="font-semibold text-white mb-2">{{ t('features.passwords.title') }}</h3>
-            <p class="text-sm text-surface-400 leading-relaxed">{{ t('features.passwords.desc') }}</p>
-          </div>
-
-          <div class="card group hover:border-orange-500/30 transition-all duration-300">
-            <div class="w-11 h-11 rounded-xl bg-orange-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Icon name="lucide:bitcoin" class="w-5 h-5 text-orange-400" />
-            </div>
-            <h3 class="font-semibold text-white mb-2">{{ t('features.crypto.title') }}</h3>
-            <p class="text-sm text-surface-400 leading-relaxed">{{ t('features.crypto.desc') }}</p>
-          </div>
-
-          <div class="card group hover:border-green-500/30 transition-all duration-300">
-            <div class="w-11 h-11 rounded-xl bg-green-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Icon name="lucide:lock" class="w-5 h-5 text-green-400" />
-            </div>
-            <h3 class="font-semibold text-white mb-2">{{ t('features.encryption.title') }}</h3>
-            <p class="text-sm text-surface-400 leading-relaxed">{{ t('features.encryption.desc') }}</p>
-          </div>
-
-          <div class="card group hover:border-purple-500/30 transition-all duration-300">
-            <div class="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Icon name="lucide:star" class="w-5 h-5 text-purple-400" />
-            </div>
-            <h3 class="font-semibold text-white mb-2">{{ t('features.favorites.title') }}</h3>
-            <p class="text-sm text-surface-400 leading-relaxed">{{ t('features.favorites.desc') }}</p>
-          </div>
-
-          <div class="card group hover:border-rose-500/30 transition-all duration-300">
-            <div class="w-11 h-11 rounded-xl bg-rose-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Icon name="lucide:ticket-check" class="w-5 h-5 text-rose-400" />
-            </div>
-            <h3 class="font-semibold text-white mb-2">Recovery codes</h3>
-            <p class="text-sm text-surface-400 leading-relaxed">Importez des fichiers .txt et protégez vos codes de secours GitHub, Google ou cloud dans le coffre chiffré.</p>
-          </div>
+            <h3 class="font-semibold text-white mb-2">{{ feature.title }}</h3>
+            <p class="text-sm text-surface-400 leading-relaxed">{{ feature.summary }}</p>
+          </NuxtLink>
         </div>
       </div>
     </section>
@@ -252,7 +253,7 @@
     <section id="reviews" class="px-6 lg:px-12 py-24 border-t border-surface-800/50 scroll-mt-28">
       <div class="max-w-5xl mx-auto">
         <div class="text-center mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('reviews.title') }}</h2>
+          <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">{{ t('reviews.title') }}</h2>
           <p class="text-surface-400 max-w-lg mx-auto">{{ t('reviews.subtitle') }}</p>
         </div>
 
@@ -369,9 +370,9 @@
         </div>
 
         <div class="flex flex-wrap items-center justify-center gap-3 text-sm text-surface-500">
-          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">CGU</NuxtLink>
-          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Politique de confidentialite</NuxtLink>
-          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Mentions legales</NuxtLink>
+          <NuxtLink to="/legal/cgu" class="hover:text-surface-300 transition-colors">Terms of Use</NuxtLink>
+          <NuxtLink to="/legal/confidentialite" class="hover:text-surface-300 transition-colors">Privacy Policy</NuxtLink>
+          <NuxtLink to="/legal/mentions-legales" class="hover:text-surface-300 transition-colors">Legal notice</NuxtLink>
         </div>
 
         <!-- Bottom -->
@@ -396,6 +397,7 @@ definePageMeta({
 
 const { t } = useLang()
 const { loggedIn, user } = useUserSession()
+const { features } = useFeatureCatalog()
 const showUserMenu = ref(false)
 
 const openFaq = ref<number | null>(null)
@@ -405,7 +407,6 @@ function toggleFaq(index: number) {
 }
 
 const navLinks = [
-  { id: 'features', label: 'nav.features' },
   { id: 'security', label: 'nav.security' },
   { id: 'reviews', label: 'nav.reviews' },
   { id: 'faq', label: 'nav.faq' },

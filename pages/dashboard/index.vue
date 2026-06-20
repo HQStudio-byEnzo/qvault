@@ -37,6 +37,15 @@
 
       <div class="card">
         <div class="flex items-center justify-between mb-3">
+          <Icon name="lucide:ticket-check" class="w-5 h-5 text-purple-400" />
+          <span class="text-xs text-surface-500">{{ t('dash.unlimited') }}</span>
+        </div>
+        <p class="text-2xl font-bold text-white">{{ stats?.counts.recovery || 0 }}</p>
+        <p class="text-sm text-surface-400">{{ t('dash.recovery') }}</p>
+      </div>
+
+      <div class="card">
+        <div class="flex items-center justify-between mb-3">
           <Icon name="lucide:star" class="w-5 h-5 text-yellow-400" />
         </div>
         <p class="text-2xl font-bold text-white">{{ stats?.counts.favorites || 0 }}</p>
@@ -65,6 +74,12 @@
             <Icon name="lucide:plus" class="w-5 h-5 text-orange-400" />
           </div>
           <span class="text-sm font-medium text-surface-200">{{ t('dash.addCrypto') }}</span>
+        </NuxtLink>
+        <NuxtLink to="/dashboard/recovery-codes" class="card-hover flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+            <Icon name="lucide:plus" class="w-5 h-5 text-purple-400" />
+          </div>
+          <span class="text-sm font-medium text-surface-200">{{ t('dash.addRecovery') }}</span>
         </NuxtLink>
       </div>
     </div>

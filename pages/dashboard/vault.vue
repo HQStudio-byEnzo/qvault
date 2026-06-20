@@ -162,7 +162,7 @@ async function handleDelete(item: any) {
 
   let secret = masterPassword.value || ''
   if (item.is_encrypted) {
-    secret = window.prompt('Entrez votre mot de passe maître pour supprimer cet élément.')?.trim() || ''
+    secret = window.prompt('Enter your master password to delete this item.')?.trim() || ''
     if (!secret) return
     setMasterPassword(secret)
   }

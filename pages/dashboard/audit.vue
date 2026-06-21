@@ -26,18 +26,18 @@
     </div>
 
     <div class="glass-panel p-4 flex items-start gap-3 border-accent-500/20 bg-accent-500/5">
-      <Icon name="lucide:shield-check" class="w-5 h-5 text-accent-400 mt-0.5 flex-shrink-0" />
+      <AppIcon name="lucide:shield-check" class="w-5 h-5 text-accent-400 mt-0.5 flex-shrink-0" />
       <p class="text-sm text-surface-400">
         {{ t('audit.notice') }}
       </p>
     </div>
 
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <Icon name="lucide:loader-2" class="w-6 h-6 text-accent-400 animate-spin" />
+      <AppIcon name="lucide:loader-2" class="w-6 h-6 text-accent-400 animate-spin" />
     </div>
 
     <div v-else-if="issues.length === 0" class="text-center py-16">
-      <Icon name="lucide:shield-check" class="w-12 h-12 text-green-500 mx-auto mb-4" />
+      <AppIcon name="lucide:shield-check" class="w-12 h-12 text-green-500 mx-auto mb-4" />
       <p class="text-surface-300 font-medium">{{ t('audit.empty') }}</p>
       <p class="text-sm text-surface-500 mt-1">{{ t('audit.emptyHint') }}</p>
     </div>
@@ -55,7 +55,7 @@
               class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
               :class="issue.severity === 'high' ? 'bg-red-500/10' : issue.severity === 'medium' ? 'bg-yellow-500/10' : 'bg-surface-800'"
             >
-              <Icon :name="issue.icon" class="w-5 h-5" :class="issue.severity === 'high' ? 'text-red-400' : issue.severity === 'medium' ? 'text-yellow-400' : 'text-surface-400'" />
+              <AppIcon :name="issue.icon" class="w-5 h-5" :class="issue.severity === 'high' ? 'text-red-400' : issue.severity === 'medium' ? 'text-yellow-400' : 'text-surface-400'" />
             </div>
             <div>
               <p class="text-sm font-medium text-white">{{ issue.title }}</p>

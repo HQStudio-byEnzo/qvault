@@ -11,7 +11,7 @@
       <div class="px-6 py-6 flex items-center gap-3">
         <NuxtLink to="/dashboard" class="flex items-center gap-3 group">
           <div class="w-10 h-10 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
-            <Icon name="lucide:shield" class="w-5 h-5" />
+            <AppIcon name="lucide:shield" class="w-5 h-5" />
           </div>
           <span class="text-2xl font-bold tracking-tight text-white">BitLock</span>
         </NuxtLink>
@@ -35,7 +35,7 @@
             ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
               : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
           >
-            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
+            <AppIcon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
         </div>
@@ -51,7 +51,7 @@
             ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
               : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
           >
-            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
+            <AppIcon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
         </div>
@@ -69,7 +69,7 @@
             <p class="text-xs text-surface-500 truncate">{{ user?.email }}</p>
           </div>
           <button @click="signOut" class="p-2 rounded-lg bg-surface-900 border border-surface-800 hover:bg-surface-800 text-surface-300 hover:text-white transition-colors">
-            <Icon name="lucide:log-out" class="w-4 h-4" />
+            <AppIcon name="lucide:log-out" class="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -80,15 +80,15 @@
       <header class="lg:hidden h-16 flex items-center justify-between px-4 border-b border-surface-800/80 bg-surface-950/95 backdrop-blur-xl">
         <div class="flex items-center gap-3">
           <button @click="mobileMenuOpen = true" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
-            <Icon name="lucide:menu" class="w-5 h-5" />
+            <AppIcon name="lucide:menu" class="w-5 h-5" />
           </button>
           <div class="w-9 h-9 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
-            <Icon name="lucide:shield" class="w-4 h-4" />
+            <AppIcon name="lucide:shield" class="w-4 h-4" />
           </div>
           <span class="text-lg font-bold tracking-tight text-white">BitLock</span>
         </div>
         <button @click="signOut" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
-          <Icon name="lucide:log-out" class="w-5 h-5" />
+          <AppIcon name="lucide:log-out" class="w-5 h-5" />
         </button>
       </header>
 
@@ -110,7 +110,7 @@
                   class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
                   @click="mobileMenuOpen = false"
                 >
-                  <Icon :name="item.icon" class="w-5 h-5" />
+                  <AppIcon :name="item.icon" class="w-5 h-5" />
                   <span>{{ t(item.label) }}</span>
                 </NuxtLink>
                 <div class="pt-3">
@@ -122,7 +122,7 @@
                     class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
                     @click="mobileMenuOpen = false"
                   >
-                    <Icon :name="item.icon" class="w-5 h-5" />
+                    <AppIcon :name="item.icon" class="w-5 h-5" />
                     <span>{{ t(item.label) }}</span>
                   </NuxtLink>
                 </div>
@@ -146,7 +146,7 @@
         >
           <div class="flex items-start gap-3">
             <div class="w-8 h-8 rounded-lg bg-yellow-600/20 flex items-center justify-center flex-shrink-0">
-              <Icon name="lucide:timer" class="w-4 h-4 text-yellow-400" />
+              <AppIcon name="lucide:timer" class="w-4 h-4 text-yellow-400" />
             </div>
             <div>
               <p class="text-sm font-medium text-yellow-200">{{ t('autolock.title') }}</p>

@@ -6,23 +6,23 @@
         <p class="text-surface-400 text-sm mt-1">{{ t('crypto.subtitle') }}</p>
       </div>
       <button @click="showAddModal = true" class="btn-primary flex items-center gap-2">
-        <Icon name="lucide:plus" class="w-4 h-4" />
+        <AppIcon name="lucide:plus" class="w-4 h-4" />
         {{ t('crypto.add') }}
       </button>
     </div>
 
     <!-- Security notice -->
     <div class="p-3 rounded-lg bg-accent-500/10 border border-accent-500/20 text-sm text-accent-300 flex items-center gap-2">
-      <Icon name="lucide:shield-check" class="w-4 h-4 flex-shrink-0" />
+      <AppIcon name="lucide:shield-check" class="w-4 h-4 flex-shrink-0" />
       <span>{{ t('crypto.recommend') }}</span>
     </div>
 
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <Icon name="lucide:loader-2" class="w-6 h-6 text-accent-400 animate-spin" />
+      <AppIcon name="lucide:loader-2" class="w-6 h-6 text-accent-400 animate-spin" />
     </div>
 
     <div v-else-if="filteredItems.length === 0" class="text-center py-16">
-      <Icon name="lucide:bitcoin" class="w-12 h-12 text-surface-600 mx-auto mb-4" />
+      <AppIcon name="lucide:bitcoin" class="w-12 h-12 text-surface-600 mx-auto mb-4" />
       <p class="text-surface-400">{{ t('crypto.empty') }}</p>
     </div>
 

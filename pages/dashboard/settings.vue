@@ -9,7 +9,7 @@
     <!-- Account section -->
     <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-        <Icon name="lucide:user" class="w-5 h-5 text-surface-400" />
+        <AppIcon name="lucide:user" class="w-5 h-5 text-surface-400" />
         {{ t('settings.account') }}
       </h2>
       <div class="space-y-3">
@@ -32,7 +32,7 @@
     <!-- Change password section -->
     <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-        <Icon name="lucide:key-round" class="w-5 h-5 text-surface-400" />
+        <AppIcon name="lucide:key-round" class="w-5 h-5 text-surface-400" />
         {{ t('settings.changePwd') }}
       </h2>
 
@@ -91,7 +91,7 @@
     <!-- Language section -->
     <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-        <Icon name="lucide:globe" class="w-5 h-5 text-surface-400" />
+        <AppIcon name="lucide:globe" class="w-5 h-5 text-surface-400" />
         {{ t('settings.language') }}
       </h2>
       <div class="flex gap-2">
@@ -115,12 +115,12 @@
     <!-- Support -->
     <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-        <Icon name="lucide:message-circle" class="w-5 h-5 text-surface-400" />
+        <AppIcon name="lucide:message-circle" class="w-5 h-5 text-surface-400" />
         {{ t('settings.support') }}
       </h2>
       <p class="text-sm text-surface-400">{{ t('settings.supportDesc') }}</p>
       <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="btn-secondary inline-flex items-center gap-2">
-        <Icon name="lucide:message-circle" class="w-4 h-4" />
+        <AppIcon name="lucide:message-circle" class="w-4 h-4" />
         {{ t('settings.joinDiscord') }}
       </a>
     </section>
@@ -128,7 +128,7 @@
     <!-- Security section -->
     <section class="card space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-        <Icon name="lucide:shield" class="w-5 h-5 text-surface-400" />
+        <AppIcon name="lucide:shield" class="w-5 h-5 text-surface-400" />
         {{ t('settings.security') }}
       </h2>
       <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
@@ -141,7 +141,7 @@
     <!-- Master password -->
     <section class="glass-panel p-5 md:p-6 space-y-4">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-        <Icon name="lucide:key-round" class="w-5 h-5 text-surface-400" />
+        <AppIcon name="lucide:key-round" class="w-5 h-5 text-surface-400" />
         {{ t('settings.masterPwdTitle') }}
       </h2>
 
@@ -212,7 +212,7 @@
     <!-- Security preferences -->
     <section class="glass-panel p-5 md:p-6 space-y-5">
       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-        <Icon name="lucide:sliders-horizontal" class="w-5 h-5 text-surface-400" />
+        <AppIcon name="lucide:sliders-horizontal" class="w-5 h-5 text-surface-400" />
         {{ t('settings.securityPrefs') }}
       </h2>
 
@@ -268,13 +268,13 @@
     <!-- Danger zone -->
     <section class="card border-red-500/20 space-y-4">
       <h2 class="text-lg font-semibold text-red-400 flex items-center gap-2">
-        <Icon name="lucide:alert-triangle" class="w-5 h-5" />
+        <AppIcon name="lucide:alert-triangle" class="w-5 h-5" />
         {{ t('settings.danger') }}
       </h2>
 
       <div class="space-y-4">
         <button @click="handleSignOut" class="btn-secondary flex items-center gap-2">
-          <Icon name="lucide:log-out" class="w-4 h-4" />
+          <AppIcon name="lucide:log-out" class="w-4 h-4" />
           {{ t('settings.logout') }}
         </button>
 
@@ -285,7 +285,7 @@
 
           <div v-if="!showDeleteConfirm">
             <button @click="showDeleteConfirm = true" class="btn-danger flex items-center gap-2">
-              <Icon name="lucide:trash-2" class="w-4 h-4" />
+              <AppIcon name="lucide:trash-2" class="w-4 h-4" />
               {{ t('settings.deleteBtn') }}
             </button>
           </div>
@@ -301,7 +301,7 @@
             <div v-if="deleteError" class="text-sm text-red-400">{{ deleteError }}</div>
             <div class="flex gap-2">
               <button @click="handleDeleteAccount" :disabled="deleteLoading" class="btn-danger flex items-center gap-2">
-                <Icon name="lucide:trash-2" class="w-4 h-4" />
+                <AppIcon name="lucide:trash-2" class="w-4 h-4" />
                 <span v-if="deleteLoading">{{ t('settings.deleting') }}</span>
                 <span v-else>{{ t('settings.confirmDelete') }}</span>
               </button>

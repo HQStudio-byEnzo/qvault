@@ -4,7 +4,7 @@
       <div class="section-shell max-w-7xl py-4 flex items-center justify-between gap-4">
         <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
           <div class="w-10 h-10 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
-            <Icon name="lucide:shield" class="w-5 h-5" />
+            <AppIcon name="lucide:shield" class="w-5 h-5" />
           </div>
           <span class="text-2xl font-bold tracking-tight text-white">BitLock</span>
         </NuxtLink>
@@ -21,7 +21,7 @@
             <label class="text-sm text-surface-400">{{ t('generator.generatedLabel') }}</label>
             <div class="mt-2 flex flex-col sm:flex-row gap-2">
               <input :value="password" readonly class="input-field font-mono text-lg min-w-0" />
-              <button class="btn-secondary shrink-0" @click="copyPassword"><Icon name="lucide:copy" class="w-5 h-5" /></button>
+              <button class="btn-secondary shrink-0" @click="copyPassword"><AppIcon name="lucide:copy" class="w-5 h-5" /></button>
             </div>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

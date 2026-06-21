@@ -75,11 +75,11 @@
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-accent-600 hover:bg-accent-500 text-white font-medium rounded-xl border border-accent-500/40 shadow-[0_0_24px_rgba(79,70,229,0.22)] transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-surface-950 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply px-4 py-2 bg-accent-600 hover:bg-accent-500 text-white font-medium rounded-xl border border-accent-500/40 shadow-[0_0_24px_rgba(79,70,229,0.22)] hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(79,70,229,0.3)] transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-surface-950 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-[rgba(23,23,23,0.9)] hover:bg-surface-800 text-surface-200 font-medium rounded-xl border border-surface-800 hover:border-surface-700 backdrop-blur-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-surface-500 focus:ring-offset-2 focus:ring-offset-surface-950;
+    @apply px-4 py-2 bg-[rgba(23,23,23,0.9)] hover:bg-surface-800 text-surface-200 font-medium rounded-xl border border-surface-800 hover:border-surface-600 hover:-translate-y-0.5 hover:text-white backdrop-blur-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-surface-500 focus:ring-offset-2 focus:ring-offset-surface-950;
   }
 
   .btn-danger {
@@ -95,7 +95,7 @@
   }
 
   .card-hover {
-    @apply card hover:border-white/20 hover:bg-white/[0.05] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer;
+    @apply card hover:border-surface-700 hover:bg-surface-900 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer;
   }
 
   .section-shell {
@@ -140,5 +140,9 @@
 
   .legal-card {
     @apply card leading-relaxed text-surface-300 space-y-5;
+  }
+
+  .nav-link {
+    @apply inline-flex items-center gap-1.5 text-sm font-medium text-surface-400 hover:text-surface-100 transition-colors;
   }
 }

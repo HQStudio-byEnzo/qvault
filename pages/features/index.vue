@@ -16,7 +16,7 @@
         >
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-2xl flex items-center justify-center" :class="feature.badgeClass">
-              <Icon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
+              <AppIcon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
             </div>
             <div class="space-y-2">
               <h2 class="text-xl font-semibold">{{ feature.title }}</h2>

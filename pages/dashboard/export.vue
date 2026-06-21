@@ -8,7 +8,7 @@
     <div class="glass-panel p-5 md:p-6 space-y-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-2xl bg-accent-600/20 flex items-center justify-center border border-white/10">
-          <Icon name="lucide:download" class="w-5 h-5 text-accent-400" />
+          <AppIcon name="lucide:download" class="w-5 h-5 text-accent-400" />
         </div>
         <div>
           <h2 class="text-lg font-semibold text-white">{{ t('export.exportTitle') }}</h2>
@@ -19,7 +19,7 @@
         {{ t('export.exportNotice') }}
       </p>
       <button @click="handleExport" :disabled="exporting" class="btn-primary flex items-center gap-2">
-        <Icon name="lucide:download" class="w-4 h-4" />
+        <AppIcon name="lucide:download" class="w-4 h-4" />
         <span v-if="exporting">{{ t('export.exporting') }}</span>
         <span v-else>{{ t('export.exportBtn') }}</span>
       </button>
@@ -28,7 +28,7 @@
     <div class="glass-panel p-5 md:p-6 space-y-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-2xl bg-green-600/20 flex items-center justify-center border border-white/10">
-          <Icon name="lucide:upload" class="w-5 h-5 text-green-400" />
+          <AppIcon name="lucide:upload" class="w-5 h-5 text-green-400" />
         </div>
         <div>
           <h2 class="text-lg font-semibold text-white">{{ t('export.importTitle') }}</h2>
@@ -40,7 +40,7 @@
       </p>
       <div class="flex flex-col sm:flex-row sm:items-center gap-3">
         <label class="btn-primary flex items-center gap-2 cursor-pointer">
-          <Icon name="lucide:upload" class="w-4 h-4" />
+          <AppIcon name="lucide:upload" class="w-4 h-4" />
           <span v-if="importing">{{ t('export.importing') }}</span>
           <span v-else>{{ t('export.importBtn') }}</span>
           <input

@@ -4,7 +4,7 @@
       <div class="text-center space-y-4">
         <NuxtLink to="/" class="inline-flex items-center justify-center gap-3">
           <div class="w-11 h-11 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
-            <Icon name="lucide:shield" class="w-5 h-5" />
+            <AppIcon name="lucide:shield" class="w-5 h-5" />
           </div>
           <span class="text-3xl md:text-4xl font-bold tracking-tight text-white">BitLock</span>
         </NuxtLink>

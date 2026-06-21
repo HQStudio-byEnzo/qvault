@@ -1,23 +1,24 @@
 <template>
   <div class="min-h-screen flex flex-col bg-surface-950 overflow-hidden scroll-smooth">
     <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center justify-between gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/92 border-b border-surface-800/70">
+    <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/92 border-b border-surface-800/70">
       <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0 gap-3">
         <div class="w-10 h-10 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
-          <Icon name="lucide:shield" class="w-5 h-5" />
+          <AppIcon name="lucide:shield" class="w-5 h-5" />
         </div>
         <span class="text-2xl font-bold tracking-tight text-white">BitLock</span>
       </NuxtLink>
 
       <!-- Desktop navigation -->
-      <div class="hidden lg:flex items-center gap-2">
+      <div class="hidden lg:flex flex-1 items-center justify-center px-8">
+        <div class="flex items-center gap-8">
         <div class="relative group">
           <NuxtLink
             to="/features"
-            class="text-sm font-medium text-surface-400 hover:text-surface-100 transition-colors inline-flex items-center gap-1.5"
+            class="nav-link"
           >
             {{ t('nav.features') }}
-            <Icon name="lucide:chevron-down" class="w-4 h-4" />
+            <AppIcon name="lucide:chevron-down" class="w-4 h-4" />
           </NuxtLink>
           <div class="absolute left-0 top-full pt-3 w-[340px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
             <div class="rounded-2xl border border-surface-800 bg-surface-900/95 shadow-2xl overflow-hidden">
@@ -29,7 +30,7 @@
                   class="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-surface-800 transition-colors"
                 >
                   <div class="w-10 h-10 rounded-xl flex items-center justify-center" :class="feature.badgeClass">
-                    <Icon :name="feature.icon" class="w-4 h-4" :class="feature.iconClass" />
+                    <AppIcon :name="feature.icon" class="w-4 h-4" :class="feature.iconClass" />
                   </div>
                   <div class="min-w-0">
                     <p class="text-sm font-medium text-white">{{ feature.title }}</p>
@@ -48,16 +49,17 @@
           v-for="link in navLinks"
           :key="link.id"
           :href="'#' + link.id"
-          class="text-sm font-medium text-surface-400 hover:text-surface-100 transition-colors"
+          class="nav-link"
         >
           {{ t(link.label) }}
         </a>
-        <NuxtLink to="/changelog" class="text-sm font-medium text-surface-400 hover:text-surface-100 transition-colors">
+        <NuxtLink to="/changelog" class="nav-link">
           {{ t('nav.changelog') }}
         </NuxtLink>
       </div>
+      </div>
 
-      <div class="flex items-center gap-3">
+      <div class="ml-auto flex items-center gap-3 shrink-0">
         <LangSwitch />
         <!-- Show avatar if logged in -->
         <div v-if="loggedIn" class="relative">
@@ -68,18 +70,18 @@
           <div v-if="showUserMenu" class="absolute right-0 top-12 w-48 bg-surface-900 border border-surface-700 rounded-xl shadow-2xl py-2 z-50">
             <p class="px-4 py-2 text-xs text-surface-500 truncate">{{ user?.email }}</p>
             <NuxtLink to="/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-surface-300 hover:text-white hover:bg-surface-800 transition-colors" @click="showUserMenu = false">
-              <Icon name="lucide:layout-dashboard" class="w-4 h-4" />
+              <AppIcon name="lucide:layout-dashboard" class="w-4 h-4" />
               {{ t('nav.dashboard') }}
             </NuxtLink>
             <button @click="handleLogout" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-surface-800 transition-colors">
-              <Icon name="lucide:log-out" class="w-4 h-4" />
+              <AppIcon name="lucide:log-out" class="w-4 h-4" />
               {{ t('nav.signout') }}
             </button>
           </div>
         </div>
         <!-- Show login/register if not logged in -->
         <template v-else>
-          <NuxtLink to="/auth/login" class="hidden sm:inline-flex text-sm text-surface-300 hover:text-white transition-colors px-4 py-2">
+          <NuxtLink to="/auth/login" class="hidden sm:inline-flex btn-secondary text-sm">
             {{ t('nav.login') }}
           </NuxtLink>
           <NuxtLink to="/auth/register" class="btn-primary text-sm">
@@ -102,7 +104,7 @@
             <div class="flex flex-wrap items-center gap-3">
               <span class="eyebrow">{{ t('hero.badge') }}</span>
               <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400">
-                <Icon name="lucide:shield-check" class="w-3.5 h-3.5 text-emerald-300" />
+                <AppIcon name="lucide:shield-check" class="w-3.5 h-3.5 text-emerald-300" />
                 {{ t('trust.zeroKnowledge') }}
               </span>
             </div>
@@ -121,7 +123,7 @@
             <div class="flex flex-col sm:flex-row flex-wrap gap-3">
               <NuxtLink to="/auth/register" class="group btn-primary text-base px-7 py-3.5 inline-flex items-center justify-center gap-2">
                 {{ t('hero.cta') }}
-                <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <AppIcon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </NuxtLink>
               <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-7 py-3.5 inline-flex items-center justify-center">{{ t('hero.passwordGenerator') }}</NuxtLink>
               <NuxtLink to="/auth/login" class="btn-secondary text-base px-7 py-3.5 inline-flex items-center justify-center">
@@ -161,7 +163,7 @@
                     <p class="mt-1 text-sm text-surface-300">{{ t('dash.overview') }}</p>
                   </div>
                   <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                    <Icon name="lucide:lock" class="w-5 h-5 text-emerald-400" />
+                    <AppIcon name="lucide:lock" class="w-5 h-5 text-emerald-400" />
                   </div>
                 </div>
 
@@ -172,7 +174,7 @@
                     class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3"
                   >
                     <div class="w-11 h-11 rounded-2xl flex items-center justify-center border border-white/10" :class="feature.badgeClass">
-                      <Icon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
+                      <AppIcon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
                     </div>
                     <div class="min-w-0 flex-1">
                       <p class="text-sm font-medium text-white">{{ feature.title }}</p>
@@ -252,7 +254,7 @@
             class="card-hover group block hover:border-surface-700"
           >
             <div class="w-11 h-11 rounded-xl mb-4 flex items-center justify-center transition-transform group-hover:scale-110" :class="feature.badgeClass">
-              <Icon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
+              <AppIcon :name="feature.icon" class="w-5 h-5" :class="feature.iconClass" />
             </div>
             <h3 class="font-semibold text-white mb-2">{{ feature.title }}</h3>
             <p class="text-sm text-surface-400 leading-relaxed">{{ feature.summary }}</p>
@@ -268,7 +270,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div>
               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-xs font-medium text-green-400 mb-4">
-                <Icon name="lucide:shield-check" class="w-3 h-3" />
+                <AppIcon name="lucide:shield-check" class="w-3 h-3" />
                 {{ t('security.badge') }}
               </div>
               <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">{{ t('security.title') }}</h2>
@@ -278,19 +280,19 @@
             </div>
             <div class="space-y-3">
               <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-800/50 border border-surface-700/50">
-                <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
+                <AppIcon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
                 <span class="text-sm text-surface-200">{{ t('security.aes') }}</span>
               </div>
               <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-800/50 border border-surface-700/50">
-                <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
+                <AppIcon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
                 <span class="text-sm text-surface-200">{{ t('security.pbkdf2') }}</span>
               </div>
               <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-800/50 border border-surface-700/50">
-                <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
+                <AppIcon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
                 <span class="text-sm text-surface-200">{{ t('security.client') }}</span>
               </div>
               <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-800/50 border border-surface-700/50">
-                <Icon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
+                <AppIcon name="lucide:check-circle" class="w-5 h-5 text-green-400 flex-shrink-0" />
                 <span class="text-sm text-surface-200">{{ t('security.open') }}</span>
               </div>
             </div>
@@ -371,7 +373,7 @@
               @click="toggleFaq(i)"
             >
               <span class="font-medium text-white text-sm md:text-base">{{ t(`faq.q${i}`) }}</span>
-              <Icon
+              <AppIcon
                 name="lucide:chevron-down"
                 class="w-5 h-5 text-surface-400 flex-shrink-0 transition-transform duration-200"
                 :class="{ 'rotate-180': openFaq === i }"
@@ -394,7 +396,7 @@
         <h2 class="text-3xl md:text-4xl font-bold text-white">{{ t('contact.title') }}</h2>
         <p class="text-surface-400 text-lg">{{ t('contact.desc') }}</p>
         <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="group btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">
-          <Icon name="lucide:message-circle" class="w-5 h-5" />
+          <AppIcon name="lucide:message-circle" class="w-5 h-5" />
           {{ t('contact.btn') }}
         </a>
       </div>
@@ -406,15 +408,15 @@
         <!-- Open Source links -->
         <div class="flex flex-col md:flex-row items-center justify-center gap-4">
           <a href="https://github.com/wave3k/BitLock" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
-            <Icon name="lucide:github" class="w-4 h-4" />
+            <AppIcon name="lucide:github" class="w-4 h-4" />
             {{ t('footer.sourceCode') }}
           </a>
           <a href="https://github.com/wave3k/BitLock-extension" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
-            <Icon name="lucide:chrome" class="w-4 h-4" />
+            <AppIcon name="lucide:chrome" class="w-4 h-4" />
             {{ t('footer.chromeExtension') }}
           </a>
           <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
-            <Icon name="lucide:message-circle" class="w-4 h-4" />
+            <AppIcon name="lucide:message-circle" class="w-4 h-4" />
             {{ t('footer.discord') }}
           </a>
         </div>

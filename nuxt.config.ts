@@ -51,9 +51,9 @@ export default defineNuxtConfig({
         { name: 'msvalidate.01', content: '842C8AAF4BA073BCBCECB73484564C3F' },
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: '/favicon.png' },
-        { rel: 'shortcut icon', href: '/favicon.png' },
-        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+        { rel: 'icon', type: 'image/png', href: '/favicon-v2.png' },
+        { rel: 'shortcut icon', href: '/favicon-v2.png' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon-v2.png' },
       ],
       script: [
         { src: 'https://www.googletagmanager.com/gtag/js?id=G-0NFS7ZKX4Y', async: true },

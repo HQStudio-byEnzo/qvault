@@ -1,7 +1,7 @@
 <template>
   <div class="inline-flex items-center leading-none" :class="gapClass">
     <img
-      src="https://i.imgur.com/IlXP7UX.png"
+      src="/bitlock-logo-mark-v3.png"
       alt="BitLock logo"
       class="shrink-0 object-contain drop-shadow-[0_10px_30px_rgba(124,58,237,0.2)]"
       :style="{ width: `${size}px`, height: `${size}px` }"

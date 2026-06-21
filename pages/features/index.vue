@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-surface-950 text-white">
-    <main class="section-shell max-w-7xl py-10 md:py-16 space-y-10">
+  <div class="min-h-screen text-white">
+    <main class="page-shell content-stack">
       <header class="max-w-3xl space-y-4">
         <p class="eyebrow">{{ t('nav.features') }}</p>
-        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight">{{ t('featuresIndex.title') }}</h1>
-        <p class="text-surface-300 text-lg leading-relaxed">{{ t('featuresIndex.subtitle') }}</p>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight">{{ t('featuresIndex.title') }}</h1>
+        <p class="text-surface-400 text-lg leading-relaxed">{{ t('featuresIndex.subtitle') }}</p>
       </header>
 
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">

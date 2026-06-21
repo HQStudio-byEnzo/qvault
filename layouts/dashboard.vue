@@ -1,37 +1,41 @@
 <template>
   <div class="dashboard-shell relative overflow-hidden flex">
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div class="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-accent-600/10 blur-[120px]"></div>
-      <div class="absolute top-1/3 right-[-120px] h-96 w-96 rounded-full bg-emerald-500/10 blur-[140px]"></div>
+      <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.14]"></div>
+      <div class="absolute -top-32 left-12 h-80 w-80 rounded-full bg-accent-600/10 blur-[120px]"></div>
+      <div class="absolute top-1/3 right-[-120px] h-96 w-96 rounded-full bg-accent-500/10 blur-[140px]"></div>
     </div>
 
     <!-- Sidebar -->
-    <aside class="hidden lg:flex w-72 flex-col border-r border-white/10 bg-surface-950/80 backdrop-blur-xl relative z-10">
-      <div class="h-20 flex items-center px-6 border-b border-white/10">
+    <aside class="hidden lg:flex w-64 flex-col border-r border-surface-800/80 bg-surface-950/95 backdrop-blur-xl relative z-10 shrink-0">
+      <div class="px-6 py-6 flex items-center gap-3">
         <NuxtLink to="/dashboard" class="flex items-center gap-3 group">
-          <span class="text-xl font-bold tracking-tight text-white">BitLock</span>
+          <div class="w-10 h-10 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
+            <Icon name="lucide:shield" class="w-5 h-5" />
+          </div>
+          <span class="text-2xl font-bold tracking-tight text-white">BitLock</span>
         </NuxtLink>
       </div>
 
-      <div class="px-6 pt-6">
-        <div class="glass-panel px-4 py-3">
-          <p class="text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupMain') }}</p>
-          <p class="mt-1 text-sm text-surface-300 leading-snug">{{ t('dash.overview') }}</p>
+      <div class="px-4 pb-4">
+        <div class="card p-4">
+          <p class="text-[11px] uppercase tracking-[0.22em] text-surface-500">{{ t('sidebar.groupMain') }}</p>
+          <p class="mt-1 text-xs text-surface-400 leading-relaxed">{{ t('dash.overview') }}</p>
         </div>
       </div>
 
-      <nav class="flex-1 px-4 py-5 space-y-6">
+      <nav class="flex-1 px-3 pb-4 space-y-6 overflow-y-auto">
         <div class="space-y-2">
           <NuxtLink
             v-for="item in mainNavItems"
             :key="item.to"
             :to="item.to"
-            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all border"
+            class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
             :class="isActive(item.to)
-            ? 'bg-white/[0.08] border-white/10 text-white shadow-lg shadow-black/10'
-              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-white/[0.04] hover:border-white/10'"
+            ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
+              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
           >
-            <Icon :name="item.icon" class="w-5 h-5" />
+            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
         </div>
@@ -42,20 +46,20 @@
             v-for="item in securityNavItems"
             :key="item.to"
             :to="item.to"
-            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all border"
+            class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
             :class="isActive(item.to)
-            ? 'bg-white/[0.08] border-white/10 text-white shadow-lg shadow-black/10'
-              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-white/[0.04] hover:border-white/10'"
+            ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
+              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
           >
-            <Icon :name="item.icon" class="w-5 h-5" />
+            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
         </div>
       </nav>
 
-      <div class="p-4 border-t border-white/10">
-        <div class="glass-panel p-4 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-surface-700 to-surface-600 flex items-center justify-center">
+      <div class="p-4 border-t border-surface-800/80">
+        <div class="flex items-center gap-3 px-2">
+          <div class="w-8 h-8 rounded-full bg-surface-800 border border-surface-700 flex items-center justify-center">
             <span class="text-sm font-medium text-white">
               {{ user?.name?.charAt(0)?.toUpperCase() || '?' }}
             </span>
@@ -64,7 +68,7 @@
             <p class="text-sm font-medium text-white truncate">{{ user?.name }}</p>
             <p class="text-xs text-surface-500 truncate">{{ user?.email }}</p>
           </div>
-          <button @click="signOut" class="p-2 rounded-xl bg-white/[0.04] hover:bg-white/10 text-surface-300 hover:text-white transition-colors border border-white/10">
+          <button @click="signOut" class="p-2 rounded-lg bg-surface-900 border border-surface-800 hover:bg-surface-800 text-surface-300 hover:text-white transition-colors">
             <Icon name="lucide:log-out" class="w-4 h-4" />
           </button>
         </div>
@@ -73,14 +77,17 @@
 
     <!-- Mobile header -->
     <div class="flex-1 flex flex-col relative z-10">
-      <header class="lg:hidden h-16 flex items-center justify-between px-4 border-b border-white/10 bg-surface-950/85 backdrop-blur-xl">
+      <header class="lg:hidden h-16 flex items-center justify-between px-4 border-b border-surface-800/80 bg-surface-950/95 backdrop-blur-xl">
         <div class="flex items-center gap-3">
-          <button @click="mobileMenuOpen = true" class="p-2 rounded-xl hover:bg-white/5 text-surface-300 border border-transparent hover:border-white/10 transition-colors">
+          <button @click="mobileMenuOpen = true" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
             <Icon name="lucide:menu" class="w-5 h-5" />
           </button>
+          <div class="w-9 h-9 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
+            <Icon name="lucide:shield" class="w-4 h-4" />
+          </div>
           <span class="text-lg font-bold tracking-tight text-white">BitLock</span>
         </div>
-        <button @click="signOut" class="p-2 rounded-xl hover:bg-white/5 text-surface-300 border border-transparent hover:border-white/10 transition-colors">
+        <button @click="signOut" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
           <Icon name="lucide:log-out" class="w-5 h-5" />
         </button>
       </header>
@@ -90,17 +97,17 @@
         <Transition name="fade">
           <div v-if="mobileMenuOpen" class="fixed inset-0 z-50 lg:hidden">
             <div class="absolute inset-0 bg-black/60" @click="mobileMenuOpen = false"></div>
-            <div class="absolute left-0 top-0 bottom-0 w-72 bg-surface-950/95 border-r border-white/10 p-4 backdrop-blur-xl">
-              <div class="glass-panel p-4 mb-4">
+            <div class="absolute left-0 top-0 bottom-0 w-72 bg-surface-950/98 border-r border-surface-800 p-4 backdrop-blur-xl">
+              <div class="card p-4 mb-4">
                 <p class="text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupMain') }}</p>
-                <p class="mt-1 text-sm text-surface-300">{{ t('dash.overview') }}</p>
+                <p class="mt-1 text-sm text-surface-400">{{ t('dash.overview') }}</p>
               </div>
               <nav class="space-y-2">
                 <NuxtLink
                   v-for="item in mainNavItems"
                   :key="item.to"
                   :to="item.to"
-                  class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-surface-300 hover:text-white hover:bg-white/[0.05] transition-colors border border-transparent hover:border-white/10"
+                  class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
                   @click="mobileMenuOpen = false"
                 >
                   <Icon :name="item.icon" class="w-5 h-5" />
@@ -112,7 +119,7 @@
                     v-for="item in securityNavItems"
                     :key="item.to"
                     :to="item.to"
-                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-surface-300 hover:text-white hover:bg-white/[0.05] transition-colors border border-transparent hover:border-white/10"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
                     @click="mobileMenuOpen = false"
                   >
                     <Icon :name="item.icon" class="w-5 h-5" />

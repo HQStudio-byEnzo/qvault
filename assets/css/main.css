@@ -14,10 +14,13 @@
     @apply bg-surface-950 text-surface-100 font-sans;
     font-weight: 400;
     background-image:
-      radial-gradient(circle at top, rgba(34, 197, 94, 0.12), transparent 28%),
-      radial-gradient(circle at 85% 10%, rgba(59, 130, 246, 0.10), transparent 24%),
-      radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.06), transparent 32%);
+      linear-gradient(180deg, rgba(10, 10, 10, 0.94), rgba(10, 10, 10, 0.98)),
+      radial-gradient(circle at 15% 0%, rgba(99, 102, 241, 0.16), transparent 26%),
+      radial-gradient(circle at 85% 10%, rgba(99, 102, 241, 0.10), transparent 20%),
+      radial-gradient(circle at 50% 100%, rgba(24, 24, 27, 0.4), transparent 32%),
+      url('https://www.transparenttextures.com/patterns/cubes.png');
     background-attachment: fixed;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
   }
 
   ::selection {
@@ -72,11 +75,11 @@
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-gradient-to-r from-emerald-500 to-accent-600 hover:from-emerald-400 hover:to-accent-500 text-white font-medium rounded-xl shadow-lg shadow-emerald-950/20 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-surface-950 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply px-4 py-2 bg-accent-600 hover:bg-accent-500 text-white font-medium rounded-xl border border-accent-500/40 shadow-[0_0_24px_rgba(79,70,229,0.22)] transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-surface-950 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-white/5 hover:bg-white/10 text-surface-200 font-medium rounded-xl border border-white/10 backdrop-blur-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-surface-500 focus:ring-offset-2 focus:ring-offset-surface-950;
+    @apply px-4 py-2 bg-[rgba(23,23,23,0.9)] hover:bg-surface-800 text-surface-200 font-medium rounded-xl border border-surface-800 hover:border-surface-700 backdrop-blur-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-surface-500 focus:ring-offset-2 focus:ring-offset-surface-950;
   }
 
   .btn-danger {
@@ -84,11 +87,11 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-surface-100 placeholder-surface-500 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all duration-200;
+    @apply w-full px-4 py-3 bg-surface-950/80 border border-surface-800 rounded-xl text-surface-100 placeholder-surface-500 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500/40 transition-all duration-200;
   }
 
   .card {
-    @apply bg-white/[0.03] border border-white/10 rounded-2xl p-6 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.5)] backdrop-blur-md;
+    @apply bg-[rgba(23,23,23,0.9)] border border-surface-800 rounded-2xl p-6 shadow-[0_24px_50px_-30px_rgba(0,0,0,0.8)] backdrop-blur-md;
   }
 
   .card-hover {
@@ -100,11 +103,11 @@
   }
 
   .eyebrow {
-    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.04] text-xs font-medium uppercase tracking-[0.18em] text-surface-300 backdrop-blur-sm;
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-surface-800 bg-[rgba(23,23,23,0.9)] text-[10px] font-semibold uppercase tracking-[0.22em] text-surface-400 backdrop-blur-sm;
   }
 
   .glass-panel {
-    @apply bg-white/[0.04] border border-white/10 rounded-3xl backdrop-blur-xl shadow-[0_24px_80px_-36px_rgba(0,0,0,0.65)];
+    @apply bg-[rgba(23,23,23,0.92)] border border-surface-800 rounded-[1.5rem] backdrop-blur-xl shadow-[0_28px_80px_-40px_rgba(0,0,0,0.9)];
   }
 
   .hero-panel {
@@ -112,14 +115,30 @@
   }
 
   .feature-tile {
-    @apply rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-all duration-200 hover:border-white/20 hover:bg-white/[0.05];
+    @apply rounded-2xl border border-surface-800 bg-[rgba(23,23,23,0.7)] p-5 transition-all duration-200 hover:border-surface-700 hover:bg-surface-900;
   }
 
   .metric-tile {
-    @apply rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm;
+    @apply rounded-2xl border border-surface-800 bg-[rgba(23,23,23,0.75)] p-4 backdrop-blur-sm;
   }
 
   .dashboard-shell {
     @apply min-h-screen bg-surface-950 text-surface-100;
+  }
+
+  .page-shell {
+    @apply section-shell max-w-7xl py-10 md:py-16;
+  }
+
+  .content-stack {
+    @apply space-y-8;
+  }
+
+  .legal-shell {
+    @apply page-shell max-w-4xl space-y-8;
+  }
+
+  .legal-card {
+    @apply card leading-relaxed text-surface-300 space-y-5;
   }
 }

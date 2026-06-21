@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-8">
     <section class="hero-panel overflow-hidden relative">
       <div class="absolute inset-0 pointer-events-none">
         <div class="absolute -top-20 right-0 h-56 w-56 rounded-full bg-emerald-500/10 blur-[90px]"></div>
@@ -8,16 +8,16 @@
 
       <div class="relative grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-6 items-start">
         <div class="space-y-6">
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="flex flex-wrap items-center gap-3">
             <span class="eyebrow">{{ t('dash.title') }}</span>
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               {{ t('security.badge') }}
             </span>
           </div>
 
           <div class="space-y-3">
-            <h1 class="text-3xl md:text-4xl font-semibold text-white tracking-tight">
+            <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">
               {{ t('dash.welcome') }}, {{ user?.name || 'there' }}.
             </h1>
             <p class="text-surface-300 text-base md:text-lg max-w-2xl leading-relaxed">
@@ -36,7 +36,7 @@
             </NuxtLink>
           </div>
 
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="metric-tile">
               <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.links') }}</p>
               <p class="mt-2 text-2xl font-semibold text-white">{{ stats?.counts.links || 0 }}</p>
@@ -58,14 +58,14 @@
         </div>
 
         <div class="flex flex-col gap-4 min-h-full">
-          <div class="glass-panel p-5 h-full">
+          <div class="glass-panel p-6 h-full">
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.healthTitle') }}</p>
                 <p class="mt-1 text-sm text-surface-300">{{ t('dash.healthDesc') }}</p>
               </div>
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-accent-500/20 border border-white/10 flex items-center justify-center">
-                <Icon name="lucide:shield-check" class="w-5 h-5 text-emerald-300" />
+              <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <Icon name="lucide:shield" class="w-5 h-5 text-emerald-400" />
               </div>
             </div>
 
@@ -92,7 +92,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.quick') }}</p>
-            <p class="mt-1 text-sm text-surface-300">{{ t('dash.overview') }}</p>
+            <p class="mt-1 text-sm text-surface-400">{{ t('dash.overview') }}</p>
           </div>
           <NuxtLink to="/dashboard/vault" class="hidden sm:inline-flex btn-secondary text-sm px-3 py-2">
             {{ t('dash.openVault') }}

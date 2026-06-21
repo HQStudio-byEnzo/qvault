@@ -1,9 +1,12 @@
 <template>
-  <div class="min-h-screen bg-surface-950 text-white">
-    <header class="sticky top-0 z-40 border-b border-white/10 bg-surface-950/75 backdrop-blur-2xl">
+  <div class="min-h-screen text-white">
+    <header class="sticky top-0 z-40 border-b border-surface-800/80 bg-surface-950/85 backdrop-blur-2xl">
       <div class="section-shell max-w-7xl py-4 flex items-center justify-between gap-4">
         <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
-          <span class="text-xl font-bold tracking-tight text-white">BitLock</span>
+          <div class="w-10 h-10 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
+            <Icon name="lucide:shield" class="w-5 h-5" />
+          </div>
+          <span class="text-2xl font-bold tracking-tight text-white">BitLock</span>
         </NuxtLink>
         <NuxtLink to="/auth/register" class="btn-primary">{{ t('generator.cta') }}</NuxtLink>
       </div>

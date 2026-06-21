@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-surface-950 text-white">
-    <main class="max-w-4xl mx-auto px-6 py-16">
+  <div class="min-h-screen text-white">
+    <main class="legal-shell">
       <NuxtLink to="/" class="text-accent-300 text-sm">{{ t('changelog.back') }}</NuxtLink>
-      <h1 class="text-4xl font-semibold mt-6 mb-3">{{ t('changelog.title') }}</h1>
+      <h1 class="text-4xl font-bold mt-6 mb-3">{{ t('changelog.title') }}</h1>
       <p class="text-surface-400 mb-10">{{ t('changelog.subtitle') }}</p>
       <div class="space-y-6">
         <article v-for="entry in entries" :key="entry.version" class="card">

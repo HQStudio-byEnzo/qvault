@@ -1,8 +1,11 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4 py-10">
+  <div class="min-h-screen flex items-center justify-center px-4 py-12">
     <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center space-y-4">
-        <NuxtLink to="/" class="inline-flex items-center justify-center">
+        <NuxtLink to="/" class="inline-flex items-center justify-center gap-3">
+          <div class="w-11 h-11 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
+            <Icon name="lucide:shield" class="w-5 h-5" />
+          </div>
           <span class="text-3xl md:text-4xl font-bold tracking-tight text-white">BitLock</span>
         </NuxtLink>
         <div class="space-y-2">

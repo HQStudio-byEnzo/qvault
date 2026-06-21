@@ -1,10 +1,14 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4 py-10">
+  <div class="min-h-screen flex items-center justify-center px-4 py-12">
     <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center">
-        <NuxtLink to="/" class="inline-flex items-center justify-center mb-6">
+        <NuxtLink to="/" class="inline-flex items-center justify-center gap-3 mb-6">
+          <div class="w-11 h-11 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
+            <Icon name="lucide:shield" class="w-5 h-5" />
+          </div>
           <span class="text-3xl md:text-4xl font-bold tracking-tight text-white">BitLock</span>
         </NuxtLink>
+        <p class="eyebrow mb-4">{{ t('nav.start') }}</p>
         <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('auth.register.title') }}</h1>
         <p class="text-sm text-surface-400 mt-3">{{ t('auth.register.subtitle') }}</p>
       </div>

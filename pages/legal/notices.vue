@@ -1,16 +1,15 @@
 <template>
-  <div class="min-h-screen bg-surface-950 py-12 px-4">
-    <div class="max-w-4xl mx-auto">
+  <div class="legal-shell">
       <div class="mb-12">
         <NuxtLink to="/" class="inline-flex items-center gap-2 mb-6 text-accent-400 hover:text-accent-300">
           <Icon name="lucide:arrow-left" class="w-4 h-4" />
           <span>{{ t('common.back') }}</span>
         </NuxtLink>
-        <h1 class="text-4xl font-semibold text-white mb-2">{{ t('legal.notices.title') }}</h1>
+        <h1 class="text-4xl font-bold text-white mb-2">{{ t('legal.notices.title') }}</h1>
       </div>
 
-      <div class="prose prose-invert max-w-none space-y-8 text-surface-300">
-        <section>
+      <div class="space-y-6 text-surface-300">
+        <section class="legal-card">
           <h2 class="text-2xl font-semibold text-white mb-4">1. Website publisher</h2>
           <p>BitLock is published by Enzo Izinga, acting as an individual on behalf of Tensor Team.</p>
           <ul class="list-disc list-inside space-y-2 ml-4">
@@ -18,7 +17,7 @@
           </ul>
         </section>
 
-        <section>
+        <section class="legal-card">
           <h2 class="text-2xl font-semibold text-white mb-4">2. Website hosting</h2>
           <p>The front-end website is hosted by:</p>
           <ul class="list-disc list-inside space-y-2 ml-4">
@@ -28,7 +27,7 @@
           </ul>
         </section>
 
-        <section>
+        <section class="legal-card">
           <h2 class="text-2xl font-semibold text-white mb-4">3. Database hosting</h2>
           <p>Encrypted data and user accounts are stored by:</p>
           <ul class="list-disc list-inside space-y-2 ml-4">
@@ -37,7 +36,6 @@
           </ul>
         </section>
       </div>
-    </div>
   </div>
 </template>
 

@@ -1,9 +1,12 @@
 <template>
   <div class="min-h-screen flex flex-col bg-surface-950 overflow-hidden scroll-smooth">
     <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center justify-between gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/90 border-b border-surface-800/60">
-      <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0">
-        <span class="text-xl font-bold tracking-tight text-white">BitLock</span>
+    <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center justify-between gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/92 border-b border-surface-800/70">
+      <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0 gap-3">
+        <div class="w-10 h-10 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
+          <Icon name="lucide:shield" class="w-5 h-5" />
+        </div>
+        <span class="text-2xl font-bold tracking-tight text-white">BitLock</span>
       </NuxtLink>
 
       <!-- Desktop navigation -->
@@ -11,13 +14,13 @@
         <div class="relative group">
           <NuxtLink
             to="/features"
-            class="px-3 py-1.5 rounded-full text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800/60 transition-all inline-flex items-center gap-1.5"
+            class="text-sm font-medium text-surface-400 hover:text-surface-100 transition-colors inline-flex items-center gap-1.5"
           >
             {{ t('nav.features') }}
             <Icon name="lucide:chevron-down" class="w-4 h-4" />
           </NuxtLink>
           <div class="absolute left-0 top-full pt-3 w-[340px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
-            <div class="rounded-2xl border border-surface-700 bg-surface-900/95 shadow-2xl overflow-hidden">
+            <div class="rounded-2xl border border-surface-800 bg-surface-900/95 shadow-2xl overflow-hidden">
               <div class="p-3">
                 <NuxtLink
                   v-for="feature in features"
@@ -45,11 +48,11 @@
           v-for="link in navLinks"
           :key="link.id"
           :href="'#' + link.id"
-          class="px-3 py-1.5 rounded-full text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800/60 transition-all"
+          class="text-sm font-medium text-surface-400 hover:text-surface-100 transition-colors"
         >
           {{ t(link.label) }}
         </a>
-        <NuxtLink to="/changelog" class="px-3 py-1.5 rounded-full text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800/60 transition-all">
+        <NuxtLink to="/changelog" class="text-sm font-medium text-surface-400 hover:text-surface-100 transition-colors">
           {{ t('nav.changelog') }}
         </NuxtLink>
       </div>
@@ -58,7 +61,7 @@
         <LangSwitch />
         <!-- Show avatar if logged in -->
         <div v-if="loggedIn" class="relative">
-          <button @click.stop="showUserMenu = !showUserMenu" class="w-8 h-8 rounded-full bg-accent-600 flex items-center justify-center text-sm font-bold text-white hover:ring-2 hover:ring-accent-400 transition-all">
+          <button @click.stop="showUserMenu = !showUserMenu" class="w-9 h-9 rounded-full bg-accent-600 flex items-center justify-center text-sm font-bold text-white shadow-[0_0_20px_rgba(79,70,229,0.25)] hover:bg-accent-500 transition-all">
             {{ user?.name?.charAt(0)?.toUpperCase() || '?' }}
           </button>
           <!-- Dropdown -->
@@ -90,26 +93,24 @@
     <section class="relative pt-28 lg:pt-32 pb-20 lg:pb-24">
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 h-[700px] w-[900px] rounded-full bg-accent-600/10 blur-[140px]"></div>
-        <div class="absolute bottom-0 left-1/4 h-[420px] w-[420px] rounded-full bg-emerald-500/10 blur-[120px]"></div>
+        <div class="absolute bottom-0 left-1/4 h-[420px] w-[420px] rounded-full bg-surface-800/40 blur-[120px]"></div>
       </div>
 
       <div class="section-shell max-w-7xl relative">
-        <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-8 items-center">
+        <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-10 items-center">
           <div class="space-y-8 animate-fade-in">
-            <span class="text-2xl md:text-3xl font-bold tracking-tight text-white">BitLock</span>
-
             <div class="flex flex-wrap items-center gap-3">
               <span class="eyebrow">{{ t('hero.badge') }}</span>
-              <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs text-surface-300">
+              <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400">
                 <Icon name="lucide:shield-check" class="w-3.5 h-3.5 text-emerald-300" />
                 {{ t('trust.zeroKnowledge') }}
               </span>
             </div>
 
             <div class="space-y-4 max-w-3xl">
-              <h1 class="text-5xl md:text-6xl xl:text-7xl font-semibold tracking-tight text-white leading-[0.98]">
+              <h1 class="text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight text-white leading-[1.02]">
                 {{ t('hero.title1') }}<br>
-                <span class="bg-gradient-to-r from-white via-emerald-200 to-accent-300 bg-clip-text text-transparent">{{ t('hero.title2') }}</span>
+                <span class="bg-gradient-to-r from-accent-300 to-accent-600 bg-clip-text text-transparent">{{ t('hero.title2') }}</span>
               </h1>
 
               <p class="text-lg md:text-xl text-surface-300 max-w-2xl leading-relaxed">
@@ -149,9 +150,9 @@
           </div>
 
           <div class="relative">
-            <div class="hero-panel relative overflow-hidden">
+            <div class="hero-panel relative overflow-hidden rounded-[2rem]">
               <div class="absolute inset-0 pointer-events-none">
-                <div class="absolute top-0 right-0 h-40 w-40 rounded-full bg-emerald-500/10 blur-[80px]"></div>
+                <div class="absolute top-0 right-0 h-40 w-40 rounded-full bg-accent-500/10 blur-[80px]"></div>
               </div>
               <div class="relative space-y-5">
                 <div class="flex items-center justify-between gap-3">
@@ -159,8 +160,8 @@
                     <p class="text-xs uppercase tracking-[0.18em] text-surface-500">{{ t('dash.title') }}</p>
                     <p class="mt-1 text-sm text-surface-300">{{ t('dash.overview') }}</p>
                   </div>
-                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-accent-500/20 border border-white/10 flex items-center justify-center">
-                    <Icon name="lucide:shield-check" class="w-5 h-5 text-emerald-300" />
+                  <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                    <Icon name="lucide:lock" class="w-5 h-5 text-emerald-400" />
                   </div>
                 </div>
 

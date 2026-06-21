@@ -2,11 +2,8 @@
   <div class="min-h-screen flex flex-col bg-surface-950 overflow-hidden scroll-smooth">
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/92 border-b border-surface-800/70">
-      <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0 gap-3">
-        <div class="w-10 h-10 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
-          <Icon name="lucide:shield" class="w-5 h-5" />
-        </div>
-        <span class="text-2xl font-bold tracking-tight text-white">BitLock</span>
+      <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0">
+        <BitLockLogo :size="44" title-class="text-2xl" />
       </NuxtLink>
 
       <!-- Desktop navigation -->
@@ -429,9 +426,7 @@
 
         <!-- Bottom -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-800/50">
-          <div class="flex items-center gap-2">
-            <span class="text-lg font-bold tracking-tight text-white">BitLock</span>
-          </div>
+          <BitLockLogo :size="34" title-class="text-lg" />
           <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">Tensor Team</span></p>
         </div>
       </div>

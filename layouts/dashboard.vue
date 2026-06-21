@@ -9,11 +9,8 @@
     <!-- Sidebar -->
     <aside class="hidden lg:flex w-64 flex-col border-r border-surface-800/80 bg-surface-950/95 backdrop-blur-xl relative z-10 shrink-0">
       <div class="px-6 py-6 flex items-center gap-3">
-        <NuxtLink to="/dashboard" class="flex items-center gap-3 group">
-          <div class="w-10 h-10 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
-            <Icon name="lucide:shield" class="w-5 h-5" />
-          </div>
-          <span class="text-2xl font-bold tracking-tight text-white">BitLock</span>
+        <NuxtLink to="/dashboard" class="flex items-center group">
+          <BitLockLogo :size="44" title-class="text-2xl" />
         </NuxtLink>
       </div>
 
@@ -78,14 +75,11 @@
     <!-- Mobile header -->
     <div class="flex-1 flex flex-col relative z-10">
       <header class="lg:hidden h-16 flex items-center justify-between px-4 border-b border-surface-800/80 bg-surface-950/95 backdrop-blur-xl">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
           <button @click="mobileMenuOpen = true" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
             <Icon name="lucide:menu" class="w-5 h-5" />
           </button>
-          <div class="w-9 h-9 rounded-xl border border-accent-500/20 bg-accent-600/10 text-accent-400 flex items-center justify-center">
-            <Icon name="lucide:shield" class="w-4 h-4" />
-          </div>
-          <span class="text-lg font-bold tracking-tight text-white">BitLock</span>
+          <BitLockLogo :size="36" title-class="text-lg" />
         </div>
         <button @click="signOut" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
           <Icon name="lucide:log-out" class="w-5 h-5" />

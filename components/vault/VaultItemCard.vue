@@ -5,7 +5,7 @@
       class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
       :class="typeStyles.bg"
     >
-      <AppIcon :name="typeStyles.icon" class="w-5 h-5" :class="typeStyles.text" />
+      <Icon :name="typeStyles.icon" class="w-5 h-5" :class="typeStyles.text" />
     </div>
 
     <!-- Content -->
@@ -15,7 +15,7 @@
           {{ item.label || t('vault.untitled') }}
         </p>
         <span v-if="item.is_encrypted" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-accent-500/10 text-accent-400 border border-accent-500/20">
-          <AppIcon name="lucide:lock" class="w-2.5 h-2.5" />
+          <Icon name="lucide:lock" class="w-2.5 h-2.5" />
         </span>
       </div>
       <p class="text-xs text-surface-500 mt-0.5">
@@ -41,7 +41,7 @@
         class="p-2 rounded-lg hover:bg-surface-700 text-surface-400 hover:text-accent-400 transition-colors"
         :title="t('vault.decrypt')"
       >
-        <AppIcon name="lucide:eye" class="w-4 h-4" />
+        <Icon name="lucide:eye" class="w-4 h-4" />
       </button>
       
       <!-- Copy button (non-encrypted) -->
@@ -51,7 +51,7 @@
         class="p-2 rounded-lg hover:bg-surface-700 text-surface-400 hover:text-green-400 transition-colors"
         :title="copied ? t('vault.copied') : t('vault.copy')"
       >
-        <AppIcon :name="copied ? 'lucide:check' : 'lucide:copy'" class="w-4 h-4" />
+        <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" class="w-4 h-4" />
       </button>
 
       <!-- Favorite -->
@@ -60,7 +60,7 @@
         class="p-2 rounded-lg hover:bg-surface-700 transition-colors"
         :class="item.favorite ? 'text-yellow-400' : 'text-surface-400 hover:text-yellow-400'"
       >
-        <AppIcon :name="item.favorite ? 'lucide:star' : 'lucide:star'" class="w-4 h-4" :class="item.favorite ? 'fill-current' : ''" />
+        <Icon :name="item.favorite ? 'lucide:star' : 'lucide:star'" class="w-4 h-4" :class="item.favorite ? 'fill-current' : ''" />
       </button>
 
       <!-- Delete -->
@@ -68,7 +68,7 @@
         @click="$emit('delete', item)"
         class="p-2 rounded-lg hover:bg-surface-700 text-surface-400 hover:text-red-400 transition-colors"
       >
-        <AppIcon name="lucide:trash-2" class="w-4 h-4" />
+        <Icon name="lucide:trash-2" class="w-4 h-4" />
       </button>
     </div>
   </div>

@@ -11,7 +11,7 @@
           <div class="flex flex-col sm:flex-row gap-2">
             <input :value="password" readonly class="input-field font-mono text-lg min-w-0" />
             <button class="btn-secondary shrink-0" @click="copyPassword">
-              <AppIcon name="lucide:copy" class="w-5 h-5" />
+              <Icon name="lucide:copy" class="w-5 h-5" />
             </button>
           </div>
         </div>

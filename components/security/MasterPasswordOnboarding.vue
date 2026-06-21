@@ -6,7 +6,7 @@
         <div class="relative w-full max-w-lg glass-panel p-5 md:p-6 shadow-2xl">
           <div class="flex items-start gap-4">
             <div class="w-11 h-11 rounded-2xl bg-accent-600/20 flex items-center justify-center flex-shrink-0 border border-white/10">
-              <AppIcon name="lucide:key-round" class="w-5 h-5 text-accent-400" />
+              <Icon name="lucide:key-round" class="w-5 h-5 text-accent-400" />
             </div>
             <div class="space-y-3">
               <div>
@@ -18,15 +18,15 @@
 
               <div class="grid gap-2 text-sm text-surface-300">
                 <div class="flex items-start gap-2">
-                  <AppIcon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
+                  <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
                   <span>Use a long, unique passphrase that is different from your login password.</span>
                 </div>
                 <div class="flex items-start gap-2">
-                  <AppIcon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
+                  <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
                   <span>Keep it somewhere safe: losing this password makes your secrets unreadable forever.</span>
                 </div>
                 <div class="flex items-start gap-2">
-                  <AppIcon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
+                  <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
                   <span>You can change it later in settings; existing items will be re-encrypted with the new password.</span>
                 </div>
               </div>

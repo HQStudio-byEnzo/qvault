@@ -7,7 +7,7 @@
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-semibold text-white">{{ t('vault.addTitle') }}</h2>
           <button @click="$emit('close')" class="p-2 rounded-xl hover:bg-white/5 text-surface-300">
-            <AppIcon name="lucide:x" class="w-5 h-5" />
+            <Icon name="lucide:x" class="w-5 h-5" />
           </button>
         </div>
 
@@ -47,7 +47,7 @@
                     : 'border-surface-700 bg-surface-800 text-surface-400 hover:border-surface-600'
                 ]"
               >
-                <AppIcon :name="tp.icon" class="w-5 h-5 mx-auto mb-1" />
+                <Icon :name="tp.icon" class="w-5 h-5 mx-auto mb-1" />
                 {{ tp.label }}
               </button>
             </div>

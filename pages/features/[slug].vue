@@ -3,12 +3,12 @@
     <main v-if="feature" class="page-shell grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-10">
       <section class="space-y-6">
         <NuxtLink to="/features" class="inline-flex items-center gap-2 text-sm text-accent-300 hover:text-accent-200">
-          <AppIcon name="lucide:arrow-left" class="w-4 h-4" />
+          <Icon name="lucide:arrow-left" class="w-4 h-4" />
           {{ t('featuresIndex.back') }}
         </NuxtLink>
         <div class="space-y-4">
           <div class="w-14 h-14 rounded-2xl flex items-center justify-center" :class="feature.badgeClass">
-            <AppIcon :name="feature.icon" class="w-6 h-6" :class="feature.iconClass" />
+            <Icon :name="feature.icon" class="w-6 h-6" :class="feature.iconClass" />
           </div>
           <h1 class="text-4xl md:text-5xl font-bold tracking-tight">{{ feature.title }}</h1>
           <p class="text-lg text-surface-400 leading-relaxed max-w-2xl">{{ feature.summary }}</p>
@@ -41,7 +41,7 @@
 
     <main v-else class="legal-shell">
       <NuxtLink to="/features" class="inline-flex items-center gap-2 text-sm text-accent-300 hover:text-accent-200">
-        <AppIcon name="lucide:arrow-left" class="w-4 h-4" />
+        <Icon name="lucide:arrow-left" class="w-4 h-4" />
         {{ t('featuresIndex.back') }}
       </NuxtLink>
       <div class="card mt-6">

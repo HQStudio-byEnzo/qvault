@@ -9,11 +9,11 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-            <AppIcon name="lucide:unlock" class="w-5 h-5 text-accent-400" />
+            <Icon name="lucide:unlock" class="w-5 h-5 text-accent-400" />
             {{ t('vault.decrypt') }}
           </h2>
           <button @click="$emit('close')" class="p-2 rounded-xl hover:bg-white/5 text-surface-300">
-            <AppIcon name="lucide:x" class="w-5 h-5" />
+            <Icon name="lucide:x" class="w-5 h-5" />
           </button>
         </div>
 
@@ -59,7 +59,7 @@
 
           <div class="flex gap-2">
             <button @click="copyDecrypted" class="btn-primary flex-1 flex items-center justify-center gap-2">
-              <AppIcon :name="copied ? 'lucide:check' : 'lucide:copy'" class="w-4 h-4" />
+              <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" class="w-4 h-4" />
               {{ copied ? t('vault.copied') : t('vault.copy') }}
             </button>
             <button @click="$emit('close')" class="btn-secondary flex-1">

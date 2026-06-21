@@ -3,7 +3,7 @@
     <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center space-y-4">
         <NuxtLink to="/" class="inline-flex items-center justify-center">
-          <BitLockLogo :size="52" title-class="text-3xl md:text-4xl" />
+          <BitLockLogo :size="52" />
         </NuxtLink>
         <div class="space-y-2">
           <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('locked.title') }}</h1>

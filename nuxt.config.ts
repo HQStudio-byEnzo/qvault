@@ -51,11 +51,10 @@ export default defineNuxtConfig({
         { name: 'msvalidate.01', content: '842C8AAF4BA073BCBCECB73484564C3F' },
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        { rel: 'shortcut icon', href: '/favicon.svg' },
-        { rel: 'mask-icon', href: '/bitlock-mark-mono.svg', color: '#34d399' },
-        { rel: 'apple-touch-icon', href: '/bitlock-mark.svg' },
-        { rel: 'preload', as: 'image', href: '/bitlock-wordmark.svg' },
+        { rel: 'icon', type: 'image/png', href: '/bitlock-logo.png' },
+        { rel: 'shortcut icon', href: '/bitlock-logo.png' },
+        { rel: 'apple-touch-icon', href: '/bitlock-logo.png' },
+        { rel: 'preload', as: 'image', href: '/bitlock-logo.png' },
       ],
       script: [
         { src: 'https://www.googletagmanager.com/gtag/js?id=G-0NFS7ZKX4Y', async: true },

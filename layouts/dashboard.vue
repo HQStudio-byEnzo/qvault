@@ -74,6 +74,7 @@
 
     <!-- Mobile header -->
     <div class="flex-1 flex flex-col relative z-10">
+      <BackToLanding />
       <header class="lg:hidden h-16 flex items-center justify-between px-4 border-b border-surface-800/80 bg-surface-950/95 backdrop-blur-xl">
         <div class="flex items-center gap-3 min-w-0">
           <button @click="mobileMenuOpen = true" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">

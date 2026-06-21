@@ -35,9 +35,34 @@
                   </div>
                 </NuxtLink>
               </div>
-              <div class="border-t border-surface-800 p-3 flex items-center gap-2">
-                <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary flex-1 text-center text-sm">{{ t('hero.passwordGenerator') }}</NuxtLink>
-                <NuxtLink to="/changelog" class="btn-secondary text-sm">{{ t('nav.changelog') }}</NuxtLink>
+              <div class="border-t border-surface-800 p-3 text-xs text-surface-500">
+                {{ t('nav.featuresHint') }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="relative group">
+          <button class="nav-link">
+            {{ t('nav.tools') }}
+            <Icon name="lucide:chevron-down" class="w-4 h-4" />
+          </button>
+          <div class="absolute left-0 top-full pt-3 w-[340px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
+            <div class="rounded-2xl border border-surface-800 bg-surface-900/95 shadow-2xl overflow-hidden">
+              <div class="p-3">
+                <NuxtLink
+                  v-for="tool in publicTools"
+                  :key="tool.to"
+                  :to="tool.to"
+                  class="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-surface-800 transition-colors"
+                >
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center" :class="tool.badgeClass">
+                    <Icon :name="tool.icon" class="w-4 h-4" :class="tool.iconClass" />
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium text-white">{{ t(tool.title) }}</p>
+                    <p class="text-xs text-surface-400">{{ t(tool.desc) }}</p>
+                  </div>
+                </NuxtLink>
               </div>
             </div>
           </div>
@@ -50,9 +75,6 @@
         >
           {{ t(link.label) }}
         </a>
-        <NuxtLink to="/changelog" class="nav-link">
-          {{ t('nav.changelog') }}
-        </NuxtLink>
       </div>
       </div>
 
@@ -118,12 +140,14 @@
             </div>
 
             <div class="flex flex-col sm:flex-row flex-wrap gap-3">
-              <NuxtLink to="/auth/register" class="group btn-primary text-base px-7 py-3.5 inline-flex items-center justify-center gap-2">
-                {{ t('hero.cta') }}
+              <NuxtLink
+                :to="loggedIn ? '/dashboard' : '/auth/register'"
+                class="group btn-primary text-base px-7 py-3.5 inline-flex items-center justify-center gap-2"
+              >
+                {{ loggedIn ? t('hero.dashboardCta') : t('hero.cta') }}
                 <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </NuxtLink>
-              <NuxtLink to="/generateur-mot-de-passe" class="btn-secondary text-base px-7 py-3.5 inline-flex items-center justify-center">{{ t('hero.passwordGenerator') }}</NuxtLink>
-              <NuxtLink to="/auth/login" class="btn-secondary text-base px-7 py-3.5 inline-flex items-center justify-center">
+              <NuxtLink v-if="!loggedIn" to="/auth/login" class="btn-secondary text-base px-7 py-3.5 inline-flex items-center justify-center">
                 {{ t('hero.login') }}
               </NuxtLink>
             </div>
@@ -134,16 +158,16 @@
                 <p class="mt-2 text-sm text-white">{{ t('security.aes') }}</p>
               </div>
               <div class="metric-tile">
-                <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('nav.features') }}</p>
-                <p class="mt-2 text-sm text-white">{{ features.length }} {{ t('featuresIndex.whatYouGet') }}</p>
+                <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('hero.openSource') }}</p>
+                <p class="mt-2 text-sm text-white">{{ t('trust.openSource') }}</p>
               </div>
               <div class="metric-tile">
-                <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('dash.recovery') }}</p>
-                <p class="mt-2 text-sm text-white">{{ t('trust.recoveryCodes') }}</p>
+                <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('sidebar.audit') }}</p>
+                <p class="mt-2 text-sm text-white">{{ t('trust.audit') }}</p>
               </div>
               <div class="metric-tile">
                 <p class="text-[11px] uppercase tracking-[0.16em] text-surface-500">{{ t('hero.free') }}</p>
-                <p class="mt-2 text-sm text-white">{{ t('features.unlimited.title') }}</p>
+                <p class="mt-2 text-sm text-white">{{ t('trust.freeForever') }}</p>
               </div>
             </div>
           </div>
@@ -357,19 +381,23 @@
       <div class="max-w-3xl mx-auto">
         <div class="text-center mb-16">
           <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ t('faq.title') }}</h2>
+          <p class="text-surface-400 max-w-2xl mx-auto">{{ t('faq.subtitle') }}</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-4">
           <div
             v-for="i in 6"
             :key="i"
-            class="card overflow-hidden"
+            class="card overflow-hidden border border-surface-800/80 hover:border-surface-700 transition-colors"
           >
             <button
-              class="w-full flex items-center justify-between gap-4 p-5 text-left"
+              class="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left"
               @click="toggleFaq(i)"
             >
-              <span class="font-medium text-white text-sm md:text-base">{{ t(`faq.q${i}`) }}</span>
+              <div class="space-y-1">
+                <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('faq.label') }} {{ i }}</p>
+                <span class="font-medium text-white text-sm md:text-base">{{ t(`faq.q${i}`) }}</span>
+              </div>
               <Icon
                 name="lucide:chevron-down"
                 class="w-5 h-5 text-surface-400 flex-shrink-0 transition-transform duration-200"
@@ -378,7 +406,7 @@
             </button>
             <div
               v-show="openFaq === i"
-              class="px-5 pb-5 -mt-1"
+              class="px-5 md:px-6 pb-5 md:pb-6 -mt-1"
             >
               <p class="text-sm text-surface-400 leading-relaxed">{{ t(`faq.a${i}`) }}</p>
             </div>
@@ -444,6 +472,32 @@ const { loggedIn, user } = useUserSession()
 const { features } = useFeatureCatalog()
 const showUserMenu = ref(false)
 const featuredFeatures = computed(() => features.value.slice(0, 3))
+const publicTools = [
+  {
+    to: '/generateur-mot-de-passe',
+    title: 'tools.password.title',
+    desc: 'tools.password.desc',
+    icon: 'lucide:key-round',
+    badgeClass: 'bg-amber-500/10',
+    iconClass: 'text-amber-400',
+  },
+  {
+    to: '/generateur-seed-phrase',
+    title: 'tools.seed.title',
+    desc: 'tools.seed.desc',
+    icon: 'lucide:scroll-text',
+    badgeClass: 'bg-purple-500/10',
+    iconClass: 'text-purple-400',
+  },
+  {
+    to: '/audit-securite',
+    title: 'tools.audit.title',
+    desc: 'tools.audit.desc',
+    icon: 'lucide:shield-check',
+    badgeClass: 'bg-emerald-500/10',
+    iconClass: 'text-emerald-400',
+  },
+]
 
 const openFaq = ref<number | null>(null)
 

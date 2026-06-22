@@ -4,6 +4,7 @@ declare module '#auth-utils' {
     name: string
     email: string
     created_at?: string
+    sessionVersion?: number
   }
 }
 

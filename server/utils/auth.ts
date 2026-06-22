@@ -29,5 +29,18 @@ export async function requireAuth(event: H3Event) {
     })
   }
 
+  const db = useDB(event)
+  const result = await db.execute({
+    sql: 'SELECT session_version FROM users WHERE id = ?',
+    args: [session.user.id],
+  })
+  const currentVersion = Number(result.rows[0]?.session_version ?? -1)
+  const sessionVersion = Number(session.user.sessionVersion ?? 0)
+
+  if (result.rows.length === 0 || currentVersion !== sessionVersion) {
+    await clearUserSession(event)
+    throw createError({ statusCode: 401, message: 'Session expired. Please sign in again.' })
+  }
+
   return session as typeof session & { user: NonNullable<typeof session.user> }
 }

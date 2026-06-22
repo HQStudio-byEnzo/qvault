@@ -5,19 +5,15 @@
 import { LEGAL_TERMS_VERSION } from '~/server/utils/legal'
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const { name, email, password, acceptedTerms } = body
-
-  if (!name || !email || !password) {
-    throw createError({ statusCode: 400, message: 'Nom, email et mot de passe requis.' })
-  }
+  enforceRateLimit(event, 'auth-register', 5, 60 * 60 * 1000)
+  const body = requireRecord(await readBody(event))
+  const name = requireString(body.name, 'Name', { min: 1, max: 80 })
+  const email = normalizeEmail(body.email)
+  const password = requireString(body.password, 'Password', { min: 8, max: 128, trim: false })
+  const acceptedTerms = body.acceptedTerms === true
 
   if (!acceptedTerms) {
     throw createError({ statusCode: 400, message: "Vous devez accepter les CGU, la politique de confidentialité et les mentions légales." })
-  }
-
-  if (password.length < 8) {
-    throw createError({ statusCode: 400, message: 'Le mot de passe doit contenir au moins 8 caractères.' })
   }
 
   const db = useDB()
@@ -25,7 +21,7 @@ export default defineEventHandler(async (event) => {
   // Vérifier si l'email existe déjà
   const existing = await db.execute({
     sql: 'SELECT id FROM users WHERE email = ?',
-    args: [email.toLowerCase()],
+    args: [email],
   })
 
   if (existing.rows.length > 0) {
@@ -39,7 +35,7 @@ export default defineEventHandler(async (event) => {
   await db.batch([
     {
       sql: "INSERT INTO users (id, name, email, password, password_hint, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))",
-      args: [id, name, email.toLowerCase(), hashedPassword, null],
+      args: [id, name, email, hashedPassword, null],
     },
     {
       sql: `INSERT INTO accepted_terms (user_id, terms_version, accepted_at, user_agent, ip_address)
@@ -55,8 +51,8 @@ export default defineEventHandler(async (event) => {
 
   // Créer la session.
   await setUserSession(event, {
-    user: { id, name, email: email.toLowerCase(), created_at: new Date().toISOString() },
+    user: { id, name, email, sessionVersion: 0, created_at: new Date().toISOString() },
   })
 
-  return { user: { id, name, email: email.toLowerCase() } }
+  return { user: { id, name, email } }
 })

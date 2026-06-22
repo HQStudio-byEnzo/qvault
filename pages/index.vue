@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/92 border-b border-surface-800/70">
       <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0">
-        <BitLockLogo :size="44" />
+        <UiBitLockLogo :size="44" />
       </NuxtLink>
 
       <!-- Desktop navigation -->
@@ -79,7 +79,7 @@
       </div>
 
       <div class="ml-auto flex items-center gap-3 shrink-0">
-        <LangSwitch />
+        <UiLangSwitch />
         <!-- Show avatar if logged in -->
         <div v-if="loggedIn" class="relative">
           <button @click.stop="showUserMenu = !showUserMenu" class="w-9 h-9 rounded-full bg-accent-600 flex items-center justify-center text-sm font-bold text-white shadow-[0_0_20px_rgba(79,70,229,0.25)] hover:bg-accent-500 transition-all">
@@ -420,7 +420,7 @@
       <div class="max-w-3xl mx-auto text-center space-y-6">
         <h2 class="text-3xl md:text-4xl font-bold text-white">{{ t('contact.title') }}</h2>
         <p class="text-surface-400 text-lg">{{ t('contact.desc') }}</p>
-        <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="group btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">
+        <a href="https://discord.gg/J9xmQchpX6" target="_blank" rel="noopener noreferrer" class="group btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">
           <Icon name="lucide:message-circle" class="w-5 h-5" />
           {{ t('contact.btn') }}
         </a>
@@ -432,15 +432,15 @@
       <div class="max-w-5xl mx-auto space-y-8">
         <!-- Open Source links -->
         <div class="flex flex-col md:flex-row items-center justify-center gap-4">
-          <a href="https://github.com/wave3k/BitLock" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+          <a href="https://github.com/wave3k/BitLock" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
             <Icon name="lucide:github" class="w-4 h-4" />
             {{ t('footer.sourceCode') }}
           </a>
-          <a href="https://github.com/wave3k/BitLock-extension" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+          <a href="https://github.com/wave3k/BitLock-extension" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
             <Icon name="lucide:chrome" class="w-4 h-4" />
             {{ t('footer.chromeExtension') }}
           </a>
-          <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
+          <a href="https://discord.gg/J9xmQchpX6" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-800 border border-surface-700 text-sm text-surface-300 hover:text-white hover:border-surface-600 transition-all">
             <Icon name="lucide:message-circle" class="w-4 h-4" />
             {{ t('footer.discord') }}
           </a>
@@ -455,7 +455,7 @@
         <!-- Bottom -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-800/50">
           <NuxtLink to="/" aria-label="Back to landing page">
-            <BitLockLogo :size="34" />
+            <UiBitLockLogo :size="34" />
           </NuxtLink>
           <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">Tensor Team</span></p>
         </div>

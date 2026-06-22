@@ -119,7 +119,7 @@
         {{ t('settings.support') }}
       </h2>
       <p class="text-sm text-surface-400">{{ t('settings.supportDesc') }}</p>
-      <a href="https://discord.gg/J9xmQchpX6" target="_blank" class="btn-secondary inline-flex items-center gap-2">
+      <a href="https://discord.gg/J9xmQchpX6" target="_blank" rel="noopener noreferrer" class="btn-secondary inline-flex items-center gap-2">
         <Icon name="lucide:message-circle" class="w-4 h-4" />
         {{ t('settings.joinDiscord') }}
       </a>

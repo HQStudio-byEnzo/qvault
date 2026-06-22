@@ -7,8 +7,8 @@ export default defineEventHandler(async (event) => {
   const db = useDB()
   const query = getQuery(event)
 
-  const type = query.type as string | undefined
-  const search = query.search as string | undefined
+  const type = typeof query.type === 'string' ? query.type : undefined
+  const search = typeof query.search === 'string' ? query.search.trim().slice(0, 200) : undefined
   const favorites = query.favorites === 'true'
 
   let sql = 'SELECT * FROM vault_items WHERE user_id = ?'

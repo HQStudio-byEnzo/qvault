@@ -21,6 +21,16 @@ function isVaultSchemaReady(sql: string | null | undefined) {
 }
 
 async function runVaultSchemaMigration(db: ReturnType<typeof createClient>) {
+  const userTableInfo = await db.execute({ sql: "PRAGMA table_info('users')" })
+  const userColumns = new Set(userTableInfo.rows.map(row => String((row as any).name || '')))
+  if (userTableInfo.rows.length > 0 && !userColumns.has('session_version')) {
+    try {
+      await db.execute({ sql: 'ALTER TABLE users ADD COLUMN session_version INTEGER NOT NULL DEFAULT 0' })
+    } catch (error) {
+      if (!String((error as any)?.message || error).toLowerCase().includes('duplicate column')) throw error
+    }
+  }
+
   const tableInfo = await db.execute({
     sql: "PRAGMA table_info('vault_items')",
   })
@@ -103,4 +113,3 @@ export function ensureVaultSchema(db: ReturnType<typeof createClient>) {
 
   return migrationPromise
 }
-

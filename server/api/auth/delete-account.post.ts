@@ -4,12 +4,9 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  const body = await readBody(event)
-  const { password } = body
-
-  if (!password) {
-    throw createError({ statusCode: 400, message: 'Mot de passe requis pour confirmer la suppression.' })
-  }
+  enforceRateLimit(event, 'auth-delete-account', 5, 60 * 60 * 1000, String(session.user.id))
+  const body = requireRecord(await readBody(event))
+  const password = requireString(body.password, 'Password', { min: 1, max: 128, trim: false })
 
   const db = useDB()
 

@@ -134,6 +134,12 @@ async function handleImport(event: Event) {
   const file = input.files?.[0]
   if (!file) return
 
+  if (file.size > 5_000_000) {
+    importResult.value = { success: false, message: t('export.invalidFormat') }
+    input.value = ''
+    return
+  }
+
   importing.value = true
   error.value = null
   importResult.value = null
@@ -142,7 +148,7 @@ async function handleImport(event: Event) {
     const text = await file.text()
     const data = JSON.parse(text)
 
-    if (!data.items || !Array.isArray(data.items)) {
+    if (!data.items || !Array.isArray(data.items) || data.items.length > 1_000) {
       throw new Error(t('export.invalidFormat'))
     }
 

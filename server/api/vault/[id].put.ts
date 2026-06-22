@@ -4,11 +4,12 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
+  enforceRateLimit(event, 'vault-update', 240, 60 * 1000, String(session.user.id))
   const db = useDB()
   const id = getRouterParam(event, 'id')
-  const body = await readBody(event)
+  const body = requireRecord(await readBody(event))
 
-  if (!id) {
+  if (!id || id.length > 128) {
     throw createError({ statusCode: 400, message: 'ID requis.' })
   }
 
@@ -23,7 +24,14 @@ export default defineEventHandler(async (event) => {
   }
 
   const current = existing.rows[0] as any
-  const nextIsEncrypted = body.is_encrypted !== undefined ? !!body.is_encrypted : current.is_encrypted === 1
+  if (body.is_encrypted !== undefined && typeof body.is_encrypted !== 'boolean') {
+    throw createError({ statusCode: 400, message: 'is_encrypted must be a boolean.' })
+  }
+  if (body.favorite !== undefined && typeof body.favorite !== 'boolean') {
+    throw createError({ statusCode: 400, message: 'favorite must be a boolean.' })
+  }
+
+  const nextIsEncrypted = body.is_encrypted !== undefined ? body.is_encrypted : current.is_encrypted === 1
   const nextPayload = body.payload !== undefined ? body.payload : current.payload
   const nextIv = body.iv !== undefined ? body.iv : current.iv
   const encryptionRequired = current.type !== 'link'
@@ -33,13 +41,10 @@ export default defineEventHandler(async (event) => {
   }
 
   if (nextIsEncrypted) {
-    if (!nextIv || typeof nextIv !== 'string') {
-      throw createError({ statusCode: 400, message: "Le vecteur d'initialisation (iv) est requis." })
-    }
-
-    if (typeof nextPayload !== 'string' || nextPayload.split(':').length !== 2) {
-      throw createError({ statusCode: 400, message: 'Format de payload chiffré invalide.' })
-    }
+    assertEncryptedPayload(nextPayload, nextIv)
+  } else {
+    requireString(nextPayload, 'Payload', { min: 1, max: 100_000, trim: false })
+    if (current.type === 'link') optionalHttpUrl(nextPayload, 'Link')
   }
 
   const updates: string[] = []
@@ -47,7 +52,7 @@ export default defineEventHandler(async (event) => {
 
   if (body.label !== undefined) {
     updates.push('label = ?')
-    params.push(body.label)
+    params.push(requireString(body.label, 'Label', { min: 0, max: 200 }))
   }
   if (body.payload !== undefined) {
     updates.push('payload = ?')
@@ -67,7 +72,7 @@ export default defineEventHandler(async (event) => {
   }
   if (body.url !== undefined) {
     updates.push('url = ?')
-    params.push(body.url || null)
+    params.push(optionalHttpUrl(body.url))
   }
 
   if (updates.length === 0) {
@@ -92,10 +97,8 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    throw createError({
-      statusCode: 500,
-      message: message || 'Failed to update vault item.',
-    })
+    console.error('Failed to update vault item:', error)
+    throw createError({ statusCode: 500, message: 'Failed to update vault item.' })
   }
 
   return { message: 'Élément mis à jour.' }

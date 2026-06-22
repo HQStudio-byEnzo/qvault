@@ -4,10 +4,11 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
+  enforceRateLimit(event, 'vault-delete', 120, 60 * 1000, String(session.user.id))
   const db = useDB()
   const id = getRouterParam(event, 'id')
 
-  if (!id) {
+  if (!id || id.length > 128) {
     throw createError({ statusCode: 400, message: 'ID requis.' })
   }
 

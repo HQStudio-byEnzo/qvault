@@ -14,6 +14,20 @@ export default defineNuxtConfig({
   // Vercel deployment
   nitro: {
     preset: 'vercel',
+    routeRules: {
+      '/**': {
+        headers: {
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
+          'X-Permitted-Cross-Domain-Policies': 'none',
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+          'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+          'Cross-Origin-Opener-Policy': 'same-origin',
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+          'Content-Security-Policy': "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://www.transparenttextures.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://vitals.vercel-insights.com; upgrade-insecure-requests",
+        },
+      },
+    },
   },
 
   // Variables d'environnement runtime
@@ -62,7 +76,7 @@ export default defineNuxtConfig({
         { innerHTML: "window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-0NFS7ZKX4Y');" },
         {
           type: 'application/ld+json',
-          children: JSON.stringify({
+          innerHTML: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'WebSite',
             name: 'BitLock',

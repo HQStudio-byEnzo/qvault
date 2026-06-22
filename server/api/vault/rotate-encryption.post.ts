@@ -4,10 +4,11 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  const body = await readBody(event)
+  enforceRateLimit(event, 'vault-rotate', 5, 60 * 60 * 1000, String(session.user.id))
+  const body = requireRecord(await readBody(event))
   const items = body?.items
 
-  if (!Array.isArray(items)) {
+  if (!Array.isArray(items) || items.length > 10_000) {
     throw createError({ statusCode: 400, message: 'La liste des éléments chiffrés est requise.' })
   }
 
@@ -16,14 +17,12 @@ export default defineEventHandler(async (event) => {
     if (
       !item ||
       typeof item.id !== 'string' ||
-      typeof item.iv !== 'string' ||
-      !item.iv ||
-      typeof item.payload !== 'string' ||
-      item.payload.split(':').length !== 2 ||
+      item.id.length > 128 ||
       ids.has(item.id)
     ) {
       throw createError({ statusCode: 400, message: 'Données de rotation invalides.' })
     }
+    assertEncryptedPayload(item.payload, item.iv)
     ids.add(item.id)
   }
 

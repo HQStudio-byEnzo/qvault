@@ -3,7 +3,7 @@
     <div class="w-full max-w-md space-y-8 animate-fade-in">
       <div class="text-center space-y-4">
         <NuxtLink to="/" class="inline-flex items-center justify-center">
-          <BitLockLogo :size="52" />
+          <UiBitLockLogo :size="52" />
         </NuxtLink>
         <div class="space-y-2">
           <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('locked.title') }}</h1>
@@ -61,6 +61,7 @@ definePageMeta({
 const route = useRoute()
 const { t } = useLang()
 const { setMasterPassword } = useMasterPassword()
+const { items, fetchItems, decryptItem } = useVault()
 
 const masterPasswordInput = ref('')
 const errorMsg = ref('')
@@ -83,8 +84,17 @@ async function unlockVault() {
 
   isLoading.value = true
   try {
+    await fetchItems()
+    const encryptedItem = items.value.find(item => item.is_encrypted)
+    if (encryptedItem) {
+      await decryptItem(encryptedItem, password)
+    }
     setMasterPassword(password)
-    await navigateTo((route.query.next as string) || '/dashboard')
+    const requestedPath = typeof route.query.next === 'string' ? route.query.next : '/dashboard'
+    const nextPath = requestedPath.startsWith('/') && !requestedPath.startsWith('//')
+      ? requestedPath
+      : '/dashboard'
+    await navigateTo(nextPath)
   } catch {
     errorMsg.value = t('locked.errorGeneric')
   } finally {

@@ -6,7 +6,7 @@
       <div class="absolute right-[-8rem] top-1/4 h-80 w-80 rounded-full bg-accent-500/8 blur-[120px]"></div>
     </div>
     <div class="relative z-10">
-      <BackToLanding />
+      <UiBackToLanding />
       <slot />
     </div>
   </div>

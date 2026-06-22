@@ -4,16 +4,10 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  const body = await readBody(event)
-  const { currentPassword, newPassword } = body
-
-  if (!currentPassword || !newPassword) {
-    throw createError({ statusCode: 400, message: 'Mot de passe actuel et nouveau mot de passe requis.' })
-  }
-
-  if (newPassword.length < 8) {
-    throw createError({ statusCode: 400, message: 'Le nouveau mot de passe doit contenir au moins 8 caractères.' })
-  }
+  enforceRateLimit(event, 'auth-change-password', 5, 60 * 60 * 1000, String(session.user.id))
+  const body = requireRecord(await readBody(event))
+  const currentPassword = requireString(body.currentPassword, 'Current password', { min: 1, max: 128, trim: false })
+  const newPassword = requireString(body.newPassword, 'New password', { min: 8, max: 128, trim: false })
 
   const db = useDB()
 
@@ -38,8 +32,19 @@ export default defineEventHandler(async (event) => {
   // Mettre à jour
   const hashedNew = await hashUserPassword(newPassword)
   await db.execute({
-    sql: 'UPDATE users SET password = ? WHERE id = ?',
+    sql: 'UPDATE users SET password = ?, session_version = session_version + 1 WHERE id = ?',
     args: [hashedNew, session.user.id],
+  })
+
+  const versionResult = await db.execute({
+    sql: 'SELECT session_version FROM users WHERE id = ?',
+    args: [session.user.id],
+  })
+  await setUserSession(event, {
+    user: {
+      ...session.user,
+      sessionVersion: Number(versionResult.rows[0]?.session_version) || 0,
+    },
   })
 
   return { message: 'Mot de passe modifié avec succès.' }

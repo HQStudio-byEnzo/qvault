@@ -234,6 +234,11 @@ async function importTxt(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
+  if (file.size > 100_000) {
+    error.value = t('vault.importTooLarge')
+    input.value = ''
+    return
+  }
   form.payload = (await file.text()).trim()
   if (!form.label) form.label = file.name.replace(/\.txt$/i, '')
   input.value = ''

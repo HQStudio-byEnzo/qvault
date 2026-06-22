@@ -22,13 +22,13 @@
         {{ typeLabels[item.type] }} · {{ formatDate(item.created_at) }}
       </p>
       <a
-        v-if="item.url && !item.is_encrypted"
-        :href="item.url"
+        v-if="safeUrl && !item.is_encrypted"
+        :href="safeUrl"
         target="_blank"
         rel="noopener noreferrer"
         class="text-xs text-accent-400 hover:text-accent-300 truncate block mt-0.5"
       >
-        {{ item.url }}
+        {{ safeUrl }}
       </a>
     </div>
 
@@ -90,6 +90,16 @@ defineEmits<{
 
 const { t, locale } = useLang()
 const copied = ref(false)
+
+const safeUrl = computed(() => {
+  if (!props.item.url) return null
+  try {
+    const url = new URL(props.item.url)
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.toString() : null
+  } catch {
+    return null
+  }
+})
 
 const typeLabels = computed(() => ({
   link: t('vault.typeLink'),

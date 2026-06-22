@@ -49,6 +49,8 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'BitLock - Stockez vos mots de passe, liens et clés crypto en toute sécurité avec un chiffrement zero-knowledge.' },
         { name: 'msvalidate.01', content: '842C8AAF4BA073BCBCECB73484564C3F' },
+        { property: 'og:site_name', content: 'BitLock' },
+        { property: 'og:title', content: 'BitLock - Votre coffre-fort numérique' },
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/favicon-v2.png' },
@@ -58,6 +60,15 @@ export default defineNuxtConfig({
       script: [
         { src: 'https://www.googletagmanager.com/gtag/js?id=G-0NFS7ZKX4Y', async: true },
         { innerHTML: "window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-0NFS7ZKX4Y');" },
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'BitLock',
+            url: 'https://bitlock-two.vercel.app',
+          }),
+        },
       ],
     },
   },

@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 h-[4.5rem] md:h-20 flex items-center gap-4 px-5 sm:px-6 lg:px-12 backdrop-blur-xl bg-surface-950/92 border-b border-surface-800/70">
       <NuxtLink to="/" class="inline-flex items-center shrink-0 min-w-0">
-        <UiBitLockLogo :size="56" />
+        <UiBitLockLogo :size="72" />
       </NuxtLink>
 
       <!-- Desktop navigation -->
@@ -455,7 +455,7 @@
         <!-- Bottom -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-800/50">
           <NuxtLink to="/" aria-label="Back to landing page">
-            <UiBitLockLogo :size="44" />
+            <UiBitLockLogo :size="56" />
           </NuxtLink>
           <p class="text-sm text-surface-500">&copy; {{ new Date().getFullYear() }} BitLock — by <span class="text-surface-300 font-medium">Tensor Team</span></p>
         </div>

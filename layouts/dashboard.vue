@@ -10,7 +10,7 @@
     <aside class="hidden lg:flex w-64 flex-col border-r border-surface-800/80 bg-surface-950/95 backdrop-blur-xl relative z-10 shrink-0">
       <div class="px-6 py-6 flex items-center gap-3">
         <NuxtLink to="/" class="flex items-center group" aria-label="Back to landing page">
-          <UiBitLockLogo :size="56" />
+          <UiBitLockLogo :size="72" />
         </NuxtLink>
       </div>
 
@@ -114,7 +114,7 @@
             <Icon name="lucide:menu" class="w-5 h-5" />
           </button>
           <NuxtLink to="/" aria-label="Back to landing page">
-            <UiBitLockLogo :size="44" />
+            <UiBitLockLogo :size="56" />
           </NuxtLink>
         </div>
         <button @click="signOut" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">

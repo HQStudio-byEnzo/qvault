@@ -5,7 +5,7 @@
       :width="resolvedSize"
       :height="resolvedSize"
       :alt="alt"
-      class="block object-contain drop-shadow-[0_12px_28px_rgba(91,33,182,0.28)]"
+      class="block object-contain drop-shadow-[0_16px_36px_rgba(91,33,182,0.32)]"
       loading="eager"
       decoding="async"
     />
@@ -18,7 +18,7 @@ const props = defineProps<{
   alt?: string
 }>()
 
-const resolvedSize = computed(() => props.size ?? 56)
+const resolvedSize = computed(() => props.size ?? 72)
 const logoSrc = '/bitlock-logo.png'
 const alt = computed(() => props.alt ?? 'BitLock')
 </script>

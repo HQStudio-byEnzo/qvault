@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen text-white">
-    <main v-if="feature" class="page-shell grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-10">
+    <main v-if="feature" class="page-shell grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-10 pt-24 md:pt-28">
       <section class="space-y-6">
         <NuxtLink to="/features" class="inline-flex items-center gap-2 text-sm text-accent-300 hover:text-accent-200">
           <Icon name="lucide:arrow-left" class="w-4 h-4" />
@@ -39,7 +39,7 @@
       </aside>
     </main>
 
-    <main v-else class="legal-shell">
+    <main v-else class="legal-shell pt-24 md:pt-28">
       <NuxtLink to="/features" class="inline-flex items-center gap-2 text-sm text-accent-300 hover:text-accent-200">
         <Icon name="lucide:arrow-left" class="w-4 h-4" />
         {{ t('featuresIndex.back') }}

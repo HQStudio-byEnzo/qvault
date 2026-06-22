@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen text-white">
-    <main class="page-shell content-stack">
+    <main class="page-shell content-stack pt-24 md:pt-28">
       <header class="max-w-3xl space-y-4">
         <p class="eyebrow">{{ t('nav.features') }}</p>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight">{{ t('featuresIndex.title') }}</h1>

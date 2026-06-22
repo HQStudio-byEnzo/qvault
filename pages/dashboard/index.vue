@@ -30,9 +30,9 @@
               <Icon name="lucide:vault" class="w-4 h-4" />
               {{ t('dash.openVault') }}
             </NuxtLink>
-            <NuxtLink to="/dashboard/recovery-codes" class="btn-secondary inline-flex items-center gap-2">
-              <Icon name="lucide:ticket-check" class="w-4 h-4" />
-              {{ t('dash.addRecovery') }}
+            <NuxtLink to="/dashboard/audit" class="btn-secondary inline-flex items-center gap-2">
+              <Icon name="lucide:shield-alert" class="w-4 h-4" />
+              {{ t('dash.runAudit') }}
             </NuxtLink>
           </div>
 
@@ -50,8 +50,8 @@
               <p class="mt-2 text-2xl font-semibold text-white">{{ stats?.counts.crypto || 0 }}</p>
             </div>
             <div class="metric-tile">
-              <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.recovery') }}</p>
-              <p class="mt-2 text-2xl font-semibold text-white">{{ stats?.counts.recovery || 0 }}</p>
+              <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('security.badge') }}</p>
+              <p class="mt-2 text-2xl font-semibold text-white">{{ encryptedItems + unencryptedItems }}</p>
             </div>
           </div>
 
@@ -79,8 +79,8 @@
                 <span class="text-sm font-semibold text-white">{{ unencryptedItems }}</span>
               </div>
               <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
-                <span class="text-sm text-surface-300">{{ t('dash.healthRecovery') }}</span>
-                <span class="text-sm font-semibold text-white">{{ stats?.counts.recovery || 0 }}</span>
+                <span class="text-sm text-surface-300">{{ t('sidebar.audit') }}</span>
+                <span class="text-sm font-semibold text-white">{{ t('audit.ready') }}</span>
               </div>
             </div>
           </div>
@@ -179,11 +179,11 @@
 
       <div class="card">
         <div class="flex items-center justify-between mb-3">
-          <Icon name="lucide:ticket-check" class="w-5 h-5 text-purple-400" />
-          <span class="text-xs text-surface-500">{{ t('dash.recovery') }}</span>
+          <Icon name="lucide:shield-alert" class="w-5 h-5 text-rose-400" />
+          <span class="text-xs text-surface-500">{{ t('sidebar.audit') }}</span>
         </div>
-        <p class="text-3xl font-semibold text-white">{{ stats?.counts.recovery || 0 }}</p>
-        <p class="text-sm text-surface-400 mt-1">{{ t('dash.healthRecovery') }}</p>
+        <p class="text-3xl font-semibold text-white">{{ t('audit.ready') }}</p>
+        <p class="text-sm text-surface-400 mt-1">{{ t('audit.notice') }}</p>
       </div>
     </div>
   </div>

@@ -23,8 +23,25 @@
 
       <nav class="flex-1 px-3 pb-4 space-y-6 overflow-y-auto">
         <div class="space-y-2">
+          <p class="px-4 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupMain') }}</p>
           <NuxtLink
             v-for="item in mainNavItems"
+            :key="item.to"
+            :to="item.to"
+            class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
+            :class="isActive(item.to)
+            ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
+              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
+          >
+            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
+            <span>{{ t(item.label) }}</span>
+          </NuxtLink>
+        </div>
+
+        <div class="space-y-2">
+          <p class="px-4 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupTools') }}</p>
+          <NuxtLink
+            v-for="item in toolNavItems"
             :key="item.to"
             :to="item.to"
             class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
@@ -41,6 +58,22 @@
           <p class="px-4 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupSecurity') }}</p>
           <NuxtLink
             v-for="item in securityNavItems"
+            :key="item.to"
+            :to="item.to"
+            class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
+            :class="isActive(item.to)
+            ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
+              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
+          >
+            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
+            <span>{{ t(item.label) }}</span>
+          </NuxtLink>
+        </div>
+
+        <div class="space-y-2">
+          <p class="px-4 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.settings') }}</p>
+          <NuxtLink
+            v-for="item in settingsNavItems"
             :key="item.to"
             :to="item.to"
             class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
@@ -111,9 +144,35 @@
                   <span>{{ t(item.label) }}</span>
                 </NuxtLink>
                 <div class="pt-3">
+                  <p class="px-1 pb-2 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupTools') }}</p>
+                  <NuxtLink
+                    v-for="item in toolNavItems"
+                    :key="item.to"
+                    :to="item.to"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
+                    @click="mobileMenuOpen = false"
+                  >
+                    <Icon :name="item.icon" class="w-5 h-5" />
+                    <span>{{ t(item.label) }}</span>
+                  </NuxtLink>
+                </div>
+                <div class="pt-3">
                   <p class="px-1 pb-2 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupSecurity') }}</p>
                   <NuxtLink
                     v-for="item in securityNavItems"
+                    :key="item.to"
+                    :to="item.to"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
+                    @click="mobileMenuOpen = false"
+                  >
+                    <Icon :name="item.icon" class="w-5 h-5" />
+                    <span>{{ t(item.label) }}</span>
+                  </NuxtLink>
+                </div>
+                <div class="pt-3">
+                  <p class="px-1 pb-2 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.settings') }}</p>
+                  <NuxtLink
+                    v-for="item in settingsNavItems"
                     :key="item.to"
                     :to="item.to"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
@@ -177,17 +236,23 @@ const { showWarning, remainingSeconds, resetTimers } = useAutoLock()
 const mainNavItems = [
   { to: '/dashboard', label: 'sidebar.dashboard', icon: 'lucide:layout-dashboard' },
   { to: '/dashboard/vault', label: 'sidebar.vault', icon: 'lucide:vault' },
-  { to: '/dashboard/password-generator', label: 'sidebar.passwordGenerator', icon: 'lucide:wand-sparkles' },
   { to: '/dashboard/links', label: 'sidebar.links', icon: 'lucide:link' },
   { to: '/dashboard/passwords', label: 'sidebar.passwords', icon: 'lucide:key-round' },
 ]
 
+const toolNavItems = [
+  { to: '/dashboard/password-generator', label: 'sidebar.passwordGenerator', icon: 'lucide:wand-sparkles' },
+  { to: '/dashboard/seed-generator', label: 'sidebar.seedGenerator', icon: 'lucide:hash' },
+  { to: '/dashboard/audit', label: 'sidebar.audit', icon: 'lucide:shield-alert' },
+]
+
 const securityNavItems = [
   { to: '/dashboard/crypto', label: 'sidebar.crypto', icon: 'lucide:bitcoin' },
-  { to: '/dashboard/seed-generator', label: 'sidebar.seedGenerator', icon: 'lucide:hash' },
   { to: '/dashboard/recovery-codes', label: 'sidebar.recoveryCode', icon: 'lucide:ticket-check' },
-  { to: '/dashboard/audit', label: 'sidebar.audit', icon: 'lucide:shield-alert' },
   { to: '/dashboard/export', label: 'sidebar.export', icon: 'lucide:download' },
+]
+
+const settingsNavItems = [
   { to: '/dashboard/settings', label: 'sidebar.settings', icon: 'lucide:settings' },
 ]
 

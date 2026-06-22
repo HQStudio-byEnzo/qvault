@@ -18,7 +18,7 @@ const props = defineProps<{
   alt?: string
 }>()
 
-const resolvedSize = computed(() => props.size ?? 44)
+const resolvedSize = computed(() => props.size ?? 56)
 const logoSrc = '/bitlock-logo.png'
 const alt = computed(() => props.alt ?? 'BitLock')
 </script>

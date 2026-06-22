@@ -3,7 +3,7 @@
     <header class="sticky top-0 z-40 border-b border-surface-800/80 bg-surface-950/85 backdrop-blur-2xl">
       <div class="section-shell max-w-7xl py-4 flex items-center justify-between gap-4">
         <NuxtLink to="/" class="flex items-center font-semibold">
-          <UiBitLockLogo :size="44" />
+          <UiBitLockLogo :size="56" />
         </NuxtLink>
         <NuxtLink to="/auth/register" class="btn-primary">{{ t('generator.cta') }}</NuxtLink>
       </div>

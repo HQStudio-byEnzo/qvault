@@ -1,7 +1,6 @@
 <template>
   <span
-    class="inline-flex items-center font-extrabold tracking-tight text-white drop-shadow-[0_8px_24px_rgba(124,58,237,0.18)]"
-    :style="{ fontSize: `${size * 0.45}px`, lineHeight: 1 }"
+    class="inline-flex items-center text-2xl md:text-3xl font-black tracking-tight text-white"
     aria-label="BitLock"
   >
     BitLock
@@ -9,9 +8,7 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
+defineProps<{
   size?: number
-}>(), {
-  size: 40,
-})
+}>()
 </script>

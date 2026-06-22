@@ -227,6 +227,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
 const { user, signOut } = useAuthClient()
 const { t } = useLang()
 const route = useRoute()

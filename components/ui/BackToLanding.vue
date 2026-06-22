@@ -10,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
+
 const route = useRoute()
 const { t } = useLang()
 

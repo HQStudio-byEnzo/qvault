@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
 definePageMeta({ layout: 'default' })
 
 const { t } = useLang()

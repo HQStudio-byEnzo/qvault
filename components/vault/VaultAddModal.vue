@@ -143,6 +143,8 @@ const emit = defineEmits<{
   added: []
 }>()
 
+import { useLang } from '~/composables/useI18n'
+
 const { addItem, error } = useVault()
 const { masterPassword, isUnlocked, setMasterPassword } = useMasterPassword()
 const { generateSeedPhrase } = useSeedGenerator()

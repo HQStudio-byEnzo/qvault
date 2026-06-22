@@ -1,3 +1,5 @@
+import { useLang } from '~/composables/useI18n'
+
 export type FeatureSlug = 'links' | 'passwords' | 'crypto' | 'encryption' | 'favorites' | 'recovery'
 
 export interface FeatureEntry {

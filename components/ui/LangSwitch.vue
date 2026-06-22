@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
+
 const { locale, setLocale } = useLang()
 
 function toggle() {

@@ -58,6 +58,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
+
 const visible = ref(false)
 const accepted = ref(false)
 const saving = ref(false)

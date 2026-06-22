@@ -190,6 +190,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',

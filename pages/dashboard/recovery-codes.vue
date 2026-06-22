@@ -21,6 +21,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
 const { masterPassword, setMasterPassword } = useMasterPassword()

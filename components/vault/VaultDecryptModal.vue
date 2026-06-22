@@ -77,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
 import type { VaultItem } from '~/composables/useVault'
 
 const props = defineProps<{

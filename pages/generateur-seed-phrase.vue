@@ -2,8 +2,9 @@
   <div class="min-h-screen text-white">
     <header class="sticky top-0 z-40 border-b border-surface-800/80 bg-surface-950/85 backdrop-blur-2xl">
       <div class="section-shell max-w-7xl py-4 flex items-center justify-between gap-4">
-        <NuxtLink to="/" class="flex items-center font-semibold">
+        <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
           <UiBitLockLogo :size="56" />
+          <span class="text-xl tracking-tight text-white">BitLock</span>
         </NuxtLink>
         <NuxtLink to="/auth/register" class="btn-primary">{{ t('generator.cta') }}</NuxtLink>
       </div>
@@ -12,8 +13,8 @@
     <main class="section-shell max-w-7xl py-10 md:py-16 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
       <section>
         <p class="eyebrow mb-4">{{ t('sidebar.seedGenerator') }}</p>
-        <h1 class="text-4xl md:text-6xl font-semibold tracking-tight mb-5">{{ t('seedGenerator.publicTitle') }}</h1>
-        <p class="text-surface-300 text-lg leading-relaxed mb-8 max-w-2xl">{{ t('seedGenerator.publicDesc') }}</p>
+        <h1 class="text-4xl md:text-6xl font-semibold tracking-tight mb-5">{{ t('seedGenerator.toolTitle') }}</h1>
+        <p class="text-surface-300 text-lg leading-relaxed mb-8 max-w-2xl">{{ t('seedGenerator.toolDesc') }}</p>
 
         <div class="glass-panel p-5 md:p-6 space-y-6">
           <div class="space-y-2">
@@ -65,8 +66,8 @@ const { t } = useLang()
 const { generateSeedPhrase } = useSeedGenerator()
 
 useSeoMeta({
-  title: t('seedGenerator.publicSeoTitle'),
-  description: t('seedGenerator.publicSeoDesc'),
+  title: t('seedGenerator.toolSeoTitle'),
+  description: t('seedGenerator.toolSeoDesc'),
 })
 
 const seedPhrase = ref('')

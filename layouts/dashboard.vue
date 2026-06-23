@@ -9,8 +9,9 @@
     <!-- Sidebar -->
     <aside class="hidden lg:flex w-64 flex-col border-r border-surface-800/80 bg-surface-950/95 backdrop-blur-xl relative z-10 shrink-0">
       <div class="px-6 py-6 flex items-center gap-3">
-        <NuxtLink to="/" class="flex items-center group" aria-label="Back to landing page">
+        <NuxtLink to="/" class="flex items-center gap-3 group" aria-label="Back to landing page">
           <UiBitLockLogo :size="72" />
+          <span class="text-2xl font-semibold tracking-tight text-white">BitLock</span>
         </NuxtLink>
       </div>
 
@@ -113,8 +114,9 @@
           <button @click="mobileMenuOpen = true" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
             <Icon name="lucide:menu" class="w-5 h-5" />
           </button>
-          <NuxtLink to="/" aria-label="Back to landing page">
+          <NuxtLink to="/" class="flex items-center gap-3" aria-label="Back to landing page">
             <UiBitLockLogo :size="56" />
+            <span class="text-lg font-semibold tracking-tight text-white">BitLock</span>
           </NuxtLink>
         </div>
         <button @click="signOut" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">

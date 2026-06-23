@@ -2,8 +2,9 @@
   <div class="min-h-screen text-white">
     <header class="sticky top-0 z-40 border-b border-surface-800/80 bg-surface-950/85 backdrop-blur-2xl">
       <div class="section-shell max-w-7xl py-4 flex items-center justify-between gap-4">
-        <NuxtLink to="/" class="flex items-center font-semibold">
+        <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
           <UiBitLockLogo :size="56" />
+          <span class="text-xl tracking-tight text-white">BitLock</span>
         </NuxtLink>
         <NuxtLink to="/auth/register" class="btn-primary">{{ t('generator.cta') }}</NuxtLink>
       </div>
@@ -13,15 +14,15 @@
       <section class="space-y-6">
         <div>
           <p class="eyebrow mb-4">{{ t('sidebar.audit') }}</p>
-          <h1 class="text-4xl md:text-6xl font-semibold tracking-tight mb-5">{{ t('audit.publicTitle') }}</h1>
-          <p class="text-surface-300 text-lg leading-relaxed max-w-2xl">{{ t('audit.publicDesc') }}</p>
+          <h1 class="text-4xl md:text-6xl font-semibold tracking-tight mb-5">{{ t('audit.toolTitle') }}</h1>
+          <p class="text-surface-300 text-lg leading-relaxed max-w-2xl">{{ t('audit.toolDesc') }}</p>
         </div>
 
         <div class="glass-panel p-5 md:p-6 space-y-6">
           <div>
-            <label for="public-audit-password" class="block text-sm text-surface-400 mb-2">{{ t('audit.passwordLabel') }}</label>
+            <label for="audit-password" class="block text-sm text-surface-400 mb-2">{{ t('audit.passwordLabel') }}</label>
             <input
-              id="public-audit-password"
+              id="audit-password"
               v-model="password"
               type="password"
               class="input-field font-mono"
@@ -35,11 +36,11 @@
               <p class="mt-2 text-3xl font-semibold" :class="scoreColor">{{ score }}%</p>
             </div>
             <div class="metric-tile">
-              <p class="text-sm text-surface-400">{{ t('audit.publicStrength') }}</p>
+              <p class="text-sm text-surface-400">{{ t('audit.strength') }}</p>
               <p class="mt-2 text-lg font-semibold text-white">{{ strengthLabel }}</p>
             </div>
             <div class="metric-tile">
-              <p class="text-sm text-surface-400">{{ t('audit.publicEntropy') }}</p>
+              <p class="text-sm text-surface-400">{{ t('audit.entropy') }}</p>
               <p class="mt-2 text-lg font-semibold text-white">{{ entropyBits }} bits</p>
             </div>
           </div>
@@ -64,12 +65,12 @@
       </section>
 
       <aside class="glass-panel p-5 md:p-6 h-fit space-y-4">
-        <h2 class="text-xl font-semibold text-white">{{ t('audit.publicChecklist') }}</h2>
+        <h2 class="text-xl font-semibold text-white">{{ t('audit.checklist') }}</h2>
         <ul class="space-y-3 text-sm text-surface-300">
-          <li>{{ t('audit.publicPractice1') }}</li>
-          <li>{{ t('audit.publicPractice2') }}</li>
-          <li>{{ t('audit.publicPractice3') }}</li>
-          <li>{{ t('audit.publicPractice4') }}</li>
+          <li>{{ t('audit.practice1') }}</li>
+          <li>{{ t('audit.practice2') }}</li>
+          <li>{{ t('audit.practice3') }}</li>
+          <li>{{ t('audit.practice4') }}</li>
         </ul>
       </aside>
     </main>
@@ -84,8 +85,8 @@ definePageMeta({ layout: 'default' })
 const { t } = useLang()
 
 useSeoMeta({
-  title: t('audit.publicSeoTitle'),
-  description: t('audit.publicSeoDesc'),
+  title: t('audit.toolSeoTitle'),
+  description: t('audit.toolSeoDesc'),
 })
 
 const password = ref('')
@@ -121,10 +122,10 @@ const scoreColor = computed(() => {
 })
 
 const strengthLabel = computed(() => {
-  if (!password.value) return t('audit.publicStrengthEmpty')
-  if (score.value >= 80) return t('audit.publicStrengthStrong')
-  if (score.value >= 55) return t('audit.publicStrengthMedium')
-  return t('audit.publicStrengthWeak')
+  if (!password.value) return t('audit.strengthEmpty')
+  if (score.value >= 80) return t('audit.strengthStrong')
+  if (score.value >= 55) return t('audit.strengthMedium')
+  return t('audit.strengthWeak')
 })
 
 const passwordIssues = computed(() => [
@@ -132,22 +133,22 @@ const passwordIssues = computed(() => [
     key: 'length',
     icon: password.value.length >= 12 ? 'lucide:check-circle-2' : 'lucide:alert-triangle',
     level: password.value.length >= 12 ? 'good' : 'warn',
-    title: password.value.length >= 12 ? t('audit.publicLengthGood') : t('audit.publicLengthBad'),
-    desc: t('audit.publicLengthDesc'),
+    title: password.value.length >= 12 ? t('audit.lengthGood') : t('audit.lengthBad'),
+    desc: t('audit.lengthDesc'),
   },
   {
     key: 'mix',
     icon: /[a-z]/.test(password.value) && /[A-Z]/.test(password.value) && /\d/.test(password.value) && /[^A-Za-z0-9]/.test(password.value) ? 'lucide:shield-check' : 'lucide:shield-alert',
     level: /[a-z]/.test(password.value) && /[A-Z]/.test(password.value) && /\d/.test(password.value) && /[^A-Za-z0-9]/.test(password.value) ? 'good' : 'warn',
-    title: /[a-z]/.test(password.value) && /[A-Z]/.test(password.value) && /\d/.test(password.value) && /[^A-Za-z0-9]/.test(password.value) ? t('audit.publicMixGood') : t('audit.publicMixBad'),
-    desc: t('audit.publicMixDesc'),
+    title: /[a-z]/.test(password.value) && /[A-Z]/.test(password.value) && /\d/.test(password.value) && /[^A-Za-z0-9]/.test(password.value) ? t('audit.mixGood') : t('audit.mixBad'),
+    desc: t('audit.mixDesc'),
   },
   {
     key: 'patterns',
     icon: /123|abc|qwerty|password|admin|bitlock/i.test(password.value) ? 'lucide:x-circle' : 'lucide:check-circle-2',
     level: /123|abc|qwerty|password|admin|bitlock/i.test(password.value) ? 'bad' : 'good',
-    title: /123|abc|qwerty|password|admin|bitlock/i.test(password.value) ? t('audit.publicPatternBad') : t('audit.publicPatternGood'),
-    desc: t('audit.publicPatternDesc'),
+    title: /123|abc|qwerty|password|admin|bitlock/i.test(password.value) ? t('audit.patternBad') : t('audit.patternGood'),
+    desc: t('audit.patternDesc'),
   },
 ].filter(issue => password.value || issue.key === 'length'))
 </script>

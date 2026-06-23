@@ -50,7 +50,7 @@
             <div class="rounded-2xl border border-surface-800 bg-surface-900/95 shadow-2xl overflow-hidden">
               <div class="p-3">
                 <NuxtLink
-                  v-for="tool in publicTools"
+                  v-for="tool in toolLinks"
                   :key="tool.to"
                   :to="tool.to"
                   class="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-surface-800 transition-colors"
@@ -476,7 +476,7 @@ const { loggedIn, user } = useUserSession()
 const { features } = useFeatureCatalog()
 const showUserMenu = ref(false)
 const featuredFeatures = computed(() => features.value.slice(0, 3))
-const publicTools = [
+const toolLinks = [
   {
     to: '/generateur-mot-de-passe',
     title: 'tools.password.title',

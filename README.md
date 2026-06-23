@@ -93,4 +93,4 @@ See [BitLock-extension](https://github.com/wave3k/BitLock-extension) for the bro
 
 ## License
 
-MIT — RLT Labs
+MIT — Tensor Team

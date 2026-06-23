@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /auth/
+Disallow: /dashboard/
 
 Sitemap: https://bitlock-two.vercel.app/sitemap.xml

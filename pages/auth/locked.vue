@@ -56,6 +56,7 @@ import { useLang } from '~/composables/useI18n'
 definePageMeta({
   layout: 'default',
   middleware: 'auth',
+  hideFloatingBrand: true,
 })
 
 const route = useRoute()

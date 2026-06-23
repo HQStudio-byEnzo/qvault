@@ -58,6 +58,21 @@
           <input id="itemUrl" v-model="itemUrl" type="url" class="input-field" :placeholder="t('dashboardGenerator.websiteUrlPlaceholder')" />
         </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="itemUsername" class="block text-sm font-medium text-surface-300 mb-1">{{ t('dashboardGenerator.username') }}</label>
+            <input id="itemUsername" v-model="itemUsername" type="text" class="input-field" :placeholder="t('dashboardGenerator.usernamePlaceholder')" />
+          </div>
+          <div>
+            <label for="itemLoginEmail" class="block text-sm font-medium text-surface-300 mb-1">{{ t('dashboardGenerator.loginEmail') }}</label>
+            <input id="itemLoginEmail" v-model="itemLoginEmail" type="email" class="input-field" :placeholder="t('dashboardGenerator.loginEmailPlaceholder')" />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="itemPhone" class="block text-sm font-medium text-surface-300 mb-1">{{ t('dashboardGenerator.phone') }}</label>
+            <input id="itemPhone" v-model="itemPhone" type="tel" class="input-field" :placeholder="t('dashboardGenerator.phonePlaceholder')" />
+          </div>
+        </div>
+
         <div v-if="saveError" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
           {{ saveError }}
         </div>
@@ -83,6 +98,7 @@
 
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
+import { serializePasswordEntry } from '~/utils/password-entry'
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { t } = useLang()
@@ -98,6 +114,9 @@ const saveError = ref('')
 const saveSuccess = ref('')
 const itemLabel = ref('')
 const itemUrl = ref('')
+const itemUsername = ref('')
+const itemLoginEmail = ref('')
+const itemPhone = ref('')
 const masterPasswordInput = ref('')
 
 const toggles = computed(() => [
@@ -140,11 +159,21 @@ async function saveToVault() {
     await addItem({
       type: 'password',
       label,
-      payload: password.value,
+      payload: serializePasswordEntry({
+        password: password.value,
+        username: itemUsername.value,
+        email: itemLoginEmail.value,
+        phone: itemPhone.value,
+      }),
       shouldEncrypt: true,
       url: url || undefined,
     })
 
+    itemLabel.value = ''
+    itemUrl.value = ''
+    itemUsername.value = ''
+    itemLoginEmail.value = ''
+    itemPhone.value = ''
     saveSuccess.value = t('dashboardGenerator.saved')
   } catch (err: any) {
     saveError.value = err.data?.message || t('dashboardGenerator.saveError')

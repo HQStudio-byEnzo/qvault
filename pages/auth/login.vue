@@ -76,6 +76,7 @@ import { useLang } from '~/composables/useI18n'
 definePageMeta({
   layout: 'default',
   middleware: 'guest',
+  hideFloatingBrand: true,
 })
 
 const { t } = useLang()

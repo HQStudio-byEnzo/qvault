@@ -12,5 +12,5 @@
 <script setup lang="ts">
 const route = useRoute()
 
-const showButton = computed(() => route.path !== '/')
+const showButton = computed(() => route.path !== '/' && route.meta.hideFloatingBrand !== true)
 </script>

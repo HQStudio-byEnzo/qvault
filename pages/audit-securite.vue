@@ -6,7 +6,9 @@
           <UiBitLockLogo :size="56" />
           <span class="text-xl tracking-tight text-white">BitLock</span>
         </NuxtLink>
-        <NuxtLink to="/auth/register" class="btn-primary">{{ t('generator.cta') }}</NuxtLink>
+        <NuxtLink :to="loggedIn ? '/dashboard' : '/auth/register'" class="btn-primary">
+          {{ loggedIn ? t('hero.dashboardCta') : t('generator.cta') }}
+        </NuxtLink>
       </div>
     </header>
 
@@ -80,9 +82,13 @@
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
 
-definePageMeta({ layout: 'default' })
+definePageMeta({
+  layout: 'default',
+  hideFloatingBrand: true,
+})
 
 const { t } = useLang()
+const { loggedIn } = useUserSession()
 
 useSeoMeta({
   title: t('audit.toolSeoTitle'),

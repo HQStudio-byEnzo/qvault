@@ -53,14 +53,38 @@
         <!-- Decrypted result -->
         <div v-else class="space-y-4">
           <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-            <p class="text-xs text-surface-500 mb-2">{{ t('vault.decryptedContent') }}</p>
-            <p class="text-sm text-surface-100 font-mono break-all whitespace-pre-wrap">{{ decryptedValue }}</p>
+            <p class="text-xs text-surface-500 mb-3">{{ t('vault.decryptedContent') }}</p>
+
+            <div v-if="passwordEntry" class="space-y-3">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.14em] text-surface-500">{{ t('vault.passwordValue') }}</p>
+                <p class="mt-1 text-sm text-surface-100 font-mono break-all whitespace-pre-wrap">{{ passwordEntry.password }}</p>
+              </div>
+              <div v-if="passwordEntry.username">
+                <p class="text-[11px] uppercase tracking-[0.14em] text-surface-500">{{ t('vault.username') }}</p>
+                <p class="mt-1 text-sm text-surface-100 break-all">{{ passwordEntry.username }}</p>
+              </div>
+              <div v-if="passwordEntry.email">
+                <p class="text-[11px] uppercase tracking-[0.14em] text-surface-500">{{ t('vault.loginEmail') }}</p>
+                <p class="mt-1 text-sm text-surface-100 break-all">{{ passwordEntry.email }}</p>
+              </div>
+              <div v-if="passwordEntry.phone">
+                <p class="text-[11px] uppercase tracking-[0.14em] text-surface-500">{{ t('vault.phone') }}</p>
+                <p class="mt-1 text-sm text-surface-100 break-all">{{ passwordEntry.phone }}</p>
+              </div>
+              <div v-if="item.url">
+                <p class="text-[11px] uppercase tracking-[0.14em] text-surface-500">{{ t('vault.websiteUrl') }}</p>
+                <p class="mt-1 text-sm text-surface-100 break-all">{{ item.url }}</p>
+              </div>
+            </div>
+
+            <p v-else class="text-sm text-surface-100 font-mono break-all whitespace-pre-wrap">{{ decryptedValue }}</p>
           </div>
 
           <div class="flex gap-2">
             <button @click="copyDecrypted" class="btn-primary flex-1 flex items-center justify-center gap-2">
               <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" class="w-4 h-4" />
-              {{ copied ? t('vault.copied') : t('vault.copy') }}
+              {{ copied ? t('vault.copied') : passwordEntry ? t('vault.copyPassword') : t('vault.copy') }}
             </button>
             <button @click="$emit('close')" class="btn-secondary flex-1">
               {{ t('vault.close') }}
@@ -79,6 +103,7 @@
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
 import type { VaultItem } from '~/composables/useVault'
+import { parsePasswordEntry } from '~/utils/password-entry'
 
 const props = defineProps<{
   item: VaultItem
@@ -98,6 +123,13 @@ const errorMsg = ref('')
 const isDecrypting = ref(false)
 const copied = ref(false)
 
+const passwordEntry = computed(() => {
+  if (!decryptedValue.value || props.item.type !== 'password') return null
+  return parsePasswordEntry(decryptedValue.value)
+})
+
+const copyValue = computed(() => passwordEntry.value?.password || decryptedValue.value)
+
 async function handleDecrypt() {
   isDecrypting.value = true
   errorMsg.value = ''
@@ -114,10 +146,10 @@ async function handleDecrypt() {
 
 async function copyDecrypted() {
   try {
-    await navigator.clipboard.writeText(decryptedValue.value)
+    await navigator.clipboard.writeText(copyValue.value)
     copied.value = true
     setTimeout(() => { copied.value = false }, 2000)
-    scheduleClipboardClear(decryptedValue.value)
+    scheduleClipboardClear(copyValue.value)
   } catch {
     // Fallback
   }

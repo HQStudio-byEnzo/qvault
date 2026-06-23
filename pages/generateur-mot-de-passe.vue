@@ -5,7 +5,9 @@
         <NuxtLink to="/" class="flex items-center font-semibold">
           <UiBitLockLogo :size="56" />
         </NuxtLink>
-        <NuxtLink to="/auth/register" class="btn-primary">{{ t('generator.cta') }}</NuxtLink>
+        <NuxtLink :to="loggedIn ? '/dashboard' : '/auth/register'" class="btn-primary">
+          {{ loggedIn ? t('hero.dashboardCta') : t('generator.cta') }}
+        </NuxtLink>
       </div>
     </header>
     <main class="section-shell max-w-7xl py-10 md:py-16 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
@@ -57,8 +59,12 @@
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
 
-definePageMeta({ layout: 'default' })
+definePageMeta({
+  layout: 'default',
+  hideFloatingBrand: true,
+})
 const { t } = useLang()
+const { loggedIn } = useUserSession()
 useSeoMeta({ title: t('generator.seoTitle'), description: t('generator.seoDesc') })
 const { generatePassword, entropy } = usePasswordGenerator()
 const options = reactive({ length: 24, uppercase: true, lowercase: true, numbers: true, symbols: true, avoidAmbiguous: true })

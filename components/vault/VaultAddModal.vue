@@ -95,9 +95,23 @@
             ></textarea>
           </div>
 
-          <div v-if="form.type === 'password'">
-            <label for="url" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.websiteUrl') }}</label>
-            <input id="url" v-model="form.url" type="url" class="input-field" placeholder="https://gmail.com" />
+          <div v-if="form.type === 'password'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="username" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.username') }}</label>
+              <input id="username" v-model="form.username" type="text" class="input-field" :placeholder="t('vault.usernamePlaceholder')" />
+            </div>
+            <div>
+              <label for="loginEmail" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.loginEmail') }}</label>
+              <input id="loginEmail" v-model="form.loginEmail" type="email" class="input-field" :placeholder="t('vault.loginEmailPlaceholder')" />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.phone') }}</label>
+              <input id="phone" v-model="form.phone" type="tel" class="input-field" :placeholder="t('vault.phonePlaceholder')" />
+            </div>
+            <div>
+              <label for="url" class="block text-sm font-medium text-surface-300 mb-1">{{ t('vault.websiteUrl') }}</label>
+              <input id="url" v-model="form.url" type="url" class="input-field" placeholder="https://gmail.com" />
+            </div>
           </div>
 
           <div class="space-y-2">
@@ -134,6 +148,9 @@
 </template>
 
 <script setup lang="ts">
+import { useLang } from '~/composables/useI18n'
+import { serializePasswordEntry } from '~/utils/password-entry'
+
 const props = defineProps<{
   defaultType?: 'link' | 'password' | 'crypto' | 'recovery'
 }>()
@@ -142,8 +159,6 @@ const emit = defineEmits<{
   close: []
   added: []
 }>()
-
-import { useLang } from '~/composables/useI18n'
 
 const { addItem, error } = useVault()
 const { masterPassword, isUnlocked, setMasterPassword } = useMasterPassword()
@@ -156,6 +171,9 @@ const form = reactive({
   type: props.defaultType || 'link' as 'link' | 'password' | 'crypto' | 'recovery',
   label: '',
   payload: '',
+  username: '',
+  loginEmail: '',
+  phone: '',
   url: '',
   encrypt: props.defaultType === 'link' ? false : true,
 })
@@ -213,7 +231,14 @@ async function handleSubmit() {
     await addItem({
       type: form.type,
       label: form.label,
-      payload: form.payload,
+      payload: form.type === 'password'
+        ? serializePasswordEntry({
+            password: form.payload,
+            username: form.username,
+            email: form.loginEmail,
+            phone: form.phone,
+          })
+        : form.payload,
       shouldEncrypt: form.type === 'link' ? form.encrypt : true,
       url: form.type === 'password' ? form.url : form.type === 'link' ? form.payload : undefined,
     })

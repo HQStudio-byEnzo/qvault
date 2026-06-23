@@ -34,7 +34,12 @@
             ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
               : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
           >
-            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
+            <Icon
+              v-if="item.icon"
+              :name="item.icon"
+              class="w-[18px] h-[18px]"
+              :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'"
+            />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
         </div>
@@ -50,7 +55,12 @@
             ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
               : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
           >
-            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
+            <Icon
+              v-if="item.icon"
+              :name="item.icon"
+              class="w-[18px] h-[18px]"
+              :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'"
+            />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
         </div>
@@ -66,7 +76,12 @@
             ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
               : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
           >
-            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
+            <Icon
+              v-if="item.icon"
+              :name="item.icon"
+              class="w-[18px] h-[18px]"
+              :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'"
+            />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
         </div>
@@ -82,7 +97,12 @@
             ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
               : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
           >
-            <Icon :name="item.icon" class="w-[18px] h-[18px]" :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'" />
+            <Icon
+              v-if="item.icon"
+              :name="item.icon"
+              class="w-[18px] h-[18px]"
+              :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'"
+            />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
         </div>
@@ -245,7 +265,7 @@ const mainNavItems = [
 
 const toolNavItems = [
   { to: '/dashboard/password-generator', label: 'sidebar.passwordGenerator', icon: 'lucide:wand-sparkles' },
-  { to: '/dashboard/seed-generator', label: 'sidebar.seedGenerator', icon: 'lucide:hash' },
+  { to: '/dashboard/seed-generator', label: 'sidebar.seedGenerator' },
   { to: '/dashboard/audit', label: 'sidebar.audit', icon: 'lucide:shield-alert' },
 ]
 

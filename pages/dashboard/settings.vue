@@ -267,6 +267,66 @@
       </section>
     </section>
 
+    <section v-else-if="activeSection === 'shortcuts'" class="space-y-6">
+      <section class="glass-panel p-5 md:p-6 space-y-4">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+              <Icon name="lucide:keyboard" class="w-5 h-5 text-surface-400" />
+              {{ t('settings.shortcuts') }}
+            </h2>
+            <p class="text-sm text-surface-400 mt-1 max-w-2xl">{{ t('settings.shortcutsDesc') }}</p>
+          </div>
+          <label class="flex items-center gap-3 rounded-2xl border border-surface-800 bg-surface-900/80 px-4 py-3">
+            <input v-model="shortcuts.enabled" type="checkbox" class="rounded border-surface-600 text-accent-500 focus:ring-accent-500" @change="saveShortcuts" />
+            <span class="text-sm text-surface-200">{{ t('settings.shortcutsEnabled') }}</span>
+          </label>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <div
+            v-for="action in shortcutActions"
+            :key="action.id"
+            class="rounded-2xl border border-surface-800 bg-surface-900/70 p-4 space-y-3"
+          >
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p class="text-sm font-medium text-white">{{ t(action.labelKey) }}</p>
+                <p class="text-xs text-surface-500 mt-1">{{ t(action.descriptionKey) }}</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="flex items-center gap-2 text-sm text-surface-300">
+                  <input
+                    v-model="shortcuts.actions[action.id].enabled"
+                    type="checkbox"
+                    class="rounded border-surface-600 text-accent-500 focus:ring-accent-500"
+                    @change="saveShortcuts"
+                  />
+                  <span>{{ t('settings.shortcutEnabled') }}</span>
+                </label>
+                <button
+                  type="button"
+                  class="btn-secondary whitespace-nowrap"
+                  @click="startShortcutCapture(action.id)"
+                >
+                  {{ editingShortcutId === action.id ? t('settings.shortcutPress') : formatShortcutCombo(shortcuts.actions[action.id].combo) }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-2">
+          <button class="btn-primary" @click="saveShortcuts">{{ t('settings.save') }}</button>
+          <button class="btn-secondary" @click="resetShortcuts">{{ t('settings.shortcutResetAll') }}</button>
+        </div>
+
+        <div v-if="shortcutsSaved" class="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400">
+          {{ t('settings.shortcutsSaved') }}
+        </div>
+      </section>
+    </section>
+
     <section v-else-if="activeSection === 'support'" class="space-y-6">
       <section class="glass-panel p-5 md:p-6 space-y-4">
         <h2 class="text-lg font-semibold text-white flex items-center gap-2">
@@ -335,19 +395,23 @@
 
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
+import { type ShortcutActionId, useShortcutPreferences } from '~/composables/useShortcuts'
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user, signOut } = useAuthClient()
 const { locale, setLocale, t } = useLang()
 const { fetchItems, reencryptVault } = useVault()
 const { masterPassword, setMasterPassword, clearMasterPassword, isUnlocked } = useMasterPassword()
+const { shortcuts, shortcutActions, loadShortcuts, saveShortcuts, resetShortcuts, formatShortcutCombo, editing } = useShortcutPreferences()
 
 const userInfo = ref<any>(null)
 const securitySaved = ref(false)
+const shortcutsSaved = ref(false)
 const masterPwdLoading = ref(false)
 const masterPwdError = ref('')
 const masterPwdSuccess = ref('')
-const activeSection = ref<'account' | 'security' | 'language' | 'support' | 'danger'>('account')
+const activeSection = ref<'account' | 'security' | 'language' | 'shortcuts' | 'support' | 'danger'>('account')
+const editingShortcutId = ref<ShortcutActionId | null>(null)
 const securitySettings = reactive({
   autoLockMinutes: 5,
   clipboardClearSeconds: 30,
@@ -357,6 +421,7 @@ const settingSections = computed(() => [
   { id: 'account', label: t('settings.account'), icon: 'lucide:user' },
   { id: 'security', label: t('settings.security'), icon: 'lucide:shield' },
   { id: 'language', label: t('settings.language'), icon: 'lucide:globe' },
+  { id: 'shortcuts', label: t('settings.shortcuts'), icon: 'lucide:keyboard' },
   { id: 'support', label: t('settings.support'), icon: 'lucide:message-circle' },
   { id: 'danger', label: t('settings.danger'), icon: 'lucide:alert-triangle' },
  ] as const)
@@ -366,6 +431,7 @@ onMounted(async () => {
     userInfo.value = await $fetch('/api/auth/me')
   } catch {}
   loadSecuritySettings()
+  loadShortcuts()
   await fetchItems()
 })
 
@@ -467,6 +533,57 @@ function resetMasterOnboarding() {
   setTimeout(() => { securitySaved.value = false }, 2000)
 }
 
+function startShortcutCapture(id: ShortcutActionId) {
+  editing.value = true
+  editingShortcutId.value = id
+}
+
+function stopShortcutCapture() {
+  editing.value = false
+  editingShortcutId.value = null
+}
+
+function buildShortcutCombo(event: KeyboardEvent) {
+  const parts: string[] = []
+  if (event.metaKey || event.ctrlKey) parts.push('mod')
+  if (event.shiftKey) parts.push('shift')
+  if (event.altKey) parts.push('alt')
+
+  const key = event.key.toLowerCase()
+  if (['control', 'shift', 'alt', 'meta'].includes(key)) return ''
+  if (key === 'escape') return 'escape'
+  if (key === ',') {
+    parts.push(',')
+    return parts.join('+')
+  }
+
+  if (key.length === 1) {
+    parts.push(key)
+    return parts.join('+')
+  }
+
+  return ''
+}
+
+function handleShortcutCapture(event: KeyboardEvent) {
+  if (!editingShortcutId.value) return
+  event.preventDefault()
+
+  if (event.key.toLowerCase() === 'escape') {
+    stopShortcutCapture()
+    return
+  }
+
+  const combo = buildShortcutCombo(event)
+  if (!combo) return
+
+  shortcuts.value.actions[editingShortcutId.value].combo = combo
+  saveShortcuts()
+  shortcutsSaved.value = true
+  stopShortcutCapture()
+  setTimeout(() => { shortcutsSaved.value = false }, 2000)
+}
+
 const masterPwdForm = reactive({
   currentPassword: '',
   newPassword: '',
@@ -502,4 +619,12 @@ function lockMasterPassword() {
   clearMasterPassword()
   masterPwdSuccess.value = t('settings.masterPwdLocked')
 }
+
+onMounted(() => {
+  window.addEventListener('keydown', handleShortcutCapture)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleShortcutCapture)
+})
 </script>

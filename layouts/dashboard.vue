@@ -251,6 +251,7 @@
 import { useLang } from '~/composables/useI18n'
 const { user, signOut } = useAuthClient()
 const { t } = useLang()
+useAppShortcuts()
 const route = useRoute()
 const mobileMenuOpen = ref(false)
 const { showWarning, remainingSeconds, resetTimers } = useAutoLock()

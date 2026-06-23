@@ -27,6 +27,8 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
 const { masterPassword, setMasterPassword } = useMasterPassword()
 const { t } = useLang()
+const route = useRoute()
+const router = useRouter()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
 const deleteTarget = ref<any>(null)
@@ -38,5 +40,18 @@ async function confirmDelete(secret: string) {
   await deleteItem(deleteTarget.value, secret || masterPassword.value || '')
   deleteTarget.value = null
 }
-onMounted(() => fetchItems({ type: 'recovery' }))
+onMounted(() => {
+  fetchItems({ type: 'recovery' })
+  if (route.query.add) {
+    showAddModal.value = true
+    router.replace({ path: route.path, query: { ...route.query, add: undefined } })
+  }
+})
+
+watch(() => route.query.add, (value) => {
+  if (value) {
+    showAddModal.value = true
+    router.replace({ path: route.path, query: { ...route.query, add: undefined } })
+  }
+})
 </script>

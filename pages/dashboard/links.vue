@@ -59,6 +59,8 @@ import { useLang } from '~/composables/useI18n'
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { t } = useLang()
+const route = useRoute()
+const router = useRouter()
 const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
 const { masterPassword, setMasterPassword } = useMasterPassword()
 const showAddModal = ref(false)
@@ -80,5 +82,18 @@ async function confirmDelete(secret: string) {
   deleteTarget.value = null
 }
 
-onMounted(() => fetchItems({ type: 'link' }))
+onMounted(() => {
+  fetchItems({ type: 'link' })
+  if (route.query.add) {
+    showAddModal.value = true
+    router.replace({ path: route.path, query: { ...route.query, add: undefined } })
+  }
+})
+
+watch(() => route.query.add, (value) => {
+  if (value) {
+    showAddModal.value = true
+    router.replace({ path: route.path, query: { ...route.query, add: undefined } })
+  }
+})
 </script>

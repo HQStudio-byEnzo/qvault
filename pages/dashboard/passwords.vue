@@ -43,6 +43,13 @@
       :item="decryptTarget"
       @close="decryptTarget = null"
     />
+
+    <VaultDeleteModal
+      v-if="deleteTarget"
+      :item="deleteTarget"
+      @close="deleteTarget = null"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
@@ -55,21 +62,21 @@ const { items, loading, fetchItems, toggleFavorite, deleteItem } = useVault()
 const { masterPassword, setMasterPassword } = useMasterPassword()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
+const deleteTarget = ref<any>(null)
 
 const filteredItems = computed(() => items.value.filter(i => i.type === 'password'))
 
 function handleDecrypt(item: any) { decryptTarget.value = item }
-async function handleDelete(item: any) {
-  if (!confirm(t('passwords.confirmDelete'))) return
+function handleDelete(item: any) {
+  deleteTarget.value = item
+}
 
-  let secret = masterPassword.value || ''
-  if (item.is_encrypted) {
-    secret = window.prompt('Enter your master password to delete this item.')?.trim() || ''
-    if (!secret) return
-    setMasterPassword(secret)
-  }
+async function confirmDelete(secret: string) {
+  if (!deleteTarget.value) return
 
-  await deleteItem(item, secret)
+  if (secret) setMasterPassword(secret)
+  await deleteItem(deleteTarget.value, secret || masterPassword.value || '')
+  deleteTarget.value = null
 }
 
 onMounted(() => {

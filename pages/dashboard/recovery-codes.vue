@@ -18,6 +18,7 @@
     <div v-else class="space-y-3"><VaultItemCard v-for="item in filteredItems" :key="item.id" :item="item" @toggle-favorite="toggleFavorite(item)" @delete="handleDelete(item)" @decrypt="decryptTarget = item" /></div>
     <VaultAddModal v-if="showAddModal" default-type="recovery" @close="showAddModal = false" @added="showAddModal = false" />
     <VaultDecryptModal v-if="decryptTarget" :item="decryptTarget" @close="decryptTarget = null" />
+    <VaultDeleteModal v-if="deleteTarget" :item="deleteTarget" @close="deleteTarget = null" @confirm="confirmDelete" />
   </div>
 </template>
 <script setup lang="ts">
@@ -28,7 +29,14 @@ const { masterPassword, setMasterPassword } = useMasterPassword()
 const { t } = useLang()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
+const deleteTarget = ref<any>(null)
 const filteredItems = computed(() => items.value.filter(i => i.type === 'recovery'))
-async function handleDelete(item: any) { if (!confirm(t('recovery.deleteConfirm'))) return; let secret = masterPassword.value || ''; if (item.is_encrypted) { secret = window.prompt(t('recovery.masterPwdRequired'))?.trim() || ''; if (!secret) return; setMasterPassword(secret) } await deleteItem(item, secret) }
+function handleDelete(item: any) { deleteTarget.value = item }
+async function confirmDelete(secret: string) {
+  if (!deleteTarget.value) return
+  if (secret) setMasterPassword(secret)
+  await deleteItem(deleteTarget.value, secret || masterPassword.value || '')
+  deleteTarget.value = null
+}
 onMounted(() => fetchItems({ type: 'recovery' }))
 </script>

@@ -231,7 +231,11 @@ export function useVault() {
           throw new Error('Le mot de passe maître est requis pour supprimer cet élément.')
         }
 
-        await decryptItem(item, secret)
+        try {
+          await decryptItem(item, secret)
+        } catch {
+          throw new Error('Le mot de passe maître est incorrect ou le secret est corrompu.')
+        }
       }
 
       await $fetch(`/api/vault/${item.id}`, { method: 'DELETE' })

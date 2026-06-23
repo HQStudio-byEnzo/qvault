@@ -48,6 +48,7 @@
     <VaultDeleteModal
       v-if="deleteTarget"
       :item="deleteTarget"
+      :error-message="deleteError"
       @close="deleteTarget = null"
       @confirm="confirmDelete"
     />
@@ -66,20 +67,27 @@ const { masterPassword, setMasterPassword } = useMasterPassword()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
 const deleteTarget = ref<any>(null)
+const deleteError = ref('')
 
 const filteredItems = computed(() => items.value.filter(i => i.type === 'link'))
 
 function handleDecrypt(item: any) { decryptTarget.value = item }
 function handleDelete(item: any) {
+  deleteError.value = ''
   deleteTarget.value = item
 }
 
 async function confirmDelete(secret: string) {
   if (!deleteTarget.value) return
 
-  if (secret) setMasterPassword(secret)
-  await deleteItem(deleteTarget.value, secret || masterPassword.value || '')
-  deleteTarget.value = null
+  deleteError.value = ''
+  try {
+    if (secret) setMasterPassword(secret)
+    await deleteItem(deleteTarget.value, secret || masterPassword.value || '')
+    deleteTarget.value = null
+  } catch (err: any) {
+    deleteError.value = err?.message || t('settings.deleteError')
+  }
 }
 
 onMounted(() => {

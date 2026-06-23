@@ -31,8 +31,8 @@
             />
           </div>
 
-          <div v-if="errorMsg" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
-            {{ errorMsg }}
+          <div v-if="displayError" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+            {{ displayError }}
           </div>
 
           <div class="flex gap-3">
@@ -55,6 +55,7 @@ import type { VaultItem } from '~/composables/useVault'
 
 const props = defineProps<{
   item: VaultItem
+  errorMessage?: string
 }>()
 
 const emit = defineEmits<{
@@ -65,6 +66,7 @@ const emit = defineEmits<{
 const { t } = useLang()
 const secret = ref('')
 const errorMsg = ref('')
+const displayError = computed(() => props.errorMessage || errorMsg.value)
 const confirmText = computed(() => {
   const label = props.item.label || t('vault.untitled')
   return t('vault.deletePrompt').replace('{label}', label)

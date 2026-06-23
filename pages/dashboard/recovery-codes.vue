@@ -18,7 +18,7 @@
     <div v-else class="space-y-3"><VaultItemCard v-for="item in filteredItems" :key="item.id" :item="item" @toggle-favorite="toggleFavorite(item)" @delete="handleDelete(item)" @decrypt="decryptTarget = item" /></div>
     <VaultAddModal v-if="showAddModal" default-type="recovery" @close="showAddModal = false" @added="showAddModal = false" />
     <VaultDecryptModal v-if="decryptTarget" :item="decryptTarget" @close="decryptTarget = null" />
-    <VaultDeleteModal v-if="deleteTarget" :item="deleteTarget" @close="deleteTarget = null" @confirm="confirmDelete" />
+    <VaultDeleteModal v-if="deleteTarget" :item="deleteTarget" :error-message="deleteError" @close="deleteTarget = null" @confirm="confirmDelete" />
   </div>
 </template>
 <script setup lang="ts">
@@ -32,13 +32,19 @@ const router = useRouter()
 const showAddModal = ref(false)
 const decryptTarget = ref<any>(null)
 const deleteTarget = ref<any>(null)
+const deleteError = ref('')
 const filteredItems = computed(() => items.value.filter(i => i.type === 'recovery'))
-function handleDelete(item: any) { deleteTarget.value = item }
+function handleDelete(item: any) { deleteError.value = ''; deleteTarget.value = item }
 async function confirmDelete(secret: string) {
   if (!deleteTarget.value) return
-  if (secret) setMasterPassword(secret)
-  await deleteItem(deleteTarget.value, secret || masterPassword.value || '')
-  deleteTarget.value = null
+  deleteError.value = ''
+  try {
+    if (secret) setMasterPassword(secret)
+    await deleteItem(deleteTarget.value, secret || masterPassword.value || '')
+    deleteTarget.value = null
+  } catch (err: any) {
+    deleteError.value = err?.message || t('settings.deleteError')
+  }
 }
 onMounted(() => {
   fetchItems({ type: 'recovery' })

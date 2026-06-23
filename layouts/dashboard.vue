@@ -223,7 +223,7 @@
         >
           <div class="flex items-start gap-3">
             <div class="w-8 h-8 rounded-lg bg-yellow-600/20 flex items-center justify-center flex-shrink-0">
-              <Icon name="lucide:timer" class="w-4 h-4 text-yellow-400" />
+              <Icon name="lucide:alert-triangle" class="w-4 h-4 text-yellow-400" />
             </div>
             <div>
               <p class="text-sm font-medium text-yellow-200">{{ t('autolock.title') }}</p>
@@ -280,6 +280,7 @@ const settingsNavItems = [
 ]
 
 function isActive(path: string) {
+  if (!path) return false
   return route.path === path || route.path.startsWith(`${path}/`)
 }
 </script>

@@ -1,12 +1,12 @@
 <template>
   <Teleport to="body">
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="$emit('close')"></div>
+      <div class="absolute inset-0 modal-backdrop" @click="$emit('close')"></div>
 
-      <div class="relative w-full max-w-md glass-panel p-5 md:p-6 animate-scale-in">
+      <div class="relative w-full max-w-md modal-shell p-5 md:p-6 animate-scale-in" role="dialog" aria-modal="true" :aria-label="t('vault.deleteTitle')">
         <div class="flex items-center justify-between mb-5">
           <h2 class="text-lg font-semibold text-white">{{ t('vault.deleteTitle') }}</h2>
-          <button @click="$emit('close')" class="p-2 rounded-xl hover:bg-white/5 text-surface-300">
+          <button type="button" @click="$emit('close')" class="icon-button" :aria-label="t('vault.close')">
             <Icon name="lucide:x" class="w-5 h-5" />
           </button>
         </div>
@@ -36,10 +36,10 @@
           </div>
 
           <div class="flex gap-3">
-            <button @click="$emit('close')" class="btn-secondary flex-1">
+            <button type="button" @click="$emit('close')" class="btn-secondary flex-1">
               {{ t('vault.close') }}
             </button>
-            <button @click="handleConfirm" class="btn-primary flex-1">
+            <button type="button" @click="handleConfirm" class="btn-primary flex-1">
               {{ t('vault.deleteAction') }}
             </button>
           </div>

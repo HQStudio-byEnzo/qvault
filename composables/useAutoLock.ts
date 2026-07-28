@@ -34,7 +34,7 @@ export function useAutoLock() {
 
     if (inactivityTimeout === 0) return
 
-    const warningBefore = Math.min(30 * 1000, Math.max(0, inactivityTimeout - 1000))
+    const warningBefore = Math.min(30 * 1000, Math.max(5000, inactivityTimeout - 1000))
 
     // Set warning timer (fires 30s before logout)
     warningTimer = setTimeout(() => {

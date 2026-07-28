@@ -9,6 +9,9 @@ dist
 
 # Node dependencies
 node_modules
+*.db
+*.db-shm
+*.db-wal
 
 # Logs
 logs

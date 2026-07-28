@@ -12,7 +12,7 @@
           v-for="section in settingSections"
           :key="section.id"
           type="button"
-          class="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all"
+          class="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors"
           :class="activeSection === section.id
             ? 'border-accent-500/30 bg-accent-600/10 text-accent-300'
             : 'border-surface-800 bg-surface-900/80 text-surface-400 hover:border-surface-700 hover:text-surface-100'"
@@ -32,12 +32,8 @@
         </h2>
         <div class="space-y-3">
           <div class="flex items-center justify-between gap-4 py-2 border-b border-surface-800">
-            <span class="text-sm text-surface-400">{{ t('settings.name') }}</span>
-            <span class="text-sm text-surface-200 text-right break-all">{{ user?.name }}</span>
-          </div>
-          <div class="flex items-center justify-between gap-4 py-2 border-b border-surface-800">
-            <span class="text-sm text-surface-400">{{ t('settings.email') }}</span>
-            <span class="text-sm text-surface-200 text-right break-all">{{ user?.email }}</span>
+            <span class="text-sm text-surface-400">{{ t('settings.username') }}</span>
+            <span class="text-sm text-surface-200 text-right break-all">@{{ user?.username }}</span>
           </div>
           <div class="flex items-center justify-between gap-4 py-2">
             <span class="text-sm text-surface-400">{{ t('settings.since') }}</span>
@@ -60,6 +56,7 @@
               v-model="pwdForm.currentPassword"
               type="password"
               required
+              autocomplete="current-password"
               class="input-field"
               placeholder="••••••••"
             />
@@ -71,7 +68,9 @@
               v-model="pwdForm.newPassword"
               type="password"
               required
-              minlength="8"
+              :minlength="MIN_ACCOUNT_PASSWORD_LENGTH"
+              maxlength="72"
+              autocomplete="new-password"
               class="input-field"
               :placeholder="t('settings.newPwdPlaceholder')"
             />
@@ -83,6 +82,9 @@
               v-model="pwdForm.confirmPassword"
               type="password"
               required
+              :minlength="MIN_ACCOUNT_PASSWORD_LENGTH"
+              maxlength="72"
+              autocomplete="new-password"
               class="input-field"
               placeholder="••••••••"
             />
@@ -109,7 +111,7 @@
           <Icon name="lucide:shield" class="w-5 h-5 text-surface-400" />
           {{ t('settings.security') }}
         </h2>
-        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+        <div class="system-note">
           <p class="text-sm text-surface-400 leading-relaxed">
             {{ t('settings.securityDesc') }}
           </p>
@@ -148,7 +150,9 @@
               v-model="masterPwdForm.newPassword"
               type="password"
               required
-              minlength="8"
+              :minlength="MIN_MASTER_PASSWORD_LENGTH"
+              maxlength="128"
+              autocomplete="new-password"
               class="input-field"
               :placeholder="t('settings.masterPwdNewPlaceholder')"
             />
@@ -162,6 +166,9 @@
               v-model="masterPwdForm.confirmPassword"
               type="password"
               required
+              :minlength="MIN_MASTER_PASSWORD_LENGTH"
+              maxlength="128"
+              autocomplete="new-password"
               class="input-field"
               :placeholder="t('settings.masterPwdConfirmPlaceholder')"
             />
@@ -231,14 +238,82 @@
           </span>
         </label>
 
+        <label class="flex items-start gap-3 text-sm text-surface-300 cursor-pointer">
+          <input v-model="securitySettings.privacyShield" type="checkbox" class="mt-1" />
+          <span>
+            {{ t('settings.privacyShield') }}
+            <span class="block text-xs text-surface-500 mt-0.5">{{ t('settings.privacyShieldDesc') }}</span>
+          </span>
+        </label>
+
         <div class="flex flex-wrap gap-2 pt-2">
-          <button class="btn-primary" @click="saveSecuritySettings">{{ t('settings.save') }}</button>
-          <button class="btn-secondary" @click="resetMasterOnboarding">{{ t('settings.resetOnboarding') }}</button>
+          <button type="button" class="btn-primary" @click="saveSecuritySettings">{{ t('settings.save') }}</button>
+          <button type="button" class="btn-secondary" @click="resetMasterOnboarding">{{ t('settings.resetOnboarding') }}</button>
         </div>
 
         <div v-if="securitySaved" class="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400">
           {{ t('settings.saved') }}
         </div>
+      </section>
+
+      <section class="glass-panel p-5 md:p-6 space-y-4">
+        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+          <Icon name="lucide:lightbulb" class="w-5 h-5 text-surface-400" />
+          {{ t('settings.hintTitle') }}
+        </h2>
+        <p class="text-sm text-surface-400">{{ t('settings.hintDesc') }}</p>
+        <form class="space-y-4" @submit.prevent="savePasswordHint">
+          <div>
+            <label for="accountHint" class="block text-sm font-medium text-surface-300 mb-1">{{ t('settings.hintLabel') }}</label>
+            <input id="accountHint" v-model="hintForm.hint" maxlength="200" class="input-field" :placeholder="t('auth.register.hintPlaceholder')" />
+            <p class="mt-1 text-xs text-amber-300">{{ t('settings.hintWarning') }}</p>
+          </div>
+          <div>
+            <label for="hintPassword" class="block text-sm font-medium text-surface-300 mb-1">{{ t('settings.hintPassword') }}</label>
+            <input id="hintPassword" v-model="hintForm.password" type="password" required class="input-field" autocomplete="current-password" />
+          </div>
+          <button class="btn-primary" :disabled="hintLoading">{{ t('settings.hintSave') }}</button>
+          <p v-if="hintMessage" class="text-sm" :class="hintFailed ? 'text-red-400' : 'text-accent-300'">{{ hintMessage }}</p>
+        </form>
+      </section>
+
+      <section class="glass-panel p-5 md:p-6 space-y-4">
+        <h2 class="text-lg font-semibold text-white flex items-center gap-2"><Icon name="lucide:fingerprint" class="w-5 h-5 text-accent-400" />{{ t('settings.passkeyTitle') }}</h2>
+        <p class="text-sm text-surface-400">{{ t('settings.passkeyDesc') }}</p>
+        <p v-if="!passkeySupported" class="text-sm text-amber-300">{{ t('settings.passkeyUnsupported') }}</p>
+        <div v-else class="flex flex-wrap items-center gap-3">
+          <span class="tech-status">{{ passkeyConfigured ? t('settings.passkeyActive') : t('settings.passkeyInactive') }}</span>
+          <button v-if="!passkeyConfigured" type="button" class="btn-primary" :disabled="!isUnlocked || passkeyLoading" @click="enablePasskey">{{ t('settings.passkeyEnable') }}</button>
+          <button v-else type="button" class="btn-secondary" @click="disablePasskey">{{ t('settings.passkeyDisable') }}</button>
+        </div>
+        <p v-if="passkeyMessage" class="text-sm" :class="passkeyFailed ? 'text-red-400' : 'text-accent-300'">{{ passkeyMessage }}</p>
+      </section>
+
+      <section class="glass-panel p-5 md:p-6 space-y-4">
+        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+          <Icon name="lucide:unplug" class="w-5 h-5 text-accent-400" />
+          {{ t('settings.extensionTitle') }}
+        </h2>
+        <p class="text-sm text-surface-400">{{ t('settings.extensionDesc') }}</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="tech-status">{{ extensionConfigured ? t('settings.extensionActive') : t('settings.extensionInactive') }}</span>
+          <button type="button" class="btn-primary" :disabled="extensionLoading" @click="generateExtensionToken">
+            {{ extensionConfigured ? t('settings.extensionRotate') : t('settings.extensionGenerate') }}
+          </button>
+          <button v-if="extensionConfigured" type="button" class="btn-secondary" :disabled="extensionLoading" @click="revokeExtensionToken">
+            {{ t('settings.extensionRevoke') }}
+          </button>
+        </div>
+        <div v-if="extensionToken" class="system-note space-y-3">
+          <p class="text-xs text-amber-300">{{ t('settings.extensionOnce') }}</p>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input :value="extensionToken" readonly class="input-field flex-1 font-mono text-xs" />
+            <button type="button" class="btn-secondary" @click="copyExtensionToken">
+              <Icon name="lucide:copy" class="w-4 h-4" />{{ t('settings.extensionCopy') }}
+            </button>
+          </div>
+        </div>
+        <p v-if="extensionMessage" class="text-sm" :class="extensionFailed ? 'text-red-400' : 'text-accent-300'">{{ extensionMessage }}</p>
       </section>
     </section>
 
@@ -251,14 +326,14 @@
         <div class="flex flex-wrap gap-2">
           <button
             @click="setLocale('fr')"
-            class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             :class="locale === 'fr' ? 'bg-accent-600 text-white' : 'bg-surface-800 text-surface-400 border border-surface-700 hover:border-surface-600'"
           >
             French
           </button>
           <button
             @click="setLocale('en')"
-            class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             :class="locale === 'en' ? 'bg-accent-600 text-white' : 'bg-surface-800 text-surface-400 border border-surface-700 hover:border-surface-600'"
           >
             English
@@ -317,8 +392,8 @@
         </div>
 
         <div class="flex flex-wrap gap-2 pt-2">
-          <button class="btn-primary" @click="saveShortcuts">{{ t('settings.save') }}</button>
-          <button class="btn-secondary" @click="resetShortcuts">{{ t('settings.shortcutResetAll') }}</button>
+          <button type="button" class="btn-primary" @click="saveShortcuts">{{ t('settings.save') }}</button>
+          <button type="button" class="btn-secondary" @click="resetShortcuts">{{ t('settings.shortcutResetAll') }}</button>
         </div>
 
         <div v-if="shortcutsSaved" class="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400">
@@ -349,7 +424,7 @@
         </h2>
 
         <div class="space-y-4">
-          <button @click="handleSignOut" class="btn-secondary flex items-center gap-2">
+          <button type="button" @click="handleSignOut" class="btn-secondary flex items-center gap-2">
             <Icon name="lucide:log-out" class="w-4 h-4" />
             {{ t('settings.logout') }}
           </button>
@@ -360,7 +435,7 @@
             </p>
 
             <div v-if="!showDeleteConfirm">
-              <button @click="showDeleteConfirm = true" class="btn-danger flex items-center gap-2">
+              <button type="button" @click="showDeleteConfirm = true" class="btn-danger flex items-center gap-2">
                 <Icon name="lucide:trash-2" class="w-4 h-4" />
                 {{ t('settings.deleteBtn') }}
               </button>
@@ -376,12 +451,12 @@
               />
               <div v-if="deleteError" class="text-sm text-red-400">{{ deleteError }}</div>
               <div class="flex gap-2">
-                <button @click="handleDeleteAccount" :disabled="deleteLoading" class="btn-danger flex items-center gap-2">
+                <button type="button" @click="handleDeleteAccount" :disabled="deleteLoading" class="btn-danger flex items-center gap-2">
                   <Icon name="lucide:trash-2" class="w-4 h-4" />
                   <span v-if="deleteLoading">{{ t('settings.deleting') }}</span>
                   <span v-else>{{ t('settings.confirmDelete') }}</span>
                 </button>
-                <button @click="showDeleteConfirm = false; deletePassword = ''" class="btn-secondary">
+                <button type="button" @click="showDeleteConfirm = false; deletePassword = ''" class="btn-secondary">
                   {{ t('settings.cancel') }}
                 </button>
               </div>
@@ -396,13 +471,19 @@
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
 import { type ShortcutActionId, useShortcutPreferences } from '~/composables/useShortcuts'
+import {
+  MIN_ACCOUNT_PASSWORD_LENGTH,
+  MIN_MASTER_PASSWORD_LENGTH,
+} from '~/utils/security-policy'
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user, signOut } = useAuthClient()
 const { locale, setLocale, t } = useLang()
 const { fetchItems, reencryptVault } = useVault()
-const { masterPassword, setMasterPassword, clearMasterPassword, isUnlocked } = useMasterPassword()
+const { masterPassword, clearMasterPassword, isUnlocked } = useMasterPassword()
 const { shortcuts, shortcutActions, loadShortcuts, saveShortcuts, resetShortcuts, formatShortcutCombo, editing } = useShortcutPreferences()
+const { supported: passkeySupported, configured: passkeyConfigured, enable: setupPasskey, disable: removePasskey } = usePasskeyUnlock()
+const { copySecurely } = useSecureClipboard()
 
 const userInfo = ref<any>(null)
 const securitySaved = ref(false)
@@ -410,12 +491,25 @@ const shortcutsSaved = ref(false)
 const masterPwdLoading = ref(false)
 const masterPwdError = ref('')
 const masterPwdSuccess = ref('')
+const passkeyLoading = ref(false)
+const passkeyMessage = ref('')
+const passkeyFailed = ref(false)
+const extensionConfigured = ref(false)
+const extensionLoading = ref(false)
+const extensionToken = ref('')
+const extensionMessage = ref('')
+const extensionFailed = ref(false)
+const hintForm = reactive({ hint: '', password: '' })
+const hintLoading = ref(false)
+const hintMessage = ref('')
+const hintFailed = ref(false)
 const activeSection = ref<'account' | 'security' | 'language' | 'shortcuts' | 'support' | 'danger'>('account')
 const editingShortcutId = ref<ShortcutActionId | null>(null)
 const securitySettings = reactive({
   autoLockMinutes: 5,
   clipboardClearSeconds: 30,
   hideDecryptedByDefault: true,
+  privacyShield: true,
 })
 const settingSections = computed(() => [
   { id: 'account', label: t('settings.account'), icon: 'lucide:user' },
@@ -429,10 +523,12 @@ const settingSections = computed(() => [
 onMounted(async () => {
   try {
     userInfo.value = await $fetch('/api/auth/me')
+    hintForm.hint = userInfo.value?.password_hint || ''
   } catch {}
   loadSecuritySettings()
   loadShortcuts()
   await fetchItems()
+  await loadExtensionTokenStatus()
 })
 
 // Change password
@@ -449,6 +545,10 @@ async function handleChangePassword() {
     pwdError.value = t('settings.pwdMismatch')
     return
   }
+  if (pwdForm.newPassword.length < MIN_ACCOUNT_PASSWORD_LENGTH) {
+    pwdError.value = t('auth.register.pwdTooShort')
+    return
+  }
 
   pwdLoading.value = true
   try {
@@ -460,6 +560,8 @@ async function handleChangePassword() {
     pwdForm.currentPassword = ''
     pwdForm.newPassword = ''
     pwdForm.confirmPassword = ''
+    extensionConfigured.value = false
+    extensionToken.value = ''
   } catch (err: any) {
     pwdError.value = err.data?.message || t('settings.pwdError')
   } finally {
@@ -485,6 +587,9 @@ async function handleDeleteAccount() {
       method: 'POST',
       body: { password: deletePassword.value },
     })
+    removePasskey()
+    clearOnboardingState()
+    clearMasterPassword()
     navigateTo('/')
   } catch (err: any) {
     deleteError.value = err.data?.message || t('settings.deleteError')
@@ -515,22 +620,109 @@ function loadSecuritySettings() {
   securitySettings.autoLockMinutes = Number(localStorage.getItem('bitlock.security.autoLockMinutes') || 5)
   securitySettings.clipboardClearSeconds = Number(localStorage.getItem('bitlock.security.clipboardClearSeconds') || 30)
   securitySettings.hideDecryptedByDefault = localStorage.getItem('bitlock.security.hideDecryptedByDefault') !== 'false'
+  securitySettings.privacyShield = localStorage.getItem('bitlock.security.privacyShield') !== 'false'
 }
 
 function saveSecuritySettings() {
   localStorage.setItem('bitlock.security.autoLockMinutes', String(securitySettings.autoLockMinutes))
   localStorage.setItem('bitlock.security.clipboardClearSeconds', String(securitySettings.clipboardClearSeconds))
   localStorage.setItem('bitlock.security.hideDecryptedByDefault', String(securitySettings.hideDecryptedByDefault))
+  localStorage.setItem('bitlock.security.privacyShield', String(securitySettings.privacyShield))
   window.dispatchEvent(new Event('bitlock-security-settings-changed'))
   securitySaved.value = true
   setTimeout(() => { securitySaved.value = false }, 2000)
 }
 
+function onboardingKey(name: 'done' | 'snoozed') {
+  const owner = user.value?.id || user.value?.username || 'anonymous'
+  return `bitlock.masterPasswordOnboarding:${encodeURIComponent(String(owner))}:${name}`
+}
+
+function clearOnboardingState() {
+  localStorage.removeItem(onboardingKey('done'))
+  localStorage.removeItem(onboardingKey('snoozed'))
+}
+
 function resetMasterOnboarding() {
-  localStorage.removeItem('bitlock.masterPasswordOnboarded')
-  localStorage.removeItem('bitlock.masterPasswordOnboardingSnoozedUntil')
+  clearOnboardingState()
   securitySaved.value = true
   setTimeout(() => { securitySaved.value = false }, 2000)
+}
+
+async function enablePasskey() {
+  if (!masterPassword.value) { passkeyFailed.value = true; passkeyMessage.value = t('settings.passkeyUnlockFirst'); return }
+  passkeyLoading.value = true; passkeyMessage.value = ''; passkeyFailed.value = false
+  try { await setupPasskey(masterPassword.value, user.value?.username || 'BitLock user'); passkeyMessage.value = t('settings.passkeyEnabled') }
+  catch { passkeyFailed.value = true; passkeyMessage.value = t('settings.passkeyError') }
+  finally { passkeyLoading.value = false }
+}
+
+function disablePasskey() { removePasskey(); passkeyMessage.value = t('settings.passkeyDisabled'); passkeyFailed.value = false }
+
+async function savePasswordHint() {
+  hintLoading.value = true
+  hintMessage.value = ''
+  hintFailed.value = false
+  try {
+    await $fetch('/api/auth/hint', {
+      method: 'PUT',
+      body: { hint: hintForm.hint, password: hintForm.password },
+    })
+    hintForm.password = ''
+    hintMessage.value = t('settings.hintSaved')
+  } catch (error: any) {
+    hintFailed.value = true
+    hintMessage.value = error?.data?.message || t('settings.hintFailed')
+  } finally {
+    hintLoading.value = false
+  }
+}
+
+async function loadExtensionTokenStatus() {
+  try {
+    const status = await $fetch<{ configured: boolean }>('/api/security/extension-token')
+    extensionConfigured.value = status.configured
+  } catch {}
+}
+
+async function generateExtensionToken() {
+  extensionLoading.value = true
+  extensionMessage.value = ''
+  extensionFailed.value = false
+  try {
+    const response = await $fetch<{ token: string }>('/api/security/extension-token', { method: 'POST' })
+    extensionToken.value = response.token
+    extensionConfigured.value = true
+    extensionMessage.value = t('settings.extensionGenerated')
+  } catch {
+    extensionFailed.value = true
+    extensionMessage.value = t('settings.extensionFailed')
+  } finally {
+    extensionLoading.value = false
+  }
+}
+
+async function revokeExtensionToken() {
+  extensionLoading.value = true
+  extensionMessage.value = ''
+  extensionFailed.value = false
+  try {
+    await $fetch('/api/security/extension-token', { method: 'DELETE' })
+    extensionToken.value = ''
+    extensionConfigured.value = false
+    extensionMessage.value = t('settings.extensionRevoked')
+  } catch {
+    extensionFailed.value = true
+    extensionMessage.value = t('settings.extensionFailed')
+  } finally {
+    extensionLoading.value = false
+  }
+}
+
+async function copyExtensionToken() {
+  await copySecurely(extensionToken.value, 120)
+  extensionMessage.value = t('settings.extensionCopied')
+  extensionFailed.value = false
 }
 
 function startShortcutCapture(id: ShortcutActionId) {
@@ -598,12 +790,16 @@ async function handleChangeMasterPassword() {
     masterPwdError.value = t('settings.masterPwdMismatch')
     return
   }
+  if (masterPwdForm.newPassword.length < MIN_MASTER_PASSWORD_LENGTH) {
+    masterPwdError.value = t('masterSetup.tooShort')
+    return
+  }
 
   masterPwdLoading.value = true
 
   try {
     await reencryptVault(masterPwdForm.currentPassword || (isUnlocked.value ? masterPassword.value || '' : ''), masterPwdForm.newPassword)
-    setMasterPassword(masterPwdForm.newPassword)
+    removePasskey()
     masterPwdForm.currentPassword = ''
     masterPwdForm.newPassword = ''
     masterPwdForm.confirmPassword = ''
@@ -613,11 +809,6 @@ async function handleChangeMasterPassword() {
   } finally {
     masterPwdLoading.value = false
   }
-}
-
-function lockMasterPassword() {
-  clearMasterPassword()
-  masterPwdSuccess.value = t('settings.masterPwdLocked')
 }
 
 onMounted(() => {

@@ -1,0 +1,30 @@
+[
+  {
+    "date": "2026-07-22",
+    "macrostructure": "Narrative Workflow",
+    "theme": "Terminal",
+    "enrichment": "none",
+    "brief": "BitLock product-led landing and operational dashboard redesign"
+  },
+  {
+    "date": "2026-07-21",
+    "macrostructure": "Workbench",
+    "theme": "Midnight",
+    "enrichment": "live product UI",
+    "brief": "BitLock full technical interface redesign"
+  },
+  {
+    "date": "2026-07-21",
+    "macrostructure": "Split Studio",
+    "theme": "Cobalt",
+    "enrichment": "none",
+    "brief": "BitLock secure-vault redesign"
+  },
+  {
+    "date": "2026-07-21",
+    "macrostructure": "Long Document",
+    "theme": "Studio",
+    "enrichment": "none",
+    "brief": "BitLock editorial local-vault redesign"
+  }
+]

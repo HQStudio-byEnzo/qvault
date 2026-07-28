@@ -1,211 +1,187 @@
 <template>
-  <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-8">
-    <section class="hero-panel overflow-hidden relative">
-      <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute -top-20 right-0 h-56 w-56 rounded-full bg-emerald-500/10 blur-[90px]"></div>
-        <div class="absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-accent-500/10 blur-[100px]"></div>
+  <div class="command-dashboard">
+    <header class="command-dashboard__head">
+      <div>
+        <p class="terminal-label">vault://overview</p>
+        <h1>{{ t('dash.commandWelcome') }} {{ user?.username || t('dash.commandFallback') }}</h1>
+        <p>{{ t('dash.commandDesc') }}</p>
       </div>
-
-      <div class="relative grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-6 items-start">
-        <div class="space-y-6">
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="eyebrow">{{ t('dash.title') }}</span>
-            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              {{ t('security.badge') }}
-            </span>
-          </div>
-
-          <div class="space-y-3">
-            <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">
-              {{ t('dash.welcome') }}, {{ user?.name || 'there' }}.
-            </h1>
-            <p class="text-surface-300 text-base md:text-lg max-w-2xl leading-relaxed">
-              {{ t('dash.overview') }} {{ t('dash.healthDesc') }}
-            </p>
-          </div>
-
-          <div class="flex flex-wrap gap-3">
-            <NuxtLink to="/dashboard/vault" class="btn-primary inline-flex items-center gap-2">
-              <Icon name="lucide:vault" class="w-4 h-4" />
-              {{ t('dash.openVault') }}
-            </NuxtLink>
-            <NuxtLink to="/dashboard/audit" class="btn-secondary inline-flex items-center gap-2">
-              <Icon name="lucide:shield-alert" class="w-4 h-4" />
-              {{ t('dash.runAudit') }}
-            </NuxtLink>
-          </div>
-
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="metric-tile">
-              <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.links') }}</p>
-              <p class="mt-2 text-2xl font-semibold text-white">{{ stats?.counts.links || 0 }}</p>
-            </div>
-            <div class="metric-tile">
-              <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.passwords') }}</p>
-              <p class="mt-2 text-2xl font-semibold text-white">{{ stats?.counts.passwords || 0 }}</p>
-            </div>
-            <div class="metric-tile">
-              <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.crypto') }}</p>
-              <p class="mt-2 text-2xl font-semibold text-white">{{ stats?.counts.crypto || 0 }}</p>
-            </div>
-            <div class="metric-tile">
-              <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('security.badge') }}</p>
-              <p class="mt-2 text-2xl font-semibold text-white">{{ encryptedItems + unencryptedItems }}</p>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="flex flex-col gap-4 min-h-full">
-          <div class="glass-panel p-6 h-full">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.healthTitle') }}</p>
-                <p class="mt-1 text-sm text-surface-300">{{ t('dash.healthDesc') }}</p>
-              </div>
-              <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <Icon name="lucide:shield" class="w-5 h-5 text-emerald-400" />
-              </div>
-            </div>
-
-            <div class="mt-5 space-y-3">
-              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
-                <span class="text-sm text-surface-300">{{ t('dash.healthEncrypted') }}</span>
-                <span class="text-sm font-semibold text-white">{{ encryptedItems }}</span>
-              </div>
-              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
-                <span class="text-sm text-surface-300">{{ t('dash.healthUnencrypted') }}</span>
-                <span class="text-sm font-semibold text-white">{{ unencryptedItems }}</span>
-              </div>
-              <div class="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3">
-                <span class="text-sm text-surface-300">{{ t('sidebar.audit') }}</span>
-                <span class="text-sm font-semibold text-white">{{ t('audit.ready') }}</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
+      <div class="command-dashboard__state">
+        <span :class="['vault-state', { 'vault-state--open': isUnlocked }]">
+          <Icon :name="isUnlocked ? 'lucide:lock-open' : 'lucide:lock-keyhole'" class="h-4 w-4" />
+          {{ isUnlocked ? t('dash.unlocked') : t('dash.locked') }}
+        </span>
+        <NuxtLink to="/dashboard/vault" class="btn-primary">
+          {{ t('dash.openVault') }}
+          <Icon name="lucide:arrow-right" class="h-4 w-4" />
+        </NuxtLink>
       </div>
+    </header>
 
-      <div class="glass-panel p-5 md:p-6 mt-6 md:mt-8">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p class="text-xs uppercase tracking-[0.16em] text-surface-500">{{ t('dash.quick') }}</p>
-            <p class="mt-1 text-sm text-surface-400">{{ t('dash.overview') }}</p>
-          </div>
-          <NuxtLink to="/dashboard/vault" class="hidden sm:inline-flex btn-secondary text-sm px-3 py-2">
-            {{ t('dash.openVault') }}
-          </NuxtLink>
-        </div>
-
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 auto-rows-fr">
-          <NuxtLink to="/dashboard/links" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-              <Icon name="lucide:link" class="w-5 h-5 text-blue-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('dash.addLink') }}</p>
-              <p class="text-xs text-surface-500">{{ t('sidebar.links') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/passwords" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-              <Icon name="lucide:key-round" class="w-5 h-5 text-amber-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('dash.addPassword') }}</p>
-              <p class="text-xs text-surface-500">{{ t('sidebar.passwords') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/password-generator" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-              <Icon name="lucide:wand-sparkles" class="w-5 h-5 text-emerald-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('sidebar.passwordGenerator') }}</p>
-              <p class="text-xs text-surface-500">{{ t('dashboardGenerator.saveDesc') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/crypto" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-              <Icon name="lucide:bitcoin" class="w-5 h-5 text-orange-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('dash.addCrypto') }}</p>
-              <p class="text-xs text-surface-500">{{ t('sidebar.crypto') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/audit" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
-              <Icon name="lucide:shield-alert" class="w-5 h-5 text-rose-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('sidebar.audit') }}</p>
-              <p class="text-xs text-surface-500">{{ t('audit.notice') }}</p>
-            </div>
-          </NuxtLink>
-          <NuxtLink to="/dashboard/seed-generator" class="feature-tile flex items-center gap-3 min-h-[96px] h-full">
-            <div class="w-10 h-10 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-              <Icon name="lucide:hash" class="w-5 h-5 text-violet-300" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-white">{{ t('sidebar.seedGenerator') }}</p>
-              <p class="text-xs text-surface-500">{{ t('seedGenerator.saveDesc') }}</p>
-            </div>
-          </NuxtLink>
-        </div>
+    <section class="vault-telemetry" :aria-label="t('dash.telemetry')">
+      <div v-for="metric in metrics" :key="metric.label" class="vault-telemetry__item">
+        <span>{{ metric.code }} / {{ metric.label }}</span>
+        <strong>{{ metric.value }}</strong>
+        <small>{{ metric.note }}</small>
       </div>
     </section>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div class="card">
-        <div class="flex items-center justify-between mb-3">
-          <Icon name="lucide:star" class="w-5 h-5 text-yellow-400" />
-          <span class="text-xs text-surface-500">{{ t('dash.favorites') }}</span>
-        </div>
-        <p class="text-3xl font-semibold text-white">{{ stats?.counts.favorites || 0 }}</p>
-        <p class="text-sm text-surface-400 mt-1">{{ t('dash.favorites') }}</p>
-      </div>
+    <div class="command-dashboard__grid">
+      <section class="dashboard-console dashboard-console--activity">
+        <header class="dashboard-console__head">
+          <div>
+            <p class="terminal-label">{{ t('dash.recentLabel') }}</p>
+            <h2>{{ t('dash.recentTitle') }}</h2>
+          </div>
+          <NuxtLink to="/dashboard/vault" class="text-command">{{ t('dash.viewAll') }} →</NuxtLink>
+        </header>
 
-      <div class="card">
-        <div class="flex items-center justify-between mb-3">
-          <Icon name="lucide:shield-check" class="w-5 h-5 text-emerald-400" />
-          <span class="text-xs text-surface-500">{{ t('security.badge') }}</span>
+        <div v-if="loading" class="dashboard-skeleton" aria-label="Loading">
+          <span v-for="index in 4" :key="index" />
         </div>
-        <p class="text-3xl font-semibold text-white">{{ totalItems }}</p>
-        <p class="text-sm text-surface-400 mt-1">{{ t('dash.overview') }}</p>
-      </div>
+        <div v-else-if="recentItems.length" class="activity-log">
+          <NuxtLink v-for="item in recentItems" :key="item.id" to="/dashboard/vault" class="activity-log__row">
+            <span class="activity-log__type"><Icon :name="typeIcon(item.type)" class="h-4 w-4" /></span>
+            <span class="activity-log__copy">
+              <strong>{{ item.label }}</strong>
+              <small>{{ typeLabel(item.type) }} · {{ formatDate(item.updated_at || item.created_at) }}</small>
+            </span>
+            <span :class="['activity-log__security', { 'activity-log__security--plain': !item.is_encrypted }]">
+              {{ item.is_encrypted ? t('dash.encrypted') : t('dash.plain') }}
+            </span>
+          </NuxtLink>
+        </div>
+        <div v-else class="dashboard-empty">
+          <Icon name="lucide:archive" class="h-6 w-6" />
+          <div>
+            <strong>{{ t('dash.emptyTitle') }}</strong>
+            <p>{{ t('dash.emptyDesc') }}</p>
+          </div>
+          <NuxtLink to="/dashboard/vault" class="btn-secondary">{{ t('dash.emptyAction') }}</NuxtLink>
+        </div>
+      </section>
 
-      <div class="card">
-        <div class="flex items-center justify-between mb-3">
-          <Icon name="lucide:shield-alert" class="w-5 h-5 text-rose-400" />
-          <span class="text-xs text-surface-500">{{ t('sidebar.audit') }}</span>
-        </div>
-        <p class="text-3xl font-semibold text-white">{{ t('audit.ready') }}</p>
-        <p class="text-sm text-surface-400 mt-1">{{ t('audit.notice') }}</p>
-      </div>
+      <section class="dashboard-console dashboard-console--capture">
+        <header class="dashboard-console__head">
+          <div>
+            <p class="terminal-label">{{ t('dash.captureLabel') }}</p>
+            <h2>{{ t('dash.captureTitle') }}</h2>
+          </div>
+        </header>
+        <nav class="capture-list" :aria-label="t('dash.captureTitle')">
+          <NuxtLink v-for="action in captureActions" :key="action.to" :to="action.to">
+            <Icon :name="action.icon" class="h-5 w-5" />
+            <span><strong>{{ action.title }}</strong><small>{{ action.note }}</small></span>
+            <span aria-hidden="true">+</span>
+          </NuxtLink>
+        </nav>
+      </section>
+
+      <section class="dashboard-console dashboard-console--health">
+        <header class="dashboard-console__head">
+          <div>
+            <p class="terminal-label">{{ t('dash.healthLabel') }}</p>
+            <h2>{{ t('dash.healthTitle') }}</h2>
+          </div>
+          <span class="health-readout">{{ healthState }}</span>
+        </header>
+        <dl class="health-table">
+          <div>
+            <dt>{{ t('dash.encryptedSecrets') }}</dt>
+            <dd>{{ encryptedSecrets }} / {{ secretItems.length }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('dash.itemsToReview') }}</dt>
+            <dd>{{ reviewItems }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('dash.localDatabase') }}</dt>
+            <dd>Turso</dd>
+          </div>
+        </dl>
+        <NuxtLink to="/dashboard/audit" class="dashboard-console__action">
+          <Icon name="lucide:scan-search" class="h-4 w-4" />
+          {{ t('dash.runAudit') }}
+          <span aria-hidden="true">→</span>
+        </NuxtLink>
+      </section>
+
+      <section class="dashboard-console dashboard-console--tools">
+        <header class="dashboard-console__head">
+          <div>
+            <p class="terminal-label">{{ t('dash.toolLabel') }}</p>
+            <h2>{{ t('dash.toolTitle') }}</h2>
+          </div>
+        </header>
+        <nav class="utility-grid" :aria-label="t('dash.toolTitle')">
+          <NuxtLink v-for="tool in utilityActions" :key="tool.to" :to="tool.to">
+            <Icon :name="tool.icon" class="h-5 w-5" />
+            <span>{{ tool.title }}</span>
+            <small>{{ tool.command }}</small>
+          </NuxtLink>
+        </nav>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { VaultItem } from '~/composables/useVault'
 import { useLang } from '~/composables/useI18n'
-definePageMeta({
-  layout: 'dashboard',
-  middleware: 'auth',
-})
+
+definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { user } = useAuthClient()
-const { t } = useLang()
-const { items, stats, fetchItems, fetchStats } = useVault()
+const { t, locale } = useLang()
+const { isUnlocked } = useMasterPassword()
+const { items, stats, loading, fetchItems, fetchStats } = useVault()
 
-const totalItems = computed(() => stats.value?.counts.total || items.value.length || 0)
-const encryptedItems = computed(() => items.value.filter(item => item.is_encrypted).length)
-const unencryptedItems = computed(() => items.value.filter(item => !item.is_encrypted).length)
+const totalItems = computed(() => stats.value?.counts.total ?? items.value.length)
+const secretItems = computed(() => items.value.filter(item => item.type !== 'link'))
+const encryptedSecrets = computed(() => secretItems.value.filter(item => item.is_encrypted).length)
+const reviewItems = computed(() => items.value.filter(item => (!item.is_encrypted && item.type !== 'link') || isStale(item)).length)
+const recentItems = computed(() => [...items.value]
+  .sort((a, b) => new Date(b.updated_at || b.created_at).getTime() - new Date(a.updated_at || a.created_at).getTime())
+  .slice(0, 5))
+const healthState = computed(() => reviewItems.value > 0 ? t('dash.review') : t('dash.nominal'))
 
-onMounted(() => {
-  fetchItems()
-  fetchStats()
-})
+const metrics = computed(() => [
+  { code: '01', label: t('dash.totalItems'), value: totalItems.value, note: t('dash.totalItemsNote') },
+  { code: '02', label: t('dash.encryptedSecrets'), value: encryptedSecrets.value, note: t('dash.encryptedSecretsNote') },
+  { code: '03', label: t('dash.favorites'), value: stats.value?.counts.favorites || 0, note: t('dash.favoritesNote') },
+  { code: '04', label: t('dash.itemsToReview'), value: reviewItems.value, note: t('dash.itemsToReviewNote') },
+])
+
+const captureActions = computed(() => [
+  { to: '/dashboard/links', icon: 'lucide:link', title: t('dash.addLink'), note: t('dash.captureLinkNote') },
+  { to: '/dashboard/passwords', icon: 'lucide:key-round', title: t('dash.addPassword'), note: t('dash.capturePasswordNote') },
+  { to: '/dashboard/crypto', icon: 'lucide:bitcoin', title: t('dash.addCrypto'), note: t('dash.captureCryptoNote') },
+  { to: '/dashboard/recovery-codes', icon: 'lucide:ticket-check', title: t('dash.addRecovery'), note: t('dash.captureRecoveryNote') },
+])
+
+const utilityActions = computed(() => [
+  { to: '/dashboard/password-generator', icon: 'lucide:wand-sparkles', title: t('sidebar.passwordGenerator'), command: 'gen --password' },
+  { to: '/dashboard/seed-generator', icon: 'lucide:binary', title: t('sidebar.seedGenerator'), command: 'gen --bip39' },
+  { to: '/dashboard/audit', icon: 'lucide:shield-check', title: t('sidebar.audit'), command: 'audit --metadata' },
+  { to: '/dashboard/export', icon: 'lucide:arrow-down-to-line', title: t('sidebar.export'), command: 'vault --transfer' },
+])
+
+function isStale(item: VaultItem) {
+  const date = new Date(item.updated_at || item.created_at).getTime()
+  return Number.isFinite(date) && Date.now() - date > 180 * 24 * 60 * 60 * 1000
+}
+
+function typeIcon(type: VaultItem['type']) {
+  return ({ link: 'lucide:link', password: 'lucide:key-round', crypto: 'lucide:bitcoin', recovery: 'lucide:ticket-check' })[type]
+}
+
+function typeLabel(type: VaultItem['type']) {
+  return ({ link: t('dash.links'), password: t('dash.passwords'), crypto: t('dash.crypto'), recovery: t('dash.recovery') })[type]
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', { day: '2-digit', month: 'short' }).format(new Date(value))
+}
+
+onMounted(() => Promise.all([fetchItems(), fetchStats()]))
 </script>

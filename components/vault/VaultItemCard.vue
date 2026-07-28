@@ -89,6 +89,7 @@ defineEmits<{
 }>()
 
 const { t, locale } = useLang()
+const { copySecurely } = useSecureClipboard()
 const copied = ref(false)
 
 const safeUrl = computed(() => {
@@ -106,18 +107,24 @@ const typeLabels = computed(() => ({
   password: t('vault.typePassword'),
   crypto: t('vault.typeCrypto'),
   recovery: t('sidebar.recoveryCode'),
+  note: t('vault.typeNote'),
+  totp: t('vault.typeTotp'),
 }))
 
 const typeStyles = computed(() => {
   switch (props.item.type) {
     case 'link':
-      return { bg: 'bg-blue-500/10', icon: 'lucide:link', text: 'text-blue-400' }
+      return { bg: 'bg-accent-500/10 border border-accent-500/20', icon: 'lucide:link', text: 'text-accent-400' }
     case 'password':
-      return { bg: 'bg-amber-500/10', icon: 'lucide:key-round', text: 'text-amber-400' }
+      return { bg: 'bg-accent-500/10 border border-accent-500/20', icon: 'lucide:key-round', text: 'text-accent-400' }
     case 'crypto':
-      return { bg: 'bg-orange-500/10', icon: 'lucide:bitcoin', text: 'text-orange-400' }
+      return { bg: 'bg-accent-500/10 border border-accent-500/20', icon: 'lucide:bitcoin', text: 'text-accent-400' }
     case 'recovery':
-      return { bg: 'bg-rose-500/10', icon: 'lucide:ticket-check', text: 'text-rose-400' }
+      return { bg: 'bg-accent-500/10 border border-accent-500/20', icon: 'lucide:ticket-check', text: 'text-accent-400' }
+    case 'note':
+      return { bg: 'bg-accent-500/10 border border-accent-500/20', icon: 'lucide:notebook-tabs', text: 'text-accent-400' }
+    case 'totp':
+      return { bg: 'bg-accent-500/10 border border-accent-500/20', icon: 'lucide:timer-reset', text: 'text-accent-400' }
     default:
       return { bg: 'bg-surface-700', icon: 'lucide:file', text: 'text-surface-400' }
   }
@@ -133,7 +140,7 @@ function formatDate(date: string) {
 
 async function copyPayload() {
   try {
-    await navigator.clipboard.writeText(props.item.payload)
+    await copySecurely(props.item.payload)
     copied.value = true
     setTimeout(() => { copied.value = false }, 2000)
   } catch {

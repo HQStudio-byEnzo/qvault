@@ -1,96 +1,105 @@
-# BitLock - Zero-Knowledge Digital Vault
+# BitLock
 
-BitLock is a free, open-source digital vault that stores your links, passwords, and crypto keys with client-side zero-knowledge encryption.
-
-**Live:** [bitlock-two.vercel.app](https://bitlock-two.vercel.app)
+BitLock is an online zero-knowledge vault. Passwords, notes, TOTP secrets,
+crypto keys, and recovery codes are encrypted in the browser before they are
+sent to the server. The hosted database stores ciphertext and the metadata
+required to operate the account.
 
 ## Features
 
-- **Links** — Save important URLs and bookmarks
-- **Passwords** — Store credentials with military-grade encryption
-- **Crypto** — Protect seed phrases and private keys
-- **Client-side encryption** — AES-256-GCM, your data is encrypted in the browser before being sent
-- **Seed Phrase Generator** — Generate random 12-word seed phrases
-- **Password Health Audit** — Check the strength of your stored passwords
-- **Export / Import** — Download or upload your vault data as JSON
-- **Auto-lock** — Automatic logout after 5 minutes of inactivity
-- **Multi-language** — English and French support
-- **Chrome Extension** — Access your vault from the browser toolbar
+- Username-based accounts with legacy email sign-in compatibility
+- AES-256-GCM encryption with a PBKDF2-derived key
+- Passwords, links, encrypted notes, TOTP, crypto secrets, and recovery codes
+- Multiple vaults, folders, tags, favorites, search, and item history
+- Encrypted `.bitlock` backup import/export
+- Password strength and reuse audit performed in the browser
+- Revocable browser-extension token
+- Voluntary Support page for disclosed sponsors and affiliate links
+- French and English interface
 
-## Security
+## Stack
 
-- **Zero-Knowledge** — The server never sees your plaintext data
-- **AES-256-GCM** — Military-standard authenticated encryption
-- **PBKDF2** — 100,000 iterations for key derivation
-- **bcrypt** — Password hashing with cost factor 12
-- **No tracking** — Your master password never leaves your browser
+- Nuxt 3, Vue 3, Tailwind CSS
+- Turso/libSQL in production
+- Vercel Nitro preset
+- `nuxt-auth-utils` encrypted session cookies
 
-## Tech Stack
+## Local development
 
-- **Framework:** Nuxt 3 (SSR)
-- **Database:** Turso (LibSQL)
-- **Auth:** nuxt-auth-utils (encrypted cookie sessions)
-- **UI:** TailwindCSS + Comfortaa font
-- **Deployment:** Vercel
-- **Analytics:** Vercel Analytics + Google Analytics
-
-## Getting Started
+Install dependencies and start Nuxt:
 
 ```bash
-# Install dependencies
-npm install
-
-# Copy config
-cp .env.example .env
-
-# Run dev server
-npm run dev
-
-# Build for production
-npm run build
+bun install
+bun run dev
 ```
 
-## Environment Variables
+Without `TURSO_DB_URL`, development uses `bitlock-dev.db` in the project root.
+The file is ignored by Git.
 
-```env
-NUXT_SESSION_PASSWORD=your-secret-at-least-32-characters-long
-TURSO_DB_URL=libsql://your-db.turso.io
+Copy `.env.example` to `.env` and set a session password of at least 32
+characters:
+
+```dotenv
+NUXT_SESSION_PASSWORD=replace-with-a-long-random-secret
+TURSO_DB_URL=libsql://your-database.turso.io
 TURSO_DB_TOKEN=your-token
+APP_URL=http://localhost:3000
+SUPPORT_CATALOG_JSON=[]
 ```
 
-## Project Structure
+## Support catalog
 
-```
-├── pages/
-│   ├── index.vue              # Landing page
-│   ├── auth/login.vue         # Login
-│   ├── auth/register.vue      # Register
-│   └── dashboard/
-│       ├── index.vue          # Dashboard home
-│       ├── vault.vue          # All vault items
-│       ├── links.vue          # Links
-│       ├── passwords.vue      # Passwords
-│       ├── crypto.vue         # Crypto keys
-│       ├── audit.vue          # Password health audit
-│       ├── export.vue         # Export/Import
-│       └── settings.vue       # Account settings
-├── server/api/
-│   ├── auth/                  # Auth endpoints
-│   └── vault/                 # Vault CRUD
-├── composables/
-│   ├── useCrypto.ts           # AES-256-GCM encryption
-│   ├── useVault.ts            # Vault management
-│   ├── useAuthClient.ts       # Auth client
-│   ├── useAutoLock.ts         # Auto-lock timer
-│   ├── useSeedGenerator.ts    # Seed phrase generator
-│   └── useI18n.ts             # Translations (FR/EN)
-└── components/vault/          # Vault UI components
+Support links are disabled by default. Configure them privately through
+`SUPPORT_CATALOG_JSON`; the client never receives the environment variable
+itself, only validated entries from `/api/support/catalog`.
+
+```json
+[
+  {
+    "id": "partner-id",
+    "kind": "affiliate",
+    "title": "Partner name",
+    "description": "What the visitor will find after opening the link.",
+    "url": "https://partner.example/path",
+    "disclosure": "Affiliate link — BitLock may receive a commission."
+  }
+]
 ```
 
-## Chrome Extension
+Only HTTPS destinations are accepted. Links open after an explicit user action
+with `rel="sponsored noopener noreferrer"`. No advertising SDK or third-party
+analytics script is loaded inside the vault.
 
-See [BitLock-extension](https://github.com/wave3k/BitLock-extension) for the browser extension.
+## Database
+
+Create or update the Turso schema:
+
+```bash
+bun run db:migrate
+```
+
+The runtime also performs idempotent compatibility migrations. Existing hosted
+accounts keep their original email identifier for sign-in while receiving a
+unique username. New accounts are username-only.
+
+## Validation
+
+```bash
+bun run test
+bun run build
+```
+
+For the API smoke test, start the app first and run:
+
+```bash
+bun run test:smoke
+```
+
+## Deployment
+
+Set `NUXT_SESSION_PASSWORD`, `TURSO_DB_URL`, `TURSO_DB_TOKEN`, and `APP_URL` in
+Vercel, then deploy. `SUPPORT_CATALOG_JSON` is optional.
 
 ## License
 
-MIT — Tensor Team
+[MIT](./LICENSE.md) — KernelStudio by Enzo.

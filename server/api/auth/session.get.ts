@@ -1,8 +1,10 @@
-/**
- * GET /api/auth/session
- * Récupère la session courante
- */
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
-  return session || { user: null }
+  const current = await getUserSession(event)
+  if (!current?.user?.id) return { user: null }
+  try {
+    return await requireAuth(event)
+  } catch (error: any) {
+    if (Number(error?.statusCode) === 401) return { user: null }
+    throw error
+  }
 })

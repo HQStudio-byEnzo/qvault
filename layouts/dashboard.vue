@@ -1,244 +1,126 @@
 <template>
-  <div class="dashboard-shell relative overflow-hidden flex">
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.14]"></div>
-      <div class="absolute -top-32 left-12 h-80 w-80 rounded-full bg-accent-600/10 blur-[120px]"></div>
-      <div class="absolute top-1/3 right-[-120px] h-96 w-96 rounded-full bg-accent-500/10 blur-[140px]"></div>
-    </div>
-
-    <!-- Sidebar -->
-    <aside class="hidden lg:flex w-64 flex-col border-r border-surface-800/80 bg-surface-950/95 backdrop-blur-xl relative z-10 shrink-0">
-      <div class="px-6 py-6 flex items-center gap-3">
-        <NuxtLink to="/" class="flex items-center gap-3 group" aria-label="Back to landing page">
-          <UiBitLockLogo :size="72" />
-          <span class="text-2xl font-semibold tracking-tight text-white">BitLock</span>
+  <div class="dashboard-shell relative flex">
+    <aside class="app-sidebar">
+      <div class="app-sidebar__brand">
+        <NuxtLink to="/" class="tech-brand" aria-label="Back to landing page">
+          <UiBitLockLogo :size="30" />
+          <span>BitLock</span>
+          <small>vault / 01</small>
         </NuxtLink>
       </div>
 
-      <div class="px-4 pb-4">
-        <div class="card p-4">
-          <p class="text-[11px] uppercase tracking-[0.22em] text-surface-500">{{ t('sidebar.groupMain') }}</p>
-          <p class="mt-1 text-xs text-surface-400 leading-relaxed">{{ t('dash.overview') }}</p>
-        </div>
+      <div class="app-sidebar__context">
+        <strong>online workspace</strong>
+        <small>{{ t('dash.overview') }}</small>
       </div>
 
-      <nav class="flex-1 px-3 pb-4 space-y-6 overflow-y-auto">
-        <div class="space-y-2">
-          <p class="px-4 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupMain') }}</p>
+      <nav class="app-nav" aria-label="Dashboard navigation">
+        <section v-for="group in navGroups" :key="group.label" class="app-nav__group">
+          <p class="app-nav__label">{{ t(group.label) }}</p>
           <NuxtLink
-            v-for="item in mainNavItems"
+            v-for="item in group.items"
             :key="item.to"
             :to="item.to"
-            class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
-            :class="isActive(item.to)
-            ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
-              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
+            class="app-nav__link"
+            :aria-current="isActive(item.to) ? 'page' : undefined"
           >
-            <Icon
-              v-if="item.icon"
-              :name="item.icon"
-              class="w-[18px] h-[18px]"
-              :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'"
-            />
+            <Icon :name="item.icon" class="h-[18px] w-[18px]" />
             <span>{{ t(item.label) }}</span>
           </NuxtLink>
-        </div>
-
-        <div class="space-y-2">
-          <p class="px-4 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupTools') }}</p>
-          <NuxtLink
-            v-for="item in toolNavItems"
-            :key="item.to"
-            :to="item.to"
-            class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
-            :class="isActive(item.to)
-            ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
-              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
-          >
-            <Icon
-              v-if="item.icon"
-              :name="item.icon"
-              class="w-[18px] h-[18px]"
-              :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'"
-            />
-            <span>{{ t(item.label) }}</span>
-          </NuxtLink>
-        </div>
-
-        <div class="space-y-2">
-          <p class="px-4 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupSecurity') }}</p>
-          <NuxtLink
-            v-for="item in securityNavItems"
-            :key="item.to"
-            :to="item.to"
-            class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
-            :class="isActive(item.to)
-            ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
-              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
-          >
-            <Icon
-              v-if="item.icon"
-              :name="item.icon"
-              class="w-[18px] h-[18px]"
-              :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'"
-            />
-            <span>{{ t(item.label) }}</span>
-          </NuxtLink>
-        </div>
-
-        <div class="space-y-2">
-          <p class="px-4 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.settings') }}</p>
-          <NuxtLink
-            v-for="item in settingsNavItems"
-            :key="item.to"
-            :to="item.to"
-            class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border"
-            :class="isActive(item.to)
-            ? 'bg-accent-600/10 text-accent-400 border-accent-500/20 shadow-sm shadow-accent-950/20'
-              : 'border-transparent text-surface-400 hover:text-surface-100 hover:bg-surface-900/80 hover:border-surface-800'"
-          >
-            <Icon
-              v-if="item.icon"
-              :name="item.icon"
-              class="w-[18px] h-[18px]"
-              :class="isActive(item.to) ? 'text-accent-400' : 'text-surface-500'"
-            />
-            <span>{{ t(item.label) }}</span>
-          </NuxtLink>
-        </div>
+        </section>
       </nav>
 
-      <div class="p-4 border-t border-surface-800/80">
-        <div class="flex items-center gap-3 px-2">
-          <div class="w-8 h-8 rounded-full bg-surface-800 border border-surface-700 flex items-center justify-center">
-            <span class="text-sm font-medium text-white">
-              {{ user?.name?.charAt(0)?.toUpperCase() || '?' }}
-            </span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-white truncate">{{ user?.name }}</p>
-            <p class="text-xs text-surface-500 truncate">{{ user?.email }}</p>
-          </div>
-          <button @click="signOut" class="p-2 rounded-lg bg-surface-900 border border-surface-800 hover:bg-surface-800 text-surface-300 hover:text-white transition-colors">
-            <Icon name="lucide:log-out" class="w-4 h-4" />
-          </button>
-        </div>
+      <div class="app-sidebar__user">
+        <span class="app-user-mark">{{ user?.username?.charAt(0)?.toUpperCase() || '?' }}</span>
+        <span class="min-w-0">
+          <strong>@{{ user?.username }}</strong>
+          <small>{{ t('nav.localAccount') }}</small>
+        </span>
+        <button type="button" class="icon-button" :aria-label="t('nav.signout')" @click="signOut">
+          <Icon name="lucide:log-out" class="h-4 w-4" />
+        </button>
       </div>
     </aside>
 
-    <!-- Mobile header -->
-    <div class="flex-1 flex flex-col relative z-10">
-      <header class="lg:hidden h-16 flex items-center justify-between px-4 border-b border-surface-800/80 bg-surface-950/95 backdrop-blur-xl">
-        <div class="flex items-center gap-3 min-w-0">
-          <button @click="mobileMenuOpen = true" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
-            <Icon name="lucide:menu" class="w-5 h-5" />
+    <div class="app-column">
+      <header class="app-mobile-bar">
+        <div class="app-mobile-bar__brand">
+          <button type="button" class="icon-button" aria-label="Open navigation" @click="mobileMenuOpen = true">
+            <Icon name="lucide:menu" class="h-5 w-5" />
           </button>
-          <NuxtLink to="/" class="flex items-center gap-3" aria-label="Back to landing page">
-            <UiBitLockLogo :size="56" />
-            <span class="text-lg font-semibold tracking-tight text-white">BitLock</span>
+          <NuxtLink to="/" class="tech-brand" aria-label="Back to landing page">
+            <UiBitLockLogo :size="26" />
+            <span>BitLock</span>
           </NuxtLink>
         </div>
-        <button @click="signOut" class="p-2 rounded-lg hover:bg-surface-900 text-surface-300 border border-transparent hover:border-surface-800 transition-colors">
-          <Icon name="lucide:log-out" class="w-5 h-5" />
+        <button type="button" class="icon-button" :aria-label="t('nav.signout')" @click="signOut">
+          <Icon name="lucide:log-out" class="h-4 w-4" />
         </button>
       </header>
 
-      <!-- Mobile menu -->
       <Teleport to="body">
         <Transition name="fade">
-          <div v-if="mobileMenuOpen" class="fixed inset-0 z-50 lg:hidden">
-            <div class="absolute inset-0 bg-black/60" @click="mobileMenuOpen = false"></div>
-            <div class="absolute left-0 top-0 bottom-0 w-72 bg-surface-950/98 border-r border-surface-800 p-4 backdrop-blur-xl">
-              <div class="card p-4 mb-4">
-                <p class="text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupMain') }}</p>
-                <p class="mt-1 text-sm text-surface-400">{{ t('dash.overview') }}</p>
+          <div v-if="mobileMenuOpen" class="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Dashboard navigation">
+            <button class="modal-backdrop absolute inset-0 w-full" aria-label="Close navigation" @click="mobileMenuOpen = false" />
+            <aside class="app-mobile-sheet">
+              <div class="app-mobile-sheet__head">
+                <span class="tech-status">online workspace</span>
+                <button type="button" class="icon-button" aria-label="Close navigation" @click="mobileMenuOpen = false">
+                  <Icon name="lucide:x" class="h-5 w-5" />
+                </button>
               </div>
-              <nav class="space-y-2">
-                <NuxtLink
-                  v-for="item in mainNavItems"
-                  :key="item.to"
-                  :to="item.to"
-                  class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
-                  @click="mobileMenuOpen = false"
-                >
-                  <Icon :name="item.icon" class="w-5 h-5" />
-                  <span>{{ t(item.label) }}</span>
-                </NuxtLink>
-                <div class="pt-3">
-                  <p class="px-1 pb-2 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupTools') }}</p>
+              <nav aria-label="Mobile dashboard navigation">
+                <section v-for="group in navGroups" :key="group.label" class="app-nav__group">
+                  <p class="app-nav__label">{{ t(group.label) }}</p>
                   <NuxtLink
-                    v-for="item in toolNavItems"
+                    v-for="item in group.items"
                     :key="item.to"
                     :to="item.to"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
+                    class="app-nav__link"
+                    :aria-current="isActive(item.to) ? 'page' : undefined"
                     @click="mobileMenuOpen = false"
                   >
-                    <Icon :name="item.icon" class="w-5 h-5" />
+                    <Icon :name="item.icon" class="h-[18px] w-[18px]" />
                     <span>{{ t(item.label) }}</span>
                   </NuxtLink>
-                </div>
-                <div class="pt-3">
-                  <p class="px-1 pb-2 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.groupSecurity') }}</p>
-                  <NuxtLink
-                    v-for="item in securityNavItems"
-                    :key="item.to"
-                    :to="item.to"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
-                    @click="mobileMenuOpen = false"
-                  >
-                    <Icon :name="item.icon" class="w-5 h-5" />
-                    <span>{{ t(item.label) }}</span>
-                  </NuxtLink>
-                </div>
-                <div class="pt-3">
-                  <p class="px-1 pb-2 text-[11px] uppercase tracking-[0.2em] text-surface-500">{{ t('sidebar.settings') }}</p>
-                  <NuxtLink
-                    v-for="item in settingsNavItems"
-                    :key="item.to"
-                    :to="item.to"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-300 hover:text-white hover:bg-surface-900 transition-colors border border-transparent hover:border-surface-800"
-                    @click="mobileMenuOpen = false"
-                  >
-                    <Icon :name="item.icon" class="w-5 h-5" />
-                    <span>{{ t(item.label) }}</span>
-                  </NuxtLink>
-                </div>
+                </section>
               </nav>
-            </div>
+            </aside>
           </div>
         </Transition>
       </Teleport>
 
-      <main class="flex-1 overflow-y-auto relative">
+      <main class="app-main">
         <slot />
       </main>
     </div>
 
-    <!-- Auto-lock warning toast -->
     <Teleport to="body">
       <Transition name="fade">
-        <div
-          v-if="showWarning"
-          class="fixed bottom-6 right-6 z-[60] max-w-sm bg-yellow-900/90 border border-yellow-600/50 rounded-xl p-4 shadow-2xl backdrop-blur-sm"
-        >
+        <aside v-if="showWarning" class="app-toast" role="status">
           <div class="flex items-start gap-3">
-            <div class="w-8 h-8 rounded-lg bg-yellow-600/20 flex items-center justify-center flex-shrink-0">
-              <Icon name="lucide:alert-triangle" class="w-4 h-4 text-yellow-400" />
-            </div>
+            <Icon name="lucide:alert-triangle" class="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />
             <div>
-              <p class="text-sm font-medium text-yellow-200">{{ t('autolock.title') }}</p>
-              <p class="text-xs text-yellow-400 mt-1">
+              <strong class="block text-sm">{{ t('autolock.title') }}</strong>
+              <p class="mt-1 text-xs text-surface-300">
                 {{ t('autolock.desc').replace('{seconds}', String(remainingSeconds)) }}
               </p>
-              <button
-                @click="resetTimers"
-                class="mt-2 text-xs px-3 py-1.5 rounded-lg bg-yellow-600/30 text-yellow-200 hover:bg-yellow-600/50 transition-colors"
-              >
+              <button type="button" class="btn-secondary mt-3 min-h-0 py-2" @click="resetTimers">
                 {{ t('autolock.stay') }}
               </button>
             </div>
           </div>
-        </div>
+        </aside>
+      </Transition>
+    </Teleport>
+
+    <Teleport to="body">
+      <Transition name="fade">
+        <button v-if="shielded" type="button" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-surface-950 text-center" @click="reveal">
+          <UiBitLockLogo :size="58" />
+          <strong class="mt-5 text-xl text-surface-50">{{ t('privacy.title') }}</strong>
+          <span class="mt-2 text-sm text-surface-400">{{ t('privacy.reveal') }}</span>
+        </button>
       </Transition>
     </Teleport>
 
@@ -249,23 +131,27 @@
 
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
+
 const { user, signOut } = useAuthClient()
 const { t } = useLang()
 useAppShortcuts()
 const route = useRoute()
 const mobileMenuOpen = ref(false)
 const { showWarning, remainingSeconds, resetTimers } = useAutoLock()
+const { shielded, reveal } = usePrivacyShield()
 
 const mainNavItems = [
   { to: '/dashboard', label: 'sidebar.dashboard', icon: 'lucide:layout-dashboard' },
   { to: '/dashboard/vault', label: 'sidebar.vault', icon: 'lucide:vault' },
   { to: '/dashboard/links', label: 'sidebar.links', icon: 'lucide:link' },
   { to: '/dashboard/passwords', label: 'sidebar.passwords', icon: 'lucide:key-round' },
+  { to: '/dashboard/notes', label: 'sidebar.notes', icon: 'lucide:notebook-tabs' },
+  { to: '/dashboard/totp', label: 'sidebar.totp', icon: 'lucide:timer-reset' },
 ]
 
 const toolNavItems = [
   { to: '/dashboard/password-generator', label: 'sidebar.passwordGenerator', icon: 'lucide:wand-sparkles' },
-  { to: '/dashboard/seed-generator', label: 'sidebar.seedGenerator' },
+  { to: '/dashboard/seed-generator', label: 'sidebar.seedGenerator', icon: 'lucide:scroll-text' },
   { to: '/dashboard/audit', label: 'sidebar.audit', icon: 'lucide:shield-alert' },
 ]
 
@@ -273,25 +159,29 @@ const securityNavItems = [
   { to: '/dashboard/crypto', label: 'sidebar.crypto', icon: 'lucide:bitcoin' },
   { to: '/dashboard/recovery-codes', label: 'sidebar.recoveryCode', icon: 'lucide:ticket-check' },
   { to: '/dashboard/export', label: 'sidebar.export', icon: 'lucide:download' },
+  { to: '/dashboard/organization', label: 'sidebar.organization', icon: 'lucide:folder-tree' },
+  { to: '/dashboard/history', label: 'sidebar.history', icon: 'lucide:history' },
+  { to: '/dashboard/transfer', label: 'sidebar.transfer', icon: 'lucide:scan-line' },
 ]
 
 const settingsNavItems = [
+  { to: '/support', label: 'sidebar.support', icon: 'lucide:heart-handshake' },
   { to: '/dashboard/settings', label: 'sidebar.settings', icon: 'lucide:settings' },
 ]
 
+const navGroups = [
+  { label: 'sidebar.groupMain', items: mainNavItems },
+  { label: 'sidebar.groupTools', items: toolNavItems },
+  { label: 'sidebar.groupSecurity', items: securityNavItems },
+  { label: 'sidebar.settings', items: settingsNavItems },
+]
+
 function isActive(path: string) {
-  if (!path) return false
+  if (path === '/dashboard') return route.path === path
   return route.path === path || route.path.startsWith(`${path}/`)
 }
-</script>
 
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
+watch(() => route.path, () => {
+  mobileMenuOpen.value = false
+})
+</script>

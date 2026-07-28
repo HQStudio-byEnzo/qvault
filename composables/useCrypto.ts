@@ -7,6 +7,29 @@
  * - Dérivation de clé : PBKDF2 avec SHA-256 (100 000 itérations)
  * - Chiffrement : AES-256-GCM (authentifié)
  */
+export const PBKDF2_ITERATIONS = 100_000
+
+export interface EncryptedPayload {
+  ciphertext: string
+  iv: string
+  salt: string
+}
+
+export function serializeEncryptedPayload(value: Pick<EncryptedPayload, 'salt' | 'ciphertext'>) {
+  return `${value.salt}:${value.ciphertext}`
+}
+
+export function parseEncryptedPayload(payload: string) {
+  const separator = payload.indexOf(':')
+  if (separator <= 0 || separator === payload.length - 1 || payload.indexOf(':', separator + 1) !== -1) {
+    throw new Error('INVALID_ENCRYPTED_PAYLOAD')
+  }
+  return {
+    salt: payload.slice(0, separator),
+    ciphertext: payload.slice(separator + 1),
+  }
+}
+
 export function useCrypto() {
   /**
    * Dérive une clé AES-256 à partir d'un mot de passe maître et d'un sel
@@ -29,7 +52,7 @@ export function useCrypto() {
       {
         name: 'PBKDF2',
         salt,
-        iterations: 100000,
+        iterations: PBKDF2_ITERATIONS,
         hash: 'SHA-256',
       },
       keyMaterial,
@@ -64,7 +87,7 @@ export function useCrypto() {
     plaintext: string,
     masterPassword: string,
     salt?: Uint8Array
-  ): Promise<{ ciphertext: string; iv: string; salt: string }> {
+  ): Promise<EncryptedPayload> {
     const encoder = new TextEncoder()
     const usedSalt = salt || generateSalt()
     const iv = generateIV()
@@ -143,5 +166,7 @@ export function useCrypto() {
     deriveKey,
     arrayBufferToBase64,
     base64ToArrayBuffer,
+    serializeEncryptedPayload,
+    parseEncryptedPayload,
   }
 }

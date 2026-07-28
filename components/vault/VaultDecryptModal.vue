@@ -2,17 +2,17 @@
   <Teleport to="body">
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <!-- Backdrop -->
-      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="$emit('close')"></div>
+      <div class="absolute inset-0 modal-backdrop" @click="$emit('close')"></div>
 
       <!-- Modal -->
-      <div class="relative w-full max-w-md glass-panel p-5 md:p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+      <div class="relative w-full max-w-md modal-shell p-5 md:p-6 animate-scale-in max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" :aria-label="t('vault.decrypt')">
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-semibold text-white flex items-center gap-2">
             <Icon name="lucide:unlock" class="w-5 h-5 text-accent-400" />
             {{ t('vault.decrypt') }}
           </h2>
-          <button @click="$emit('close')" class="p-2 rounded-xl hover:bg-white/5 text-surface-300">
+          <button type="button" @click="$emit('close')" class="icon-button" :aria-label="t('vault.close')">
             <Icon name="lucide:x" class="w-5 h-5" />
           </button>
         </div>
@@ -52,10 +52,10 @@
 
         <!-- Decrypted result -->
         <div v-else class="space-y-4">
-          <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+          <div class="modal-section">
             <p class="text-xs text-surface-500 mb-3">{{ t('vault.decryptedContent') }}</p>
 
-            <div v-if="passwordEntry" class="space-y-3">
+            <div v-if="passwordEntry && !editing" class="space-y-3">
               <div>
                 <p class="text-[11px] uppercase tracking-[0.14em] text-surface-500">{{ t('vault.passwordValue') }}</p>
                 <p class="mt-1 text-sm text-surface-100 font-mono break-all whitespace-pre-wrap">{{ passwordEntry.password }}</p>
@@ -78,18 +78,25 @@
               </div>
             </div>
 
+            <div v-else-if="editing" class="space-y-3">
+              <input v-model="editLabel" class="input-field" :placeholder="t('vault.labelField')" />
+              <textarea v-model="editValue" rows="8" class="input-field resize-y font-mono text-sm" />
+            </div>
             <p v-else class="text-sm text-surface-100 font-mono break-all whitespace-pre-wrap">{{ decryptedValue }}</p>
           </div>
 
           <div class="flex gap-2">
-            <button @click="copyDecrypted" class="btn-primary flex-1 flex items-center justify-center gap-2">
+            <button v-if="!editing" type="button" @click="copyDecrypted" class="btn-primary flex-1 flex items-center justify-center gap-2">
               <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" class="w-4 h-4" />
               {{ copied ? t('vault.copied') : passwordEntry ? t('vault.copyPassword') : t('vault.copy') }}
             </button>
-            <button @click="$emit('close')" class="btn-secondary flex-1">
-              {{ t('vault.close') }}
+            <button v-if="!editing" type="button" @click="startEditing" class="btn-secondary flex-1"><Icon name="lucide:pencil" class="w-4 h-4" />{{ t('vault.edit') }}</button>
+            <button v-if="editing" type="button" @click="saveEdit" :disabled="saving" class="btn-primary flex-1"><Icon name="lucide:save" class="w-4 h-4" />{{ saving ? t('vault.saving') : t('vault.save') }}</button>
+            <button type="button" @click="editing ? cancelEdit() : $emit('close')" class="btn-secondary flex-1">
+              {{ editing ? t('settings.cancel') : t('vault.close') }}
             </button>
           </div>
+          <p v-if="editMessage" class="text-sm" :class="editFailed ? 'text-red-400' : 'text-accent-300'">{{ editMessage }}</p>
 
           <p class="text-xs text-surface-500 text-center">
             {{ t('vault.decryptNotice') }}
@@ -114,14 +121,22 @@ defineEmits<{
 }>()
 
 const { t } = useLang()
-const { decryptItem } = useVault()
-const { setMasterPassword } = useMasterPassword()
+const { decryptItem, updateItem } = useVault()
+const { unlockMasterPassword, masterPassword: sessionMaster } = useMasterPassword()
+const { encrypt, serializeEncryptedPayload } = useCrypto()
+const { copySecurely } = useSecureClipboard()
 
 const masterPassword = ref('')
 const decryptedValue = ref('')
 const errorMsg = ref('')
 const isDecrypting = ref(false)
 const copied = ref(false)
+const editing = ref(false)
+const editLabel = ref('')
+const editValue = ref('')
+const saving = ref(false)
+const editMessage = ref('')
+const editFailed = ref(false)
 
 const passwordEntry = computed(() => {
   if (!decryptedValue.value || props.item.type !== 'password') return null
@@ -135,8 +150,8 @@ async function handleDecrypt() {
   errorMsg.value = ''
 
   try {
+    await unlockMasterPassword(masterPassword.value)
     decryptedValue.value = await decryptItem(props.item, masterPassword.value)
-    setMasterPassword(masterPassword.value)
   } catch (err: any) {
     errorMsg.value = t('vault.decryptError')
   } finally {
@@ -146,26 +161,29 @@ async function handleDecrypt() {
 
 async function copyDecrypted() {
   try {
-    await navigator.clipboard.writeText(copyValue.value)
+    await copySecurely(copyValue.value)
     copied.value = true
     setTimeout(() => { copied.value = false }, 2000)
-    scheduleClipboardClear(copyValue.value)
   } catch {
     // Fallback
   }
 }
 
-function scheduleClipboardClear(value: string) {
-  const seconds = Number(localStorage.getItem('bitlock.security.clipboardClearSeconds') || 30)
-  if (seconds <= 0) return
-
-  setTimeout(async () => {
-    try {
-      const current = await navigator.clipboard.readText()
-      if (current === value) await navigator.clipboard.writeText('')
-    } catch {
-      // Clipboard permissions are browser-dependent.
-    }
-  }, seconds * 1000)
+function startEditing() { editing.value = true; editLabel.value = props.item.label; editValue.value = decryptedValue.value; editMessage.value = '' }
+function cancelEdit() { editing.value = false; editValue.value = decryptedValue.value; editLabel.value = props.item.label }
+async function saveEdit() {
+  if (!sessionMaster.value) return
+  saving.value = true; editMessage.value = ''; editFailed.value = false
+  try {
+    const encrypted = await encrypt(editValue.value, sessionMaster.value)
+    await updateItem(props.item.id, { label: editLabel.value, payload: serializeEncryptedPayload(encrypted), iv: encrypted.iv, is_encrypted: true })
+    decryptedValue.value = editValue.value; editing.value = false; editMessage.value = t('vault.saved')
+  } catch { editFailed.value = true; editMessage.value = t('vault.saveFailed') }
+  finally { saving.value = false }
 }
+
+onMounted(async () => {
+  if (!sessionMaster.value) return
+  try { decryptedValue.value = await decryptItem(props.item, sessionMaster.value) } catch {}
+})
 </script>

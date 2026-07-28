@@ -1,39 +1,37 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4 py-12">
-    <div class="w-full max-w-md space-y-8 animate-fade-in">
-      <div class="text-center">
-        <NuxtLink to="/" class="inline-flex items-center justify-center mb-6">
+  <div class="auth-shell">
+    <div class="auth-frame animate-fade-in">
+      <header class="auth-header">
+        <NuxtLink
+          to="/"
+          class="inline-flex items-center justify-center rounded-md outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-4 focus-visible:ring-offset-surface-950 active:opacity-70"
+          aria-label="BitLock — accueil"
+        >
           <UiBitLockLogo :size="64" />
         </NuxtLink>
-        <p class="eyebrow mb-4">{{ t('nav.start') }}</p>
-        <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('auth.register.title') }}</h1>
+        <h1 class="mt-6 min-w-0 text-3xl font-semibold tracking-tight text-white">{{ t('auth.register.title') }}</h1>
         <p class="text-sm text-surface-400 mt-3">{{ t('auth.register.subtitle') }}</p>
-      </div>
+      </header>
 
-      <div class="glass-panel p-6 md:p-8">
+      <div class="glass-panel auth-card">
       <form @submit.prevent="handleRegister" class="space-y-4">
         <div>
-          <label for="name" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.name') }}</label>
+          <label for="username" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.username') }}</label>
           <input
-            id="name"
-            v-model="form.name"
+            id="username"
+            v-model="form.username"
             type="text"
             required
+            minlength="3"
+            maxlength="32"
             class="input-field"
-            :placeholder="t('auth.register.namePlaceholder')"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false"
+            pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,31}"
+            :placeholder="t('auth.register.usernamePlaceholder')"
           />
-        </div>
-
-        <div>
-          <label for="email" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.email') }}</label>
-          <input
-            id="email"
-            v-model="form.email"
-            type="email"
-            required
-            class="input-field"
-            placeholder="you@example.com"
-          />
+          <p class="mt-1 text-xs text-surface-500">{{ t('auth.register.usernameDesc') }}</p>
         </div>
 
         <div>
@@ -43,10 +41,25 @@
             v-model="form.password"
             type="password"
             required
-            minlength="8"
+            :minlength="MIN_ACCOUNT_PASSWORD_LENGTH"
+            maxlength="72"
+            autocomplete="new-password"
             class="input-field"
             :placeholder="t('settings.newPwdPlaceholder')"
           />
+        </div>
+
+        <div>
+          <label for="hint" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.hint') }}</label>
+          <input
+            id="hint"
+            v-model="form.hint"
+            type="text"
+            class="input-field"
+            :placeholder="t('auth.register.hintPlaceholder')"
+          />
+          <p class="mt-1 text-xs text-surface-500">{{ t('auth.register.hintDesc') }}</p>
+          <p class="mt-1 text-xs text-amber-300">{{ t('auth.register.hintWarning') }}</p>
         </div>
 
         <div>
@@ -56,6 +69,9 @@
             v-model="form.confirmPassword"
             type="password"
             required
+            :minlength="MIN_ACCOUNT_PASSWORD_LENGTH"
+            maxlength="72"
+            autocomplete="new-password"
             class="input-field"
             placeholder="••••••••"
           />
@@ -73,7 +89,7 @@
         </label>
 
         <!-- Error message -->
-        <div v-if="errorMsg" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+        <div v-if="errorMsg" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400" role="alert">
           {{ errorMsg }}
         </div>
 
@@ -89,7 +105,7 @@
       </div>
 
       <!-- Footer -->
-      <div class="space-y-4">
+      <div class="auth-footer">
         <p class="text-center text-sm text-surface-400">
           {{ t('auth.register.hasAccount') }}
           <NuxtLink to="/auth/login" class="text-accent-400 hover:text-accent-300 font-medium">
@@ -108,6 +124,7 @@
 
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
+import { MIN_ACCOUNT_PASSWORD_LENGTH } from '~/utils/security-policy'
 
 definePageMeta({
   layout: 'default',
@@ -118,13 +135,13 @@ definePageMeta({
 const { t } = useLang()
 const { signUp } = useAuthClient()
 
-const form = reactive({
-  name: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-  acceptedTerms: false,
-})
+ const form = reactive({
+   username: '',
+   password: '',
+   confirmPassword: '',
+   acceptedTerms: false,
+   hint: '',
+ })
 
 const isLoading = ref(false)
 const errorMsg = ref('')
@@ -139,7 +156,7 @@ async function handleRegister() {
     return
   }
 
-  if (form.password.length < 8) {
+  if (form.password.length < MIN_ACCOUNT_PASSWORD_LENGTH) {
     errorMsg.value = t('auth.register.pwdTooShort')
     isLoading.value = false
     return
@@ -147,10 +164,10 @@ async function handleRegister() {
 
   try {
     await signUp({
-      name: form.name,
-      email: form.email,
+      username: form.username,
       password: form.password,
       acceptedTerms: form.acceptedTerms,
+      passwordHint: form.hint || undefined,
     })
     navigateTo('/dashboard')
   } catch (err: any) {

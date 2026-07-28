@@ -44,14 +44,16 @@ NUXT_SESSION_PASSWORD=replace-with-a-long-random-secret
 TURSO_DB_URL=libsql://your-database.turso.io
 TURSO_DB_TOKEN=your-token
 APP_URL=http://localhost:3000
+# Optional: set [] to hide the public partner catalogue.
 SUPPORT_CATALOG_JSON=[]
 ```
 
 ## Support catalog
 
-Support links are disabled by default. Configure them privately through
-`SUPPORT_CATALOG_JSON`; the client never receives the environment variable
-itself, only validated entries from `/api/support/catalog`.
+The Support page includes the disclosed PokePings partner offers. Configure a
+different catalogue privately through `SUPPORT_CATALOG_JSON`, or set it to
+`[]` to hide all partner links. The client never receives the environment
+variable itself, only validated entries from `/api/support/catalog`.
 
 ```json
 [

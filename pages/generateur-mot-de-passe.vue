@@ -1,9 +1,10 @@
 <template>
   <div class="min-h-screen text-white">
-    <header class="sticky top-0 z-40 border-b border-surface-800/80 bg-surface-950/85 backdrop-blur-2xl">
-      <div class="section-shell max-w-7xl py-4 flex items-center justify-between gap-4">
-        <NuxtLink to="/" class="flex items-center font-semibold">
-          <UiBitLockLogo :size="56" />
+    <header class="tool-header">
+      <div class="tool-header__inner section-shell max-w-7xl">
+        <NuxtLink to="/" class="tech-brand">
+          <UiBitLockLogo :size="30" />
+          <span>BitLock</span>
         </NuxtLink>
         <NuxtLink :to="loggedIn ? '/dashboard' : '/auth/register'" class="btn-primary">
           {{ loggedIn ? t('hero.dashboardCta') : t('generator.cta') }}
@@ -67,6 +68,7 @@ const { t } = useLang()
 const { loggedIn } = useUserSession()
 useSeoMeta({ title: t('generator.seoTitle'), description: t('generator.seoDesc') })
 const { generatePassword, entropy } = usePasswordGenerator()
+const { copySecurely } = useSecureClipboard()
 const options = reactive({ length: 24, uppercase: true, lowercase: true, numbers: true, symbols: true, avoidAmbiguous: true })
 const password = ref('')
 const copied = ref(false)
@@ -79,7 +81,7 @@ const toggles = computed(() => [
 ])
 const passwordEntropy = computed(() => entropy(password.value, options))
 function regenerate() { password.value = generatePassword(options) }
-async function copyPassword() { await navigator.clipboard.writeText(password.value); copied.value = true; setTimeout(() => { copied.value = false }, 1600) }
+async function copyPassword() { await copySecurely(password.value); copied.value = true; setTimeout(() => { copied.value = false }, 1600) }
 watch(options, regenerate, { deep: true })
 onMounted(regenerate)
 </script>

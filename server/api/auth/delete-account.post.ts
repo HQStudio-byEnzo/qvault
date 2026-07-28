@@ -26,17 +26,21 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Mot de passe incorrect.' })
   }
 
-  // Supprimer les vault items
-  await db.execute({
-    sql: 'DELETE FROM vault_items WHERE user_id = ?',
-    args: [session.user.id],
-  })
-
-  // Supprimer l'utilisateur
-  await db.execute({
-    sql: 'DELETE FROM users WHERE id = ?',
-    args: [session.user.id],
-  })
+  // Delete all account-owned data atomically. This also works when SQLite
+  // foreign-key enforcement is not enabled by the hosting environment.
+  await db.batch([
+    { sql: 'DELETE FROM vault_item_tags WHERE item_id IN (SELECT id FROM vault_items WHERE user_id = ?)', args: [session.user.id] },
+    { sql: 'DELETE FROM vault_item_history WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM vault_items WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM tags WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM folders WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM vaults WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM master_verifiers WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM webauthn_credentials WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM extension_tokens WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM accepted_terms WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM users WHERE id = ?', args: [session.user.id] },
+  ], 'write')
 
   // Supprimer la session
   await clearUserSession(event)

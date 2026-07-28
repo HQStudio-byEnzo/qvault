@@ -2,48 +2,57 @@
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="visible" class="fixed inset-0 z-[80] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-lg glass-panel p-5 md:p-6 shadow-2xl">
+        <div class="absolute inset-0 modal-backdrop"></div>
+        <div class="relative w-full max-w-lg modal-shell p-5 md:p-6" role="dialog" aria-modal="true" aria-label="Master password">
           <div class="flex items-start gap-4">
-            <div class="w-11 h-11 rounded-2xl bg-accent-600/20 flex items-center justify-center flex-shrink-0 border border-white/10">
-              <Icon name="lucide:key-round" class="w-5 h-5 text-accent-400" />
+            <div class="feature-mark shrink-0">
+              <Icon name="lucide:key-round" class="w-5 h-5" />
             </div>
             <div class="space-y-3">
               <div>
-                <h2 class="text-lg font-semibold text-white">Choose your master password</h2>
-                <p class="text-sm text-surface-400 mt-1">
-                  It encrypts and decrypts your entire vault in this browser. BitLock does not store it and cannot recover it.
-                </p>
+                <h2 class="text-lg font-semibold text-white">{{ t('masterSetup.title') }}</h2>
+                <p class="text-sm text-surface-400 mt-1">{{ t('masterSetup.desc') }}</p>
               </div>
 
               <div class="grid gap-2 text-sm text-surface-300">
                 <div class="flex items-start gap-2">
                   <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
-                  <span>Use a long, unique passphrase that is different from your login password.</span>
+                  <span>{{ t('masterSetup.ruleUnique') }}</span>
                 </div>
                 <div class="flex items-start gap-2">
                   <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
-                  <span>Keep it somewhere safe: losing this password makes your secrets unreadable forever.</span>
+                  <span>{{ t('masterSetup.ruleRecovery') }}</span>
                 </div>
                 <div class="flex items-start gap-2">
                   <Icon name="lucide:check" class="w-4 h-4 text-green-400 mt-0.5" />
-                  <span>You can change it later in settings; existing items will be re-encrypted with the new password.</span>
+                  <span>{{ t('masterSetup.ruleRotation') }}</span>
                 </div>
               </div>
 
-              <label class="flex items-start gap-2 text-sm text-surface-300 cursor-pointer">
-                <input v-model="understood" type="checkbox" class="mt-1" />
-                <span>I understand that BitLock cannot recover my master password.</span>
-              </label>
+              <form class="space-y-3" @submit.prevent="complete">
+                <div>
+                  <label for="master-setup-password" class="block text-sm text-surface-300 mb-1">{{ t('masterSetup.password') }}</label>
+                  <input id="master-setup-password" v-model="password" type="password" :minlength="MIN_MASTER_PASSWORD_LENGTH" maxlength="128" required autocomplete="new-password" class="input-field" />
+                </div>
+                <div>
+                  <label for="master-setup-confirm" class="block text-sm text-surface-300 mb-1">{{ t('masterSetup.confirm') }}</label>
+                  <input id="master-setup-confirm" v-model="confirmation" type="password" :minlength="MIN_MASTER_PASSWORD_LENGTH" maxlength="128" required autocomplete="new-password" class="input-field" />
+                </div>
 
-              <div class="flex flex-col sm:flex-row gap-2 pt-2">
-                <button :disabled="!understood" class="btn-primary" @click="complete">
-                  Continue
-                </button>
-                <button class="btn-secondary" @click="remindLater">
-                  Remind me later
-                </button>
-              </div>
+                <label class="flex items-start gap-2 text-sm text-surface-300 cursor-pointer">
+                  <input v-model="understood" type="checkbox" class="mt-1" />
+                  <span>{{ t('masterSetup.understood') }}</span>
+                </label>
+
+                <p v-if="error" class="text-sm text-red-400" role="alert">{{ error }}</p>
+
+                <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                  <button type="submit" :disabled="!understood || saving" class="btn-primary">
+                    {{ saving ? t('masterSetup.saving') : t('masterSetup.continue') }}
+                  </button>
+                  <button type="button" class="btn-secondary" @click="remindLater">{{ t('masterSetup.later') }}</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -53,23 +62,57 @@
 </template>
 
 <script setup lang="ts">
+import { MIN_MASTER_PASSWORD_LENGTH } from '~/utils/security-policy'
+
 const visible = ref(false)
 const understood = ref(false)
+const password = ref('')
+const confirmation = ref('')
+const error = ref('')
+const saving = ref(false)
+const { t } = useLang()
+const { unlockMasterPassword } = useMasterPassword()
+const { user } = useUserSession()
+
+function onboardingKey(name: 'done' | 'snoozed') {
+  const owner = user.value?.id || user.value?.username || 'anonymous'
+  return `bitlock.masterPasswordOnboarding:${encodeURIComponent(String(owner))}:${name}`
+}
 
 onMounted(() => {
-  const done = localStorage.getItem('bitlock.masterPasswordOnboarded') === 'true'
-  const snoozedUntil = Number(localStorage.getItem('bitlock.masterPasswordOnboardingSnoozedUntil') || 0)
+  const done = localStorage.getItem(onboardingKey('done')) === 'true'
+  const snoozedUntil = Number(localStorage.getItem(onboardingKey('snoozed')) || 0)
   visible.value = !done && Date.now() > snoozedUntil
 })
 
-function complete() {
-  localStorage.setItem('bitlock.masterPasswordOnboarded', 'true')
-  localStorage.removeItem('bitlock.masterPasswordOnboardingSnoozedUntil')
-  visible.value = false
+async function complete() {
+  error.value = ''
+  if (password.value.length < MIN_MASTER_PASSWORD_LENGTH) {
+    error.value = t('masterSetup.tooShort')
+    return
+  }
+  if (password.value !== confirmation.value) {
+    error.value = t('masterSetup.mismatch')
+    return
+  }
+
+  saving.value = true
+  try {
+    await unlockMasterPassword(password.value)
+    localStorage.setItem(onboardingKey('done'), 'true')
+    localStorage.removeItem(onboardingKey('snoozed'))
+    password.value = ''
+    confirmation.value = ''
+    visible.value = false
+  } catch {
+    error.value = t('masterSetup.error')
+  } finally {
+    saving.value = false
+  }
 }
 
 function remindLater() {
-  localStorage.setItem('bitlock.masterPasswordOnboardingSnoozedUntil', String(Date.now() + 24 * 60 * 60 * 1000))
+  localStorage.setItem(onboardingKey('snoozed'), String(Date.now() + 24 * 60 * 60 * 1000))
   visible.value = false
 }
 </script>

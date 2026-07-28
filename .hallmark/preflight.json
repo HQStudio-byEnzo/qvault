@@ -1,0 +1,11 @@
+{
+  "date": "2026-07-27",
+  "framework": "Nuxt 3.21.8 / Vue 3.5.34 / Tailwind CSS 3.4",
+  "fonts_before": ["Cascadia Mono", "Segoe UI Variable"],
+  "palette_before": "Terminal navy with signal green",
+  "motion": "CSS-only, purposeful state transitions, reduced-motion enforced",
+  "spacing": "Semantic 4px scale in assets/css/tokens.css",
+  "redesign": "Narrative Workflow / Terminal technical local-vault surface",
+  "maintenance": "Authentication, vault rotation, extension compatibility, responsive auth and modal hardening",
+  "mobile_check": "Pass at 320, 375, 414 and 768 CSS px"
+}

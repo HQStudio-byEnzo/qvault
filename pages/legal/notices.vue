@@ -18,22 +18,13 @@
         </section>
 
         <section class="legal-card">
-          <h2 class="text-2xl font-semibold text-white mb-4">2. Website hosting</h2>
-          <p>The front-end website is hosted by:</p>
-          <ul class="list-disc list-inside space-y-2 ml-4">
-            <li><strong>Host:</strong> Vercel Inc.</li>
-            <li><strong>Address:</strong> 340 S Lemon Ave #4133, Walnut, CA 91789, United States</li>
-            <li><strong>Website:</strong> <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:text-accent-300">https://vercel.com</a></li>
-          </ul>
+          <h2 class="text-2xl font-semibold text-white mb-4">2. Online hosting</h2>
+          <p>BitLock is deployed on Vercel. Encrypted application data is stored in a Turso database.</p>
         </section>
 
         <section class="legal-card">
-          <h2 class="text-2xl font-semibold text-white mb-4">3. Database hosting</h2>
-          <p>Encrypted data and user accounts are stored by:</p>
-          <ul class="list-disc list-inside space-y-2 ml-4">
-            <li><strong>Host:</strong> Turso (ChikiLabs Inc.)</li>
-            <li><strong>Website:</strong> <a href="https://turso.tech" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:text-accent-300">https://turso.tech</a></li>
-          </ul>
+          <h2 class="text-2xl font-semibold text-white mb-4">3. Data storage</h2>
+          <p>Vault secrets are encrypted in the browser before synchronization. Turso stores ciphertext and account metadata.</p>
         </section>
       </div>
   </div>

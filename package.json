@@ -1,6 +1,7 @@
 {
   "name": "bitlock",
   "version": "1.0.0",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,33 +9,39 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "generate": "nuxt generate",
-    "typecheck": "nuxt typecheck",
+    "typecheck": "bun ./node_modules/vue-tsc/bin/vue-tsc.js --noEmit -p ./.nuxt/tsconfig.json",
     "postinstall": "nuxt prepare",
-    "db:migrate": "wrangler d1 execute bitlock-db --local --file=server/database/schema.sql && wrangler d1 execute bitlock-db --local --file=server/database/migrate-terms.sql",
-    "db:migrate:terms": "wrangler d1 execute bitlock-db --local --file=server/database/migrate-terms.sql",
-    "db:setup:turso": "node scripts/run-turso-sql.mjs server/database/schema.sql",
-    "db:migrate:turso:terms": "node scripts/run-turso-sql.mjs server/database/migrate-terms.sql"
+    "test": "bun run test:security && bun run test:migration && bun run test:i18n && bun run test:quality && bun run typecheck",
+    "test:smoke": "bun scripts/smoke-api.mjs",
+    "test:i18n": "bun scripts/check-i18n.mjs",
+    "test:security": "bun scripts/security-self-test.mjs",
+    "test:migration": "bun scripts/migration-self-test.mjs",
+    "test:quality": "bun scripts/quality-check.mjs",
+    "db:migrate": "bun scripts/run-turso-sql.mjs server/database/schema.sql",
+    "db:setup:turso": "bun scripts/run-turso-sql.mjs server/database/schema.sql",
+    "db:migrate:turso:terms": "bun scripts/run-turso-sql.mjs server/database/migrate-terms.sql"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.0",
     "@libsql/client": "^0.17.3",
     "@nuxt/icon": "^1.10.0",
     "@scure/bip39": "^2.2.0",
-    "@vercel/analytics": "^2.0.1",
+    "@types/qrcode": "^1.5.6",
     "bcryptjs": "^3.0.3",
     "nuxt": "^3.15.0",
     "nuxt-auth-utils": "^0.5.29",
+    "qrcode": "^1.5.4",
     "vue": "^3.5.0",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241205.0",
     "@nuxtjs/tailwindcss": "^6.12.0",
     "@types/bcryptjs": "^2.4.6",
-    "nitro-cloudflare-dev": "^0.1.0",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.7.0",
-    "vue-tsc": "^3.3.5",
-    "wrangler": "^4.103.0"
+    "vue-tsc": "^3.3.5"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.8"
   }
 }

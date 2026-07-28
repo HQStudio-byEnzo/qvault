@@ -1,55 +1,49 @@
 <template>
-  <div class="min-h-screen text-white">
-    <main v-if="feature" class="page-shell grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-10 pt-24 md:pt-28">
-      <section class="space-y-6">
-        <NuxtLink to="/features" class="inline-flex items-center gap-2 text-sm text-accent-300 hover:text-accent-200">
-          <Icon name="lucide:arrow-left" class="w-4 h-4" />
-          {{ t('featuresIndex.back') }}
-        </NuxtLink>
-        <div class="space-y-4">
-          <div class="w-14 h-14 rounded-2xl flex items-center justify-center" :class="feature.badgeClass">
-            <Icon :name="feature.icon" class="w-6 h-6" :class="feature.iconClass" />
-          </div>
-          <h1 class="text-4xl md:text-5xl font-bold tracking-tight">{{ feature.title }}</h1>
-          <p class="text-lg text-surface-400 leading-relaxed max-w-2xl">{{ feature.summary }}</p>
-        </div>
-
-        <div class="grid gap-4">
-          <article v-for="point in feature.points" :key="point" class="card">
-            <p class="text-surface-300 leading-relaxed">{{ point }}</p>
-          </article>
-        </div>
-      </section>
-
-      <aside class="space-y-4">
-        <div class="card space-y-4">
-          <h2 class="text-lg font-semibold">{{ t('featuresIndex.whatYouGet') }}</h2>
-          <ul class="space-y-3 text-sm text-surface-300">
-            <li v-for="item in feature.points" :key="item">• {{ item }}</li>
-          </ul>
-        </div>
-        <div class="card space-y-4">
-          <h2 class="text-lg font-semibold">{{ t('featuresIndex.relatedActions') }}</h2>
-          <div class="flex flex-col gap-3">
-            <NuxtLink v-if="feature.slug === 'recovery'" to="/dashboard/recovery-codes" class="btn-primary text-center w-full">{{ t('featuresIndex.openRecoveryCodes') }}</NuxtLink>
-            <NuxtLink v-else to="/auth/register" class="btn-primary text-center w-full">{{ t('featuresIndex.createVault') }}</NuxtLink>
-            <NuxtLink v-if="feature.slug === 'passwords'" to="/generateur-mot-de-passe" class="btn-secondary text-center w-full">{{ t('featuresIndex.useGenerator') }}</NuxtLink>
-          </div>
-        </div>
-      </aside>
-    </main>
-
-    <main v-else class="legal-shell pt-24 md:pt-28">
-      <NuxtLink to="/features" class="inline-flex items-center gap-2 text-sm text-accent-300 hover:text-accent-200">
-        <Icon name="lucide:arrow-left" class="w-4 h-4" />
+  <main v-if="feature" class="page-shell grid grid-cols-1 gap-10 pt-24 md:pt-28 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
+    <section class="space-y-8">
+      <NuxtLink to="/features" class="btn-secondary">
+        <Icon name="lucide:arrow-left" class="h-4 w-4" />
         {{ t('featuresIndex.back') }}
       </NuxtLink>
-      <div class="card mt-6">
-        <h1 class="text-2xl font-semibold">{{ t('featuresIndex.notFound') }}</h1>
-        <p class="text-surface-400 mt-2">{{ t('featuresIndex.notFoundDesc') }}</p>
+
+      <header class="max-w-3xl space-y-4">
+        <span class="feature-mark"><Icon :name="feature.icon" class="h-5 w-5" /></span>
+        <p class="workbench-section__index">feature / {{ feature.slug }}</p>
+        <h1 class="text-4xl font-bold tracking-tight md:text-6xl">{{ feature.title }}</h1>
+        <p class="max-w-2xl text-lg leading-relaxed text-surface-300">{{ feature.summary }}</p>
+      </header>
+
+      <ol class="feature-spec-list">
+        <li v-for="point in feature.points" :key="point">{{ point }}</li>
+      </ol>
+    </section>
+
+    <aside class="dashboard-module h-fit">
+      <header class="dashboard-module__head">
+        <div>
+          <h2>{{ t('featuresIndex.relatedActions') }}</h2>
+          <p>{{ t('featuresIndex.whatYouGet') }}</p>
+        </div>
+        <span class="tech-status">online</span>
+      </header>
+      <div class="space-y-3 p-4">
+        <NuxtLink v-if="feature.slug === 'recovery'" to="/dashboard/recovery-codes" class="btn-primary w-full">{{ t('featuresIndex.openRecoveryCodes') }}</NuxtLink>
+        <NuxtLink v-else to="/auth/register" class="btn-primary w-full">{{ t('featuresIndex.createVault') }}</NuxtLink>
+        <NuxtLink v-if="feature.slug === 'passwords'" to="/generateur-mot-de-passe" class="btn-secondary w-full">{{ t('featuresIndex.useGenerator') }}</NuxtLink>
       </div>
-    </main>
-  </div>
+    </aside>
+  </main>
+
+  <main v-else class="legal-shell pt-24 md:pt-28">
+    <NuxtLink to="/features" class="btn-secondary">
+      <Icon name="lucide:arrow-left" class="h-4 w-4" />
+      {{ t('featuresIndex.back') }}
+    </NuxtLink>
+    <section class="dashboard-module p-6">
+      <h1 class="text-2xl font-semibold">{{ t('featuresIndex.notFound') }}</h1>
+      <p class="mt-2 text-surface-300">{{ t('featuresIndex.notFoundDesc') }}</p>
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">

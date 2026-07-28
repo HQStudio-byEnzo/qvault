@@ -1,10 +1,10 @@
 <template>
   <div class="min-h-screen text-white">
-    <header class="sticky top-0 z-40 border-b border-surface-800/80 bg-surface-950/85 backdrop-blur-2xl">
-      <div class="section-shell max-w-7xl py-4 flex items-center justify-between gap-4">
-        <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
-          <UiBitLockLogo :size="56" />
-          <span class="text-xl tracking-tight text-white">BitLock</span>
+    <header class="tool-header">
+      <div class="tool-header__inner section-shell max-w-7xl">
+        <NuxtLink to="/" class="tech-brand">
+          <UiBitLockLogo :size="30" />
+          <span>BitLock</span>
         </NuxtLink>
         <NuxtLink :to="loggedIn ? '/dashboard' : '/auth/register'" class="btn-primary">
           {{ loggedIn ? t('hero.dashboardCta') : t('generator.cta') }}
@@ -70,6 +70,7 @@ definePageMeta({
 const { t } = useLang()
 const { loggedIn } = useUserSession()
 const { generateSeedPhrase } = useSeedGenerator()
+const { copySecurely } = useSecureClipboard()
 
 useSeoMeta({
   title: t('seedGenerator.toolSeoTitle'),
@@ -85,7 +86,7 @@ function regenerate() {
 }
 
 async function copySeed() {
-  await navigator.clipboard.writeText(seedPhrase.value)
+  await copySecurely(seedPhrase.value)
   copied.value = true
   setTimeout(() => { copied.value = false }, 1600)
 }

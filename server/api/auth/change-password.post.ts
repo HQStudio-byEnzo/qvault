@@ -7,7 +7,10 @@ export default defineEventHandler(async (event) => {
   enforceRateLimit(event, 'auth-change-password', 5, 60 * 60 * 1000, String(session.user.id))
   const body = requireRecord(await readBody(event))
   const currentPassword = requireString(body.currentPassword, 'Current password', { min: 1, max: 128, trim: false })
-  const newPassword = requireString(body.newPassword, 'New password', { min: 8, max: 128, trim: false })
+  const newPassword = requireNewAccountPassword(body.newPassword, 'New password')
+  if (currentPassword === newPassword) {
+    throw createError({ statusCode: 400, message: 'Le nouveau mot de passe doit être différent.' })
+  }
 
   const db = useDB()
 
@@ -31,10 +34,16 @@ export default defineEventHandler(async (event) => {
 
   // Mettre à jour
   const hashedNew = await hashUserPassword(newPassword)
-  await db.execute({
-    sql: 'UPDATE users SET password = ?, session_version = session_version + 1 WHERE id = ?',
-    args: [hashedNew, session.user.id],
-  })
+  await db.batch([
+    {
+      sql: 'UPDATE users SET password = ?, session_version = session_version + 1 WHERE id = ?',
+      args: [hashedNew, session.user.id],
+    },
+    {
+      sql: 'DELETE FROM extension_tokens WHERE user_id = ?',
+      args: [session.user.id],
+    },
+  ], 'write')
 
   const versionResult = await db.execute({
     sql: 'SELECT session_version FROM users WHERE id = ?',

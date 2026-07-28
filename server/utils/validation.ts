@@ -1,5 +1,10 @@
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+import {
+  MAX_BCRYPT_PASSWORD_BYTES,
+  MIN_ACCOUNT_PASSWORD_LENGTH,
+} from '~/utils/security-policy'
+
 const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/
+const USERNAME_PATTERN = /^[a-z0-9][a-z0-9._-]{2,31}$/
 
 export function requireRecord(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -24,12 +29,41 @@ export function requireString(
   return result
 }
 
-export function normalizeEmail(value: unknown) {
-  const email = requireString(value, 'Email', { min: 3, max: 254 }).toLowerCase()
-  if (!EMAIL_PATTERN.test(email)) {
-    throw createError({ statusCode: 400, message: 'Invalid email address.' })
+export function normalizeUsername(value: unknown) {
+  const username = requireString(value, 'Username', { min: 3, max: 32 }).toLowerCase()
+  if (!USERNAME_PATTERN.test(username)) {
+    throw createError({
+      statusCode: 400,
+      message: 'Le username doit contenir 3 à 32 caractères : lettres, chiffres, point, tiret ou underscore.',
+    })
   }
-  return email
+  return username
+}
+
+export function normalizeLoginIdentifier(value: unknown) {
+  const identifier = requireString(value, 'Username', { min: 3, max: 254 }).toLowerCase()
+  if (identifier.includes('@')) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
+      throw createError({ statusCode: 400, message: 'Identifiant de connexion invalide.' })
+    }
+    return identifier
+  }
+  return normalizeUsername(identifier)
+}
+
+export function requireNewAccountPassword(value: unknown, field = 'Password') {
+  const password = requireString(value, field, {
+    min: MIN_ACCOUNT_PASSWORD_LENGTH,
+    max: 128,
+    trim: false,
+  })
+  if (new TextEncoder().encode(password).byteLength > MAX_BCRYPT_PASSWORD_BYTES) {
+    throw createError({
+      statusCode: 400,
+      message: `${field} must not exceed ${MAX_BCRYPT_PASSWORD_BYTES} UTF-8 bytes.`,
+    })
+  }
+  return password
 }
 
 export function optionalHttpUrl(value: unknown, field = 'URL') {
@@ -72,6 +106,10 @@ export function assertEncryptedPayload(payload: unknown, iv: unknown) {
   }
 
   return { payload: encrypted, iv: vector }
+}
+
+export function escapeLikePattern(value: string) {
+  return value.replace(/[\\%_]/g, match => `\\${match}`)
 }
 
 export function safeInternalPath(value: unknown, fallback = '/dashboard') {

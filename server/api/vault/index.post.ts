@@ -1,57 +1,53 @@
-/**
- * POST /api/vault
- * Crée un nouvel élément dans le coffre-fort (aucune limite)
- */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
   enforceRateLimit(event, 'vault-create', 120, 60 * 1000, String(session.user.id))
   const db = useDB()
   const body = requireRecord(await readBody(event))
   const type = body.type
+  const allowedTypes = ['link', 'password', 'crypto', 'recovery', 'note', 'totp']
+  if (typeof type !== 'string' || !allowedTypes.includes(type)) throw createError({ statusCode: 400, message: 'Type de coffre invalide.' })
+
   const label = body.label === undefined ? '' : requireString(body.label, 'Label', { min: 0, max: 200 })
   const isEncrypted = body.is_encrypted === undefined ? true : body.is_encrypted
-
-  if (typeof type !== 'string' || !['link', 'password', 'crypto', 'recovery'].includes(type)) {
-    throw createError({ statusCode: 400, message: 'Type invalide. Doit être: link, password, crypto ou recovery.' })
-  }
-
-  if (typeof isEncrypted !== 'boolean') {
-    throw createError({ statusCode: 400, message: 'is_encrypted must be a boolean.' })
-  }
-
-  const encryptionRequired = type !== 'link'
-
-  if (encryptionRequired && !isEncrypted) {
-    throw createError({ statusCode: 400, message: 'Les mots de passe, recovery codes et clés crypto doivent être chiffrés côté client.' })
-  }
+  if (typeof isEncrypted !== 'boolean') throw createError({ statusCode: 400, message: 'is_encrypted doit être un booléen.' })
+  if (type !== 'link' && !isEncrypted) throw createError({ statusCode: 400, message: 'Ce type de donnée doit être chiffré côté client.' })
 
   const encrypted = isEncrypted ? assertEncryptedPayload(body.payload, body.iv) : null
-  const payload = encrypted?.payload || requireString(body.payload, 'Payload', { min: 1, max: 100_000, trim: false })
+  let payload = encrypted?.payload || requireString(body.payload, 'Payload', { min: 1, max: 100_000, trim: false })
   const iv = encrypted?.iv || null
   const url = optionalHttpUrl(body.url)
+  if (type === 'link' && !isEncrypted) payload = optionalHttpUrl(payload, 'Link') ?? payload
 
-  if (type === 'link' && !isEncrypted) optionalHttpUrl(payload, 'Link')
+  const vaultId = typeof body.vault_id === 'string' && body.vault_id.length <= 128 ? body.vault_id : `default-${session.user.id}`
+  const folderId = typeof body.folder_id === 'string' && body.folder_id.length <= 128 ? body.folder_id : null
+  const tagIds = Array.isArray(body.tag_ids)
+    ? [...new Set(body.tag_ids.filter((value): value is string => typeof value === 'string' && value.length <= 128))].slice(0, 20)
+    : []
+  const favorite = body.favorite === undefined ? false : body.favorite
+  if (typeof favorite !== 'boolean') throw createError({ statusCode: 400, message: 'favorite doit être un booléen.' })
 
-  const id = crypto.randomUUID()
-
-  try {
-    await db.execute({
-      sql: "INSERT INTO vault_items (id, user_id, type, label, is_encrypted, payload, iv, url, favorite, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), datetime('now'))",
-      args: [id, session.user.id, type, label, isEncrypted ? 1 : 0, payload, iv, url],
-    })
-  } catch (error: any) {
-    const message = String(error?.message || error || '')
-
-    if (message.includes('SQLITE_CONSTRAINT') || message.includes('CHECK constraint failed')) {
-      throw createError({
-        statusCode: 500,
-        message: 'Vault schema migration is required before saving recovery codes. Please refresh and try again.',
-      })
-    }
-
-    console.error('Failed to save vault item:', error)
-    throw createError({ statusCode: 500, message: 'Failed to save vault item.' })
+  const vault = await db.execute({ sql: 'SELECT id FROM vaults WHERE id = ? AND user_id = ?', args: [vaultId, session.user.id] })
+  if (!vault.rows.length) throw createError({ statusCode: 400, message: 'Coffre introuvable.' })
+  if (folderId) {
+    const folder = await db.execute({ sql: 'SELECT id FROM folders WHERE id = ? AND vault_id = ? AND user_id = ?', args: [folderId, vaultId, session.user.id] })
+    if (!folder.rows.length) throw createError({ statusCode: 400, message: 'Dossier introuvable.' })
   }
 
-  return { id, message: 'Élément ajouté avec succès.' }
+  const id = crypto.randomUUID()
+  const statements: any[] = [{
+    sql: "INSERT INTO vault_items (id, user_id, vault_id, folder_id, type, label, is_encrypted, payload, iv, url, favorite, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
+    args: [id, session.user.id, vaultId, folderId, type, label, isEncrypted ? 1 : 0, payload, iv, url, favorite ? 1 : 0],
+  }]
+  for (const tagId of tagIds) statements.push({
+    sql: 'INSERT OR IGNORE INTO vault_item_tags (item_id, tag_id) SELECT ?, id FROM tags WHERE id = ? AND user_id = ?',
+    args: [id, tagId, session.user.id],
+  })
+
+  try {
+    await db.batch(statements, 'write')
+  } catch (error) {
+    console.error('Failed to save vault item:', error)
+    throw createError({ statusCode: 500, message: 'Impossible d’enregistrer cet élément.' })
+  }
+  return { id, message: 'Élément ajouté.' }
 })

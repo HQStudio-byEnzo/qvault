@@ -1,6 +1,6 @@
 <template>
   <div class="section-shell max-w-7xl py-10 md:py-16 space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 class="text-2xl font-bold text-white">{{ t('passwords.title') }}</h1>
         <p class="text-surface-400 text-sm mt-1">{{ t('passwords.subtitle') }}</p>

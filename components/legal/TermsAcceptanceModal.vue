@@ -2,8 +2,8 @@
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="visible" class="fixed inset-0 z-[90] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-2xl glass-panel p-5 md:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="absolute inset-0 modal-backdrop"></div>
+        <div class="relative w-full max-w-2xl modal-shell p-5 md:p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" :aria-label="t('legal.acceptTitle')">
           <div class="flex items-start justify-between gap-4 mb-6">
             <div>
               <h2 class="text-xl font-semibold text-white">{{ t('legal.acceptTitle') }}</h2>
@@ -11,21 +11,21 @@
                 {{ t('legal.acceptDesc') }}
               </p>
             </div>
-            <div class="w-10 h-10 rounded-2xl bg-accent-600/20 flex items-center justify-center flex-shrink-0 border border-white/10">
-              <Icon name="lucide:file-text" class="w-5 h-5 text-accent-400" />
+            <div class="feature-mark shrink-0">
+              <Icon name="lucide:file-text" class="w-5 h-5" />
             </div>
           </div>
 
-          <div class="grid gap-3 mb-6">
-            <NuxtLink to="/legal/cgu" class="flex items-center justify-between gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-colors">
+          <div class="modal-link-list mb-6">
+            <NuxtLink to="/legal/cgu" class="modal-link-row">
               <span class="text-sm font-medium text-surface-200">{{ t('footer.terms') }}</span>
               <Icon name="lucide:arrow-up-right" class="w-4 h-4 text-surface-500" />
             </NuxtLink>
-            <NuxtLink to="/legal/confidentialite" class="flex items-center justify-between gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-colors">
+            <NuxtLink to="/legal/confidentialite" class="modal-link-row">
               <span class="text-sm font-medium text-surface-200">{{ t('footer.privacy') }}</span>
               <Icon name="lucide:arrow-up-right" class="w-4 h-4 text-surface-500" />
             </NuxtLink>
-            <NuxtLink to="/legal/mentions-legales" class="flex items-center justify-between gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-colors">
+            <NuxtLink to="/legal/mentions-legales" class="modal-link-row">
               <span class="text-sm font-medium text-surface-200">{{ t('footer.legalNotice') }}</span>
               <Icon name="lucide:arrow-up-right" class="w-4 h-4 text-surface-500" />
             </NuxtLink>
@@ -39,11 +39,11 @@
           </label>
 
           <div class="flex flex-col sm:flex-row gap-2">
-            <button class="btn-primary" :disabled="!accepted || saving" @click="accept">
+            <button type="button" class="btn-primary" :disabled="!accepted || saving" @click="accept">
               <span v-if="saving">{{ t('legal.accepting') }}</span>
               <span v-else>{{ t('legal.acceptCta') }}</span>
             </button>
-            <button class="btn-secondary" @click="logout">
+            <button type="button" class="btn-secondary" @click="logout">
               {{ t('settings.logout') }}
             </button>
           </div>

@@ -103,6 +103,7 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { t } = useLang()
 const { generatePassword, entropy } = usePasswordGenerator()
+const { copySecurely } = useSecureClipboard()
 const { addItem } = useVault()
 const { masterPassword, isUnlocked, setMasterPassword } = useMasterPassword()
 
@@ -134,7 +135,7 @@ function regenerate() {
 }
 
 async function copyPassword() {
-  await navigator.clipboard.writeText(password.value)
+  await copySecurely(password.value)
   copied.value = true
   setTimeout(() => { copied.value = false }, 1600)
 }

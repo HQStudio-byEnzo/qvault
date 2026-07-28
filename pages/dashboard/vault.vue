@@ -123,6 +123,8 @@ const filters = computed(() => [
   { label: t('vault.filterLinks'), value: 'link' },
   { label: t('vault.filterPasswords'), value: 'password' },
   { label: t('vault.filterCrypto'), value: 'crypto' },
+  { label: t('vault.typeNote'), value: 'note' },
+  { label: t('vault.typeTotp'), value: 'totp' },
 ])
 
 const searchChips = computed(() => [

@@ -1,13 +1,14 @@
 import { createClient } from '@libsql/client'
 import type { H3Event } from 'h3'
 import { ensureVaultSchema } from './vault-schema'
+import { useRuntimeConfig } from '#imports'
 
 let dbClient: ReturnType<typeof createClient> | null = null
 let dbReadyPromise: Promise<void> | null = null
 let dbProxy: ReturnType<typeof createClient> | null = null
 
 /**
- * Récupère le client Turso/LibSQL
+ * Récupère le client SQLite local
  * Utilise un singleton pour réutiliser la connexion
  */
 export function useDB(event?: H3Event) {
@@ -15,13 +16,26 @@ export function useDB(event?: H3Event) {
 
   const config = useRuntimeConfig()
 
-  dbClient = createClient({
-    url: String(config.tursoDbUrl),
-    authToken: config.tursoDbToken ? String(config.tursoDbToken) : undefined,
-  })
+  const configuredUrl = String(config.tursoDbUrl || '').trim()
+  if (!configuredUrl && process.env.NODE_ENV === 'production') {
+    throw createError({
+      statusCode: 503,
+      message: 'TURSO_DB_URL is required in production.',
+    })
+  }
+  const url = configuredUrl || 'file:./bitlock-dev.db'
+  const authToken = String(config.tursoDbToken || '').trim()
+
+  dbClient = createClient(authToken ? { url, authToken } : { url })
 
   if (!dbReadyPromise) {
-    dbReadyPromise = ensureVaultSchema(dbClient).finally(() => {
+    dbReadyPromise = (async () => {
+      if (url.startsWith('file:')) {
+        await dbClient!.execute('PRAGMA foreign_keys = ON')
+        await dbClient!.execute('PRAGMA busy_timeout = 5000')
+      }
+      await ensureVaultSchema(dbClient!)
+    })().finally(() => {
       dbReadyPromise = null
     })
   }
@@ -39,6 +53,13 @@ export function useDB(event?: H3Event) {
         return async (...args: any[]) => {
           if (dbReadyPromise) await dbReadyPromise
           return (target.batch as any)(...args)
+        }
+      }
+
+      if (prop === 'transaction') {
+        return async (...args: any[]) => {
+          if (dbReadyPromise) await dbReadyPromise
+          return (target.transaction as any)(...args)
         }
       }
 

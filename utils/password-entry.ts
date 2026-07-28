@@ -1,4 +1,5 @@
 export interface PasswordEntry {
+  schema?: 'bitlock.credentials/v1'
   password: string
   username?: string
   email?: string
@@ -13,6 +14,7 @@ function cleanOptional(value: unknown) {
 
 export function serializePasswordEntry(entry: PasswordEntry) {
   return JSON.stringify({
+    schema: 'bitlock.credentials/v1',
     password: entry.password,
     username: cleanOptional(entry.username),
     email: cleanOptional(entry.email),
@@ -25,6 +27,7 @@ export function parsePasswordEntry(payload: string): PasswordEntry {
     const parsed = JSON.parse(payload)
     if (parsed && typeof parsed === 'object' && typeof parsed.password === 'string') {
       return {
+        schema: parsed.schema === 'bitlock.credentials/v1' ? parsed.schema : undefined,
         password: parsed.password,
         username: cleanOptional(parsed.username),
         email: cleanOptional(parsed.email),

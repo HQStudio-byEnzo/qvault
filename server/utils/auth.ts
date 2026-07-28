@@ -31,7 +31,7 @@ export async function requireAuth(event: H3Event) {
 
   const db = useDB(event)
   const result = await db.execute({
-    sql: 'SELECT session_version FROM users WHERE id = ?',
+    sql: 'SELECT username, session_version FROM users WHERE id = ?',
     args: [session.user.id],
   })
   const currentVersion = Number(result.rows[0]?.session_version ?? -1)
@@ -40,6 +40,21 @@ export async function requireAuth(event: H3Event) {
   if (result.rows.length === 0 || currentVersion !== sessionVersion) {
     await clearUserSession(event)
     throw createError({ statusCode: 401, message: 'Session expired. Please sign in again.' })
+  }
+
+  const username = String(result.rows[0]?.username || '')
+  if (username && session.user.username !== username) {
+    const hydratedSession = {
+      ...session,
+      user: {
+        id: session.user.id,
+        username,
+        sessionVersion,
+        created_at: session.user.created_at,
+      },
+    }
+    await setUserSession(event, hydratedSession)
+    return hydratedSession
   }
 
   return session as typeof session & { user: NonNullable<typeof session.user> }

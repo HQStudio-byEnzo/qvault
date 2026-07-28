@@ -9,7 +9,7 @@ export function useAuthClient() {
   /**
    * Inscription
    */
-  async function signUp(data: { name: string; email: string; password: string; acceptedTerms: boolean }) {
+  async function signUp(data: { username: string; password: string; passwordHint?: string; acceptedTerms: boolean }) {
     const response = await $fetch<{ user: any }>('/api/auth/register', {
       method: 'POST',
       body: data,
@@ -22,7 +22,7 @@ export function useAuthClient() {
   /**
    * Connexion
    */
-  async function signIn(data: { email: string; password: string }) {
+  async function signIn(data: { username: string; password: string }) {
     const response = await $fetch<{ user: any }>('/api/auth/login', {
       method: 'POST',
       body: data,

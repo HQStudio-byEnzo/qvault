@@ -1,4 +1,12 @@
 export default defineEventHandler((event) => {
+  if (getRequestURL(event).pathname.startsWith('/api/')) {
+    setResponseHeaders(event, {
+      'Cache-Control': 'no-store, max-age=0',
+      Pragma: 'no-cache',
+      'X-Robots-Tag': 'noindex, nofollow, noarchive',
+    })
+  }
+
   const method = getMethod(event).toUpperCase()
   if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) return
 

@@ -1,17 +1,21 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4 py-12">
-    <div class="w-full max-w-md space-y-8 animate-fade-in">
-      <div class="text-center space-y-4">
-        <NuxtLink to="/" class="inline-flex items-center justify-center">
+  <div class="auth-shell">
+    <div class="auth-frame animate-fade-in">
+      <header class="auth-header">
+        <NuxtLink
+          to="/"
+          class="inline-flex items-center justify-center rounded-md outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-4 focus-visible:ring-offset-surface-950 active:opacity-70"
+          aria-label="BitLock — accueil"
+        >
           <UiBitLockLogo :size="64" />
         </NuxtLink>
-        <div class="space-y-2">
+        <div class="mt-6 min-w-0 space-y-2">
           <h1 class="text-3xl font-semibold tracking-tight text-white">{{ t('locked.title') }}</h1>
           <p class="text-sm text-surface-400">{{ t('locked.subtitle') }}</p>
         </div>
-      </div>
+      </header>
 
-      <div class="glass-panel p-6 md:p-8 space-y-5">
+      <div class="glass-panel auth-card space-y-5">
         <div class="p-4 rounded-2xl bg-accent-500/10 border border-accent-500/20 text-sm text-accent-200">
           {{ reasonMessage }}
         </div>
@@ -40,11 +44,14 @@
             <span v-if="isLoading">{{ t('locked.loading') }}</span>
             <span v-else>{{ t('locked.cta') }}</span>
           </button>
+          <button v-if="passkeyConfigured" type="button" :disabled="isLoading" class="btn-secondary w-full py-2.5" @click="unlockWithPasskey">
+            <Icon name="lucide:fingerprint" class="w-4 h-4" /> {{ t('locked.passkey') }}
+          </button>
         </form>
 
-        <NuxtLink to="/auth/login" class="block text-center text-sm text-surface-400 hover:text-white transition-colors">
+        <button type="button" class="mx-auto block min-h-11 text-center text-sm text-surface-400 hover:text-white transition-colors" @click="signOut">
           {{ t('locked.back') }}
-        </NuxtLink>
+        </button>
       </div>
     </div>
   </div>
@@ -61,8 +68,9 @@ definePageMeta({
 
 const route = useRoute()
 const { t } = useLang()
-const { setMasterPassword } = useMasterPassword()
-const { items, fetchItems, decryptItem } = useVault()
+const { signOut } = useAuthClient()
+const { unlockMasterPassword } = useMasterPassword()
+const { configured: passkeyConfigured, unlock: getPasskeyMaster } = usePasskeyUnlock()
 
 const masterPasswordInput = ref('')
 const errorMsg = ref('')
@@ -76,7 +84,7 @@ const reasonMessage = computed(() => {
 
 async function unlockVault() {
   errorMsg.value = ''
-  const password = masterPasswordInput.value.trim()
+  const password = masterPasswordInput.value
 
   if (!password) {
     errorMsg.value = t('locked.errorRequired')
@@ -85,12 +93,7 @@ async function unlockVault() {
 
   isLoading.value = true
   try {
-    await fetchItems()
-    const encryptedItem = items.value.find(item => item.is_encrypted)
-    if (encryptedItem) {
-      await decryptItem(encryptedItem, password)
-    }
-    setMasterPassword(password)
+    await unlockMasterPassword(password)
     const requestedPath = typeof route.query.next === 'string' ? route.query.next : '/dashboard'
     const nextPath = requestedPath.startsWith('/') && !requestedPath.startsWith('//')
       ? requestedPath
@@ -101,5 +104,16 @@ async function unlockVault() {
   } finally {
     isLoading.value = false
   }
+}
+
+async function unlockWithPasskey() {
+  errorMsg.value = ''
+  isLoading.value = true
+  try {
+    await unlockMasterPassword(await getPasskeyMaster())
+    const requestedPath = typeof route.query.next === 'string' ? route.query.next : '/dashboard'
+    await navigateTo(requestedPath.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : '/dashboard')
+  } catch { errorMsg.value = t('locked.passkeyError') }
+  finally { isLoading.value = false }
 }
 </script>

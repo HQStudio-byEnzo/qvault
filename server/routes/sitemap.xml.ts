@@ -1,5 +1,3 @@
-const appUrl = 'https://bitlock-two.vercel.app'
-
 const publicRoutes = [
   { loc: '/', priority: '1.0', changefreq: 'daily' },
   { loc: '/features', priority: '0.9', changefreq: 'weekly' },
@@ -12,6 +10,7 @@ const publicRoutes = [
   { loc: '/generateur-mot-de-passe', priority: '0.9', changefreq: 'weekly' },
   { loc: '/generateur-seed-phrase', priority: '0.9', changefreq: 'weekly' },
   { loc: '/audit-securite', priority: '0.8', changefreq: 'weekly' },
+  { loc: '/support', priority: '0.6', changefreq: 'weekly' },
   { loc: '/legal/cgu', priority: '0.4', changefreq: 'monthly' },
   { loc: '/legal/confidentialite', priority: '0.4', changefreq: 'monthly' },
   { loc: '/legal/mentions-legales', priority: '0.4', changefreq: 'monthly' },
@@ -23,6 +22,7 @@ function formatDate(date: Date) {
 }
 
 export default defineEventHandler((event) => {
+  const appUrl = String(useRuntimeConfig(event).appUrl || 'http://localhost:3000').replace(/\/+$/, '')
   const today = formatDate(new Date())
   const urls = publicRoutes
     .map(route => `  <url>

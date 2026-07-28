@@ -2,10 +2,16 @@
  * Composable pour la gestion du coffre-fort
  * Gère les appels API et le chiffrement/déchiffrement côté client
  */
+import { MASTER_VERIFIER_TEXT } from '~/composables/useMasterPassword'
+import { MIN_MASTER_PASSWORD_LENGTH } from '~/utils/security-policy'
+
 export interface VaultItem {
   id: string
   user_id: string
-  type: 'link' | 'password' | 'crypto' | 'recovery'
+  type: 'link' | 'password' | 'crypto' | 'recovery' | 'note' | 'totp'
+  vault_id?: string | null
+  folder_id?: string | null
+  tags?: VaultTag[]
   label: string
   is_encrypted: boolean
   payload: string
@@ -19,12 +25,20 @@ export interface VaultItem {
   _salt?: string
 }
 
+export interface VaultTag {
+  id: string
+  name: string
+  color: string
+}
+
 export interface VaultStats {
   counts: {
     links: number
     passwords: number
     crypto: number
-    recovery: number
+      recovery: number
+      notes: number
+      totp: number
     favorites: number
     total: number
   }
@@ -37,7 +51,7 @@ export function useVault() {
   const error = useState<string | null>('vault-error', () => null)
   const { masterPassword, setMasterPassword } = useMasterPassword()
 
-  const { encrypt, decrypt } = useCrypto()
+  const { encrypt, decrypt, serializeEncryptedPayload, parseEncryptedPayload } = useCrypto()
 
   /**
    * Récupère tous les éléments du coffre-fort
@@ -79,12 +93,16 @@ export function useVault() {
    * Si shouldEncrypt=true, le chiffrement est effectué côté client avant envoi
    */
   async function addItem(data: {
-    type: 'link' | 'password' | 'crypto' | 'recovery'
+    type: 'link' | 'password' | 'crypto' | 'recovery' | 'note' | 'totp'
     label: string
     payload: string
     shouldEncrypt: boolean
     url?: string
-  }) {
+    vaultId?: string
+    folderId?: string | null
+    tagIds?: string[]
+    favorite?: boolean
+  }, options: { refresh?: boolean } = {}) {
     error.value = null
 
     let payload = data.payload
@@ -99,7 +117,7 @@ export function useVault() {
         throw new Error(message)
       }
       const encrypted = await encrypt(data.payload, masterPassword.value)
-      payload = `${encrypted.salt}:${encrypted.ciphertext}`
+      payload = serializeEncryptedPayload(encrypted)
       iv = encrypted.iv
     }
 
@@ -117,12 +135,17 @@ export function useVault() {
             : data.type === 'link' && !shouldEncrypt
               ? data.url || undefined
               : undefined,
+          vault_id: data.vaultId,
+          folder_id: data.folderId,
+          tag_ids: data.tagIds,
+          favorite: data.favorite,
         },
       })
 
-      // Rafraîchir la liste
-      await fetchItems()
-      await fetchStats()
+      if (options.refresh !== false) {
+        await fetchItems()
+        await fetchStats()
+      }
 
       return response
     } catch (err: any) {
@@ -144,21 +167,23 @@ export function useVault() {
       throw new Error('Déverrouillez votre mot de passe maître pour déchiffrer cet élément.')
     }
 
-    // Le payload est stocké sous la forme "salt:ciphertext"
-    const [salt, ciphertext] = item.payload.split(':')
-    
-    if (!salt || !ciphertext) {
+    let envelope
+    try {
+      envelope = parseEncryptedPayload(item.payload)
+    } catch {
       throw new Error('Format de payload chiffré invalide.')
     }
 
-    return decrypt(ciphertext, item.iv, secret, salt)
+    return decrypt(envelope.ciphertext, item.iv, secret, envelope.salt)
   }
 
   /**
    * Ré-encrypte tous les éléments chiffrés avec un nouveau mot de passe maître
    */
   async function reencryptVault(currentPassword: string | null, newPassword: string) {
-    // Always load the complete vault; the shared state may currently contain a filtered view.
+    if (newPassword.length < MIN_MASTER_PASSWORD_LENGTH) {
+      throw new Error(`Le nouveau mot de passe maître doit contenir au moins ${MIN_MASTER_PASSWORD_LENGTH} caractères.`)
+    }
     await fetchItems()
 
     const encryptedItems = items.value.filter(item => item.is_encrypted)
@@ -175,20 +200,66 @@ export function useVault() {
     // Prepare every replacement before writing anything. A wrong current password
     // therefore cannot modify only part of the vault.
     const replacements = []
+    const historyReplacements: Array<{
+      id: string
+      previousPayload: string
+      previousIv: string
+      payload: string
+      iv: string
+    }> = []
     for (const item of encryptedItems) {
       const plain = await decryptItem(item, sourcePassword || '')
       const encrypted = await encrypt(plain, newPassword)
 
       replacements.push({
         id: item.id,
-        payload: `${encrypted.salt}:${encrypted.ciphertext}`,
+        previousPayload: item.payload,
+        previousIv: item.iv,
+        payload: serializeEncryptedPayload(encrypted),
         iv: encrypted.iv,
+      })
+
+    }
+
+    const history = await $fetch<{ history: Array<{ id: string; payload: string; iv: string | null; is_encrypted: boolean | number }> }>(
+      '/api/vault/history',
+    )
+    for (const snapshot of history.history.filter(entry => Boolean(entry.is_encrypted))) {
+      if (!snapshot.iv) throw new Error('Une ancienne version chiffrée est corrompue.')
+      let envelope
+      try {
+        envelope = parseEncryptedPayload(snapshot.payload)
+      } catch {
+        throw new Error('Une ancienne version chiffrée est corrompue.')
+      }
+      const historyPlain = await decrypt(
+        envelope.ciphertext,
+        snapshot.iv,
+        sourcePassword || '',
+        envelope.salt,
+      )
+      const historyEncrypted = await encrypt(historyPlain, newPassword)
+      historyReplacements.push({
+        id: snapshot.id,
+        previousPayload: snapshot.payload,
+        previousIv: snapshot.iv,
+        payload: serializeEncryptedPayload(historyEncrypted),
+        iv: historyEncrypted.iv,
       })
     }
 
+    const verifier = await encrypt(MASTER_VERIFIER_TEXT, newPassword)
+
     await $fetch('/api/vault/rotate-encryption', {
       method: 'POST',
-      body: { items: replacements },
+      body: {
+        items: replacements,
+        history: historyReplacements,
+        verifier: {
+          payload: serializeEncryptedPayload(verifier),
+          iv: verifier.iv,
+        },
+      },
     })
 
     setMasterPassword(newPassword)

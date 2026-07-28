@@ -22,10 +22,20 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Élément non trouvé.' })
   }
 
-  await db.execute({
-    sql: 'DELETE FROM vault_items WHERE id = ? AND user_id = ?',
-    args: [id, session.user.id],
-  })
+  await db.batch([
+    {
+      sql: 'DELETE FROM vault_item_tags WHERE item_id = ?',
+      args: [id],
+    },
+    {
+      sql: 'DELETE FROM vault_item_history WHERE item_id = ? AND user_id = ?',
+      args: [id, session.user.id],
+    },
+    {
+      sql: 'DELETE FROM vault_items WHERE id = ? AND user_id = ?',
+      args: [id, session.user.id],
+    },
+  ], 'write')
 
   return { message: 'Élément supprimé.' }
 })

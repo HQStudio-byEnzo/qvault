@@ -25,12 +25,18 @@
       </div>
     </div>
 
-    <div class="glass-panel p-4 flex items-start gap-3 border-accent-500/20 bg-accent-500/5">
-      <Icon name="lucide:shield-check" class="w-5 h-5 text-accent-400 mt-0.5 flex-shrink-0" />
-      <p class="text-sm text-surface-400">
-        {{ t('audit.notice') }}
-      </p>
+    <div class="glass-panel p-4 flex flex-col sm:flex-row sm:items-center gap-3 border-accent-500/20 bg-accent-500/5">
+      <Icon name="lucide:shield-check" class="w-5 h-5 text-accent-400 flex-shrink-0" />
+      <p class="text-sm text-surface-400 flex-1">{{ t('audit.notice') }}</p>
+      <button type="button" class="btn-secondary" :disabled="passwordAuditLoading" @click="runPasswordAudit">
+        <Icon name="lucide:key-round" class="w-4 h-4" />
+        {{ passwordAuditLoading ? t('audit.passwordAuditRunning') : t('audit.passwordAuditAction') }}
+      </button>
     </div>
+
+    <p v-if="passwordAuditMessage" class="text-sm" :class="passwordAuditError ? 'text-red-400' : 'text-green-400'" role="status">
+      {{ passwordAuditMessage }}
+    </p>
 
     <div v-if="loading" class="flex items-center justify-center py-12">
       <Icon name="lucide:loader-2" class="w-6 h-6 text-accent-400 animate-spin" />
@@ -74,7 +80,9 @@
 
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
+import { parseEncryptedPayload } from '~/composables/useCrypto'
 import type { VaultItem } from '~/composables/useVault'
+import { parsePasswordEntry } from '~/utils/password-entry'
 
 definePageMeta({
   layout: 'dashboard',
@@ -82,7 +90,12 @@ definePageMeta({
 })
 
 const { t } = useLang()
-const { items, loading, fetchItems } = useVault()
+const { items, loading, fetchItems, decryptItem } = useVault()
+const { masterPassword, isUnlocked } = useMasterPassword()
+const passwordAuditLoading = ref(false)
+const passwordAuditMessage = ref('')
+const passwordAuditError = ref(false)
+const localPasswordIssues = ref<AuditIssue[]>([])
 
 type Severity = 'high' | 'medium' | 'low'
 
@@ -177,7 +190,7 @@ const issues = computed<AuditIssue[]>(() => {
     })
   }
 
-  return result
+  return [...result, ...localPasswordIssues.value]
 })
 
 const highIssues = computed(() => issues.value.filter(issue => issue.severity === 'high'))
@@ -195,7 +208,13 @@ const scoreColor = computed(() => {
 })
 
 function hasEncryptedPayload(item: VaultItem) {
-  return typeof item.payload === 'string' && item.payload.split(':').length === 2
+  if (typeof item.payload !== 'string') return false
+  try {
+    parseEncryptedPayload(item.payload)
+    return true
+  } catch {
+    return false
+  }
 }
 
 function normalizeUrl(url: string) {
@@ -224,6 +243,73 @@ function findDuplicates(itemsToGroup: VaultItem[], getKey: (item: VaultItem) => 
   return Array.from(groups.entries())
     .filter(([, group]) => group.length > 1)
     .map(([key, group]) => ({ key, items: group }))
+}
+
+function isWeakPassword(password: string) {
+  const variety = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter(pattern => pattern.test(password)).length
+  return password.length < 12 || variety < 3 || /(password|admin|qwerty|12345|bitlock)/i.test(password)
+}
+
+async function runPasswordAudit() {
+  passwordAuditMessage.value = ''
+  passwordAuditError.value = false
+
+  if (!isUnlocked.value || !masterPassword.value) {
+    passwordAuditError.value = true
+    passwordAuditMessage.value = t('audit.passwordAuditUnlock')
+    return
+  }
+
+  passwordAuditLoading.value = true
+  try {
+    const passwordItems = items.value.filter(item => item.type === 'password' && item.is_encrypted)
+    const decrypted: Array<{ item: VaultItem; password: string }> = []
+
+    for (const item of passwordItems) {
+      const plain = await decryptItem(item, masterPassword.value)
+      decrypted.push({ item, password: parsePasswordEntry(plain).password })
+    }
+
+    const findings: AuditIssue[] = []
+    const weak = decrypted.filter(entry => isWeakPassword(entry.password))
+    const groups = new Map<string, VaultItem[]>()
+    decrypted.forEach(({ item, password }) => groups.set(password, [...(groups.get(password) || []), item]))
+    const reused = Array.from(groups.values()).filter(group => group.length > 1)
+
+    if (weak.length) {
+      findings.push({
+        key: 'local-weak-passwords',
+        severity: 'high',
+        icon: 'lucide:key-round',
+        title: t('audit.weakPasswordsTitle').replace('{count}', String(weak.length)),
+        description: weak.map(entry => entry.item.label || t('vault.untitled')).join(', '),
+        action: t('audit.weakPasswordsAction'),
+      })
+    }
+
+    if (reused.length) {
+      const affected = reused.reduce((sum, group) => sum + group.length, 0)
+      findings.push({
+        key: 'local-reused-passwords',
+        severity: 'high',
+        icon: 'lucide:copy-x',
+        title: t('audit.reusedPasswordsTitle').replace('{count}', String(affected)),
+        description: reused.flatMap(group => group.map(item => item.label || t('vault.untitled'))).join(', '),
+        action: t('audit.reusedPasswordsAction'),
+      })
+    }
+
+    localPasswordIssues.value = findings
+    passwordAuditMessage.value = findings.length
+      ? t('audit.passwordAuditFindings').replace('{count}', String(findings.length))
+      : t('audit.passwordAuditClean')
+  } catch {
+    localPasswordIssues.value = []
+    passwordAuditError.value = true
+    passwordAuditMessage.value = t('audit.passwordAuditFailed')
+  } finally {
+    passwordAuditLoading.value = false
+  }
 }
 
 onMounted(() => {

@@ -63,6 +63,7 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { t } = useLang()
 const { generateSeedPhrase } = useSeedGenerator()
+const { copySecurely } = useSecureClipboard()
 const { addItem } = useVault()
 const { masterPassword, isUnlocked, setMasterPassword } = useMasterPassword()
 
@@ -79,7 +80,7 @@ function regenerate() {
 }
 
 async function copySeed() {
-  await navigator.clipboard.writeText(seedPhrase.value)
+  await copySecurely(seedPhrase.value)
   copied.value = true
   setTimeout(() => { copied.value = false }, 1600)
 }

@@ -50,19 +50,6 @@
         </div>
 
         <div>
-          <label for="hint" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.hint') }}</label>
-          <input
-            id="hint"
-            v-model="form.hint"
-            type="text"
-            class="input-field"
-            :placeholder="t('auth.register.hintPlaceholder')"
-          />
-          <p class="mt-1 text-xs text-surface-500">{{ t('auth.register.hintDesc') }}</p>
-          <p class="mt-1 text-xs text-amber-300">{{ t('auth.register.hintWarning') }}</p>
-        </div>
-
-        <div>
           <label for="confirmPassword" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.register.confirmPassword') }}</label>
           <input
             id="confirmPassword"
@@ -140,7 +127,6 @@ const { signUp } = useAuthClient()
    password: '',
    confirmPassword: '',
    acceptedTerms: false,
-   hint: '',
  })
 
 const isLoading = ref(false)
@@ -167,7 +153,6 @@ async function handleRegister() {
       username: form.username,
       password: form.password,
       acceptedTerms: form.acceptedTerms,
-      passwordHint: form.hint || undefined,
     })
     navigateTo('/dashboard')
   } catch (err: any) {

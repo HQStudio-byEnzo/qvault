@@ -41,8 +41,8 @@ export function useMasterPassword() {
   }
 
   async function decryptEnvelope(envelope: { payload: string; iv: string }, value: string) {
-    const { salt, ciphertext } = parseEncryptedPayload(envelope.payload)
-    return decrypt(ciphertext, envelope.iv, value, salt)
+    const { salt, ciphertext, iterations } = parseEncryptedPayload(envelope.payload)
+    return decrypt(ciphertext, envelope.iv, value, salt, iterations)
   }
 
   async function unlockMasterPassword(value: string) {

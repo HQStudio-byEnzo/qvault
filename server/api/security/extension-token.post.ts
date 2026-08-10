@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  enforceRateLimit(event, 'extension-token-create', 10, 60 * 60 * 1000, String(session.user.id))
+  await enforceRateLimit(event, 'extension-token-create', 10, 60 * 60 * 1000, String(session.user.id))
   const db = useDB()
   const token = `blx_${randomBytes(32).toString('base64url')}`
   const tokenHash = createHash('sha256').update(token).digest('hex')

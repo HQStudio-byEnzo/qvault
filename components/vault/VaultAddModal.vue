@@ -206,14 +206,11 @@
               <input
                 v-model="form.encrypt"
                 type="checkbox"
-                :disabled="form.type !== 'link'"
+                disabled
                 class="rounded border-surface-600 text-accent-500 focus:ring-accent-500"
               />
-              <span>{{ form.type === 'link' ? t('vault.encryptThisLink') : t('vault.encryptionRequired') }}</span>
+              <span>{{ t('vault.encryptionRequired') }}</span>
             </label>
-            <p v-if="form.type === 'link' && !form.encrypt" class="text-xs text-surface-500">
-              {{ t('vault.linkPlainTextNotice') }}
-            </p>
           </div>
 
           <div v-if="error" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
@@ -264,7 +261,7 @@ const form = reactive({
   loginEmail: '',
   phone: '',
   url: '',
-  encrypt: props.defaultType === 'link' ? false : true,
+  encrypt: true,
 })
 
 const types = computed(() => [
@@ -298,13 +295,13 @@ const payloadPlaceholder = computed(() => {
   }
 })
 
-const needsEncryption = computed(() => form.type !== 'link' || form.encrypt)
+const needsEncryption = computed(() => true)
 const isNote = computed(() => form.type === 'note')
 
 watch(
   () => form.type,
-  (type) => {
-    form.encrypt = type === 'link' ? false : true
+  () => {
+    form.encrypt = true
   },
   { immediate: true }
 )
@@ -335,7 +332,7 @@ async function handleSubmit() {
             phone: form.phone,
           })
         : form.payload,
-      shouldEncrypt: form.type === 'link' ? form.encrypt : true,
+      shouldEncrypt: true,
       url: form.type === 'password' ? form.url : form.type === 'link' ? form.payload : undefined,
     })
     masterPasswordInput.value = ''

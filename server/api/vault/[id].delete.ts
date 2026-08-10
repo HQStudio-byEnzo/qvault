@@ -4,7 +4,7 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  enforceRateLimit(event, 'vault-delete', 120, 60 * 1000, String(session.user.id))
+  await enforceRateLimit(event, 'vault-delete', 120, 60 * 1000, String(session.user.id))
   const db = useDB()
   const id = getRouterParam(event, 'id')
 

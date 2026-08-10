@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  enforceRateLimit(event, 'master-verifier-update', 20, 60 * 60 * 1000, String(session.user.id))
+  await enforceRateLimit(event, 'master-verifier-update', 20, 60 * 60 * 1000, String(session.user.id))
   const body = requireRecord(await readBody(event))
   const encrypted = assertEncryptedPayload(body.payload, body.iv)
   const db = useDB()

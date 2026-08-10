@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  enforceRateLimit(event, 'vault-create', 120, 60 * 1000, String(session.user.id))
+  await enforceRateLimit(event, 'vault-create', 120, 60 * 1000, String(session.user.id))
   const db = useDB()
   const body = requireRecord(await readBody(event))
   const type = body.type
@@ -10,13 +10,12 @@ export default defineEventHandler(async (event) => {
   const label = body.label === undefined ? '' : requireString(body.label, 'Label', { min: 0, max: 200 })
   const isEncrypted = body.is_encrypted === undefined ? true : body.is_encrypted
   if (typeof isEncrypted !== 'boolean') throw createError({ statusCode: 400, message: 'is_encrypted doit être un booléen.' })
-  if (type !== 'link' && !isEncrypted) throw createError({ statusCode: 400, message: 'Ce type de donnée doit être chiffré côté client.' })
+  if (!isEncrypted) throw createError({ statusCode: 400, message: 'Toutes les données du coffre doivent être chiffrées côté client.' })
 
-  const encrypted = isEncrypted ? assertEncryptedPayload(body.payload, body.iv) : null
-  let payload = encrypted?.payload || requireString(body.payload, 'Payload', { min: 1, max: 100_000, trim: false })
-  const iv = encrypted?.iv || null
+  const encrypted = assertEncryptedPayload(body.payload, body.iv)
+  const payload = encrypted.payload
+  const iv = encrypted.iv
   const url = optionalHttpUrl(body.url)
-  if (type === 'link' && !isEncrypted) payload = optionalHttpUrl(payload, 'Link') ?? payload
 
   const vaultId = typeof body.vault_id === 'string' && body.vault_id.length <= 128 ? body.vault_id : `default-${session.user.id}`
   const folderId = typeof body.folder_id === 'string' && body.folder_id.length <= 128 ? body.folder_id : null

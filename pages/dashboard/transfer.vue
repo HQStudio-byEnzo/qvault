@@ -60,7 +60,7 @@ async function importPackage() {
     const envelope = JSON.parse(incoming.value) as TransferEnvelope
     if (envelope.format !== 'bitlock-transfer' || envelope.version !== 1) throw new Error('FORMAT')
     const parsedPayload = parseEncryptedPayload(envelope.payload)
-    const plain = await decrypt(parsedPayload.ciphertext, envelope.iv, incomingCode.value, parsedPayload.salt)
+    const plain = await decrypt(parsedPayload.ciphertext, envelope.iv, incomingCode.value, parsedPayload.salt, parsedPayload.iterations)
     await addItem({ type: envelope.type, label: envelope.label, payload: plain, shouldEncrypt: true, url: envelope.url })
     message.value = t('transfer.imported'); incoming.value = ''; incomingCode.value = ''
   } catch { failed.value = true; message.value = t('transfer.invalid') }

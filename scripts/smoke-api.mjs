@@ -63,7 +63,6 @@ try {
     body: JSON.stringify({
       username,
       password,
-      passwordHint: 'Indice smoke test',
       acceptedTerms: true,
     }),
   })
@@ -75,22 +74,12 @@ try {
     body: JSON.stringify({ username, password: 'incorrect-password' }),
   })
   assert(rejectedLogin.response.status === 401, 'Incorrect password was accepted')
-  const hint = (await request(`/api/auth/hint?username=${encodeURIComponent(username)}`)).data
-  assert(hint.hint === 'Indice smoke test', 'Password hint was not available after a failed login')
-
   await request('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ username, password }),
   })
   const session = (await request('/api/auth/session')).data
   assert(session.user?.username === username, 'Username login did not create the expected session')
-  await request('/api/auth/hint', {
-    method: 'PUT',
-    body: JSON.stringify({ password, hint: 'Indice smoke modifié' }),
-  })
-  const updatedHint = (await request(`/api/auth/hint?username=${encodeURIComponent(username)}`)).data
-  assert(updatedHint.hint === 'Indice smoke modifié', 'Password hint update failed')
-
   const organization = (await request('/api/organization')).data
   assert(organization.vaults.length === 1, 'Default vault was not created')
   const vaultId = organization.vaults[0].id
@@ -180,7 +169,7 @@ try {
   console.log(JSON.stringify({
     ok: true,
     usernameAuth: true,
-    passwordHintChallenge: true,
+    passwordHintsDisabled: true,
     defaultVault: true,
     notes: 1,
     historyWithoutFavoriteNoise: true,

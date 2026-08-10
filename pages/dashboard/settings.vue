@@ -257,27 +257,6 @@
       </section>
 
       <section class="glass-panel p-5 md:p-6 space-y-4">
-        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-          <Icon name="lucide:lightbulb" class="w-5 h-5 text-surface-400" />
-          {{ t('settings.hintTitle') }}
-        </h2>
-        <p class="text-sm text-surface-400">{{ t('settings.hintDesc') }}</p>
-        <form class="space-y-4" @submit.prevent="savePasswordHint">
-          <div>
-            <label for="accountHint" class="block text-sm font-medium text-surface-300 mb-1">{{ t('settings.hintLabel') }}</label>
-            <input id="accountHint" v-model="hintForm.hint" maxlength="200" class="input-field" :placeholder="t('auth.register.hintPlaceholder')" />
-            <p class="mt-1 text-xs text-amber-300">{{ t('settings.hintWarning') }}</p>
-          </div>
-          <div>
-            <label for="hintPassword" class="block text-sm font-medium text-surface-300 mb-1">{{ t('settings.hintPassword') }}</label>
-            <input id="hintPassword" v-model="hintForm.password" type="password" required class="input-field" autocomplete="current-password" />
-          </div>
-          <button class="btn-primary" :disabled="hintLoading">{{ t('settings.hintSave') }}</button>
-          <p v-if="hintMessage" class="text-sm" :class="hintFailed ? 'text-red-400' : 'text-accent-300'">{{ hintMessage }}</p>
-        </form>
-      </section>
-
-      <section class="glass-panel p-5 md:p-6 space-y-4">
         <h2 class="text-lg font-semibold text-white flex items-center gap-2"><Icon name="lucide:fingerprint" class="w-5 h-5 text-accent-400" />{{ t('settings.passkeyTitle') }}</h2>
         <p class="text-sm text-surface-400">{{ t('settings.passkeyDesc') }}</p>
         <p v-if="!passkeySupported" class="text-sm text-amber-300">{{ t('settings.passkeyUnsupported') }}</p>
@@ -499,10 +478,6 @@ const extensionLoading = ref(false)
 const extensionToken = ref('')
 const extensionMessage = ref('')
 const extensionFailed = ref(false)
-const hintForm = reactive({ hint: '', password: '' })
-const hintLoading = ref(false)
-const hintMessage = ref('')
-const hintFailed = ref(false)
 const activeSection = ref<'account' | 'security' | 'language' | 'shortcuts' | 'support' | 'danger'>('account')
 const editingShortcutId = ref<ShortcutActionId | null>(null)
 const securitySettings = reactive({
@@ -523,7 +498,6 @@ const settingSections = computed(() => [
 onMounted(async () => {
   try {
     userInfo.value = await $fetch('/api/auth/me')
-    hintForm.hint = userInfo.value?.password_hint || ''
   } catch {}
   loadSecuritySettings()
   loadShortcuts()
@@ -658,25 +632,6 @@ async function enablePasskey() {
 }
 
 function disablePasskey() { removePasskey(); passkeyMessage.value = t('settings.passkeyDisabled'); passkeyFailed.value = false }
-
-async function savePasswordHint() {
-  hintLoading.value = true
-  hintMessage.value = ''
-  hintFailed.value = false
-  try {
-    await $fetch('/api/auth/hint', {
-      method: 'PUT',
-      body: { hint: hintForm.hint, password: hintForm.password },
-    })
-    hintForm.password = ''
-    hintMessage.value = t('settings.hintSaved')
-  } catch (error: any) {
-    hintFailed.value = true
-    hintMessage.value = error?.data?.message || t('settings.hintFailed')
-  } finally {
-    hintLoading.value = false
-  }
-}
 
 async function loadExtensionTokenStatus() {
   try {

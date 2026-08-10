@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  enforceRateLimit(event, 'organization-assign', 120, 60 * 1000, String(session.user.id))
+  await enforceRateLimit(event, 'organization-assign', 120, 60 * 1000, String(session.user.id))
   const db = useDB()
   const body = requireRecord(await readBody(event))
   const itemId = requireString(body.item_id, 'Item', { min: 1, max: 128 })

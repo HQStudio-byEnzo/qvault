@@ -107,7 +107,7 @@ export function useVault() {
 
     let payload = data.payload
     let iv: string | undefined
-    const shouldEncrypt = data.type === 'link' ? data.shouldEncrypt : true
+    const shouldEncrypt = true
 
     // Chiffrement côté client si demandé
     if (shouldEncrypt) {
@@ -132,9 +132,7 @@ export function useVault() {
           iv,
           url: data.type === 'password'
             ? data.url || undefined
-            : data.type === 'link' && !shouldEncrypt
-              ? data.url || undefined
-              : undefined,
+            : undefined,
           vault_id: data.vaultId,
           folder_id: data.folderId,
           tag_ids: data.tagIds,
@@ -174,7 +172,7 @@ export function useVault() {
       throw new Error('Format de payload chiffré invalide.')
     }
 
-    return decrypt(envelope.ciphertext, item.iv, secret, envelope.salt)
+    return decrypt(envelope.ciphertext, item.iv, secret, envelope.salt, envelope.iterations)
   }
 
   /**
@@ -237,6 +235,7 @@ export function useVault() {
         snapshot.iv,
         sourcePassword || '',
         envelope.salt,
+        envelope.iterations,
       )
       const historyEncrypted = await encrypt(historyPlain, newPassword)
       historyReplacements.push({

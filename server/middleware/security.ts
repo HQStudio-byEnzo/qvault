@@ -1,4 +1,5 @@
 export default defineEventHandler((event) => {
+  removeResponseHeader(event, 'x-powered-by')
   if (getRequestURL(event).pathname.startsWith('/api/')) {
     setResponseHeaders(event, {
       'Cache-Control': 'no-store, max-age=0',

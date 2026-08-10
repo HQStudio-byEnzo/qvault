@@ -1,41 +1,50 @@
 /**
  * Composable de chiffrement Zero-Knowledge
  * Tout le chiffrement se fait EXCLUSIVEMENT côté client (navigateur)
- * Le serveur ne reçoit et ne stocke que du texte chiffré illisible
+ * Le serveur ne reçoit et ne stocke que le contenu secret sous forme chiffrée
  * 
  * Algorithmes utilisés :
- * - Dérivation de clé : PBKDF2 avec SHA-256 (100 000 itérations)
+ * - Dérivation de clé : PBKDF2 avec SHA-256 (600 000 itérations)
  * - Chiffrement : AES-256-GCM (authentifié)
  */
-export const PBKDF2_ITERATIONS = 100_000
+export const LEGACY_PBKDF2_ITERATIONS = 100_000
+export const PBKDF2_ITERATIONS = 600_000
+const ENCRYPTED_PAYLOAD_VERSION = 'v2'
 
 export interface EncryptedPayload {
   ciphertext: string
   iv: string
   salt: string
+  iterations: number
 }
 
 export function serializeEncryptedPayload(value: Pick<EncryptedPayload, 'salt' | 'ciphertext'>) {
-  return `${value.salt}:${value.ciphertext}`
+  return `${ENCRYPTED_PAYLOAD_VERSION}:${PBKDF2_ITERATIONS}:${value.salt}:${value.ciphertext}`
 }
 
 export function parseEncryptedPayload(payload: string) {
-  const separator = payload.indexOf(':')
-  if (separator <= 0 || separator === payload.length - 1 || payload.indexOf(':', separator + 1) !== -1) {
-    throw new Error('INVALID_ENCRYPTED_PAYLOAD')
+  const parts = payload.split(':')
+  if (parts.length === 2 && parts.every(Boolean)) {
+    return { salt: parts[0], ciphertext: parts[1], iterations: LEGACY_PBKDF2_ITERATIONS }
   }
-  return {
-    salt: payload.slice(0, separator),
-    ciphertext: payload.slice(separator + 1),
+  if (
+    parts.length === 4 &&
+    parts[0] === ENCRYPTED_PAYLOAD_VERSION &&
+    Number(parts[1]) === PBKDF2_ITERATIONS &&
+    parts[2] &&
+    parts[3]
+  ) {
+    return { salt: parts[2], ciphertext: parts[3], iterations: PBKDF2_ITERATIONS }
   }
+  throw new Error('INVALID_ENCRYPTED_PAYLOAD')
 }
 
 export function useCrypto() {
   /**
    * Dérive une clé AES-256 à partir d'un mot de passe maître et d'un sel
-   * Utilise PBKDF2 avec 100 000 itérations de SHA-256
+   * Utilise PBKDF2 avec un facteur de travail versionné
    */
-  async function deriveKey(masterPassword: string, salt: BufferSource): Promise<CryptoKey> {
+  async function deriveKey(masterPassword: string, salt: BufferSource, iterations = PBKDF2_ITERATIONS): Promise<CryptoKey> {
     const encoder = new TextEncoder()
     
     // Importer le mot de passe comme clé brute
@@ -52,7 +61,7 @@ export function useCrypto() {
       {
         name: 'PBKDF2',
         salt,
-        iterations: PBKDF2_ITERATIONS,
+        iterations,
         hash: 'SHA-256',
       },
       keyMaterial,
@@ -104,6 +113,7 @@ export function useCrypto() {
       ciphertext: arrayBufferToBase64(encrypted),
       iv: arrayBufferToBase64(iv),
       salt: arrayBufferToBase64(usedSalt),
+      iterations: PBKDF2_ITERATIONS,
     }
   }
 
@@ -115,11 +125,12 @@ export function useCrypto() {
     ciphertext: string,
     iv: string,
     masterPassword: string,
-    salt: string
+    salt: string,
+    iterations = PBKDF2_ITERATIONS,
   ): Promise<string> {
     const decoder = new TextDecoder()
     
-    const key = await deriveKey(masterPassword, base64ToArrayBuffer(salt))
+    const key = await deriveKey(masterPassword, base64ToArrayBuffer(salt), iterations)
 
     const decrypted = await crypto.subtle.decrypt(
       { name: 'AES-GCM', iv: base64ToArrayBuffer(iv) },

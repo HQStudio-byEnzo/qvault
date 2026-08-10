@@ -36,9 +36,9 @@ try {
       updated_at TEXT DEFAULT (datetime('now'))
     )`,
     {
-      sql: `INSERT INTO users (id, name, email, password)
-            VALUES (?, ?, ?, ?)`,
-      args: ['legacy-user', 'Legacy User', 'legacy@example.com', 'hash'],
+      sql: `INSERT INTO users (id, name, email, password, password_hint)
+            VALUES (?, ?, ?, ?, ?)`,
+      args: ['legacy-user', 'Legacy User', 'legacy@example.com', 'hash', 'legacy hint'],
     },
     {
       sql: `INSERT INTO vault_items (id, user_id, type, label, payload)
@@ -50,12 +50,18 @@ try {
   await ensureVaultSchema(db)
 
   const migratedUser = await db.execute({
-    sql: 'SELECT username, email, session_version FROM users WHERE id = ?',
+    sql: 'SELECT username, email, session_version, password_hint FROM users WHERE id = ?',
     args: ['legacy-user'],
   })
   assert(migratedUser.rows[0]?.username === 'legacy_user', 'Legacy username was not derived')
   assert(migratedUser.rows[0]?.email === 'legacy@example.com', 'Legacy email was overwritten')
   assert(Number(migratedUser.rows[0]?.session_version) === 0, 'Session version was not added')
+  assert(migratedUser.rows[0]?.password_hint === null, 'Legacy password hint was not removed')
+
+  const rateLimitSchema = await db.execute({
+    sql: "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'rate_limits'",
+  })
+  assert(rateLimitSchema.rows.length === 1, 'Distributed rate-limit table was not created')
 
   const migratedItem = await db.execute({
     sql: 'SELECT vault_id, type, label, payload FROM vault_items WHERE id = ?',
@@ -76,6 +82,7 @@ try {
     usernameMigrated: true,
     ciphertextPreserved: true,
     defaultVaultAssigned: true,
+    distributedRateLimitReady: true,
   }))
 } finally {
   await db.close()

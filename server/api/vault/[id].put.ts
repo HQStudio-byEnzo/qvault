@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  enforceRateLimit(event, 'vault-update', 240, 60 * 1000, String(session.user.id))
+  await enforceRateLimit(event, 'vault-update', 240, 60 * 1000, String(session.user.id))
   const db = useDB()
   const id = getRouterParam(event, 'id')
   const body = requireRecord(await readBody(event))
@@ -15,9 +15,10 @@ export default defineEventHandler(async (event) => {
   const encrypted = body.is_encrypted === undefined ? Number(current.is_encrypted) === 1 : body.is_encrypted
   let payload = body.payload === undefined ? current.payload : body.payload
   const iv = body.iv === undefined ? current.iv : body.iv
+  if (body.is_encrypted === false) throw createError({ statusCode: 400, message: 'Un element chiffre ne peut pas etre repasse en clair.' })
+  if (!encrypted && (body.payload !== undefined || body.iv !== undefined)) throw createError({ statusCode: 400, message: 'Chiffrez cet ancien element avant de modifier son contenu.' })
   if (current.type !== 'link' && !encrypted) throw createError({ statusCode: 400, message: 'Cet élément doit rester chiffré.' })
   if (encrypted) assertEncryptedPayload(payload, iv)
-  else payload = requireString(payload, 'Payload', { min: 1, max: 100_000, trim: false })
 
   const updates: string[] = []
   const args: any[] = []

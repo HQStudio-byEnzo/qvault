@@ -30,17 +30,6 @@
           />
         </div>
 
-        <div class="space-y-2">
-          <button v-if="hintAvailable" type="button" class="text-xs text-accent-400 hover:text-accent-300" :disabled="hintLoading" @click="loadHint">
-            <Icon name="lucide:lightbulb" class="inline h-3.5 w-3.5 mr-1" />
-            {{ t('auth.login.forgotHint') }}
-          </button>
-          <p v-else class="min-h-[1lh] text-xs text-surface-500">{{ t('auth.login.hintAfterFailure') }}</p>
-          <p v-if="hintMessage" class="system-note text-sm" :class="hintFailed ? 'text-amber-300' : 'text-surface-200'">
-            {{ hintMessage }}
-          </p>
-        </div>
-
         <div>
           <label for="password" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.login.password') }}</label>
           <input
@@ -108,36 +97,6 @@ const form = reactive({
 
 const isLoading = ref(false)
 const errorMsg = ref('')
-const hintLoading = ref(false)
-const hintMessage = ref('')
-const hintFailed = ref(false)
-const hintAvailable = ref(false)
-
-async function loadHint() {
-  hintMessage.value = ''
-  hintFailed.value = false
-  if (!form.username.trim()) {
-    hintFailed.value = true
-    hintMessage.value = t('auth.login.enterUsername')
-    return
-  }
-  hintLoading.value = true
-  try {
-    const response = await $fetch<{ hint: string | null }>('/api/auth/hint', {
-      query: { username: form.username },
-    })
-    hintMessage.value = response.hint
-      ? t('auth.login.hintValue').replace('{hint}', response.hint)
-      : t('auth.login.noHint')
-    hintFailed.value = !response.hint
-    hintAvailable.value = false
-  } catch {
-    hintFailed.value = true
-    hintMessage.value = t('auth.login.hintError')
-  } finally {
-    hintLoading.value = false
-  }
-}
 
 async function handleLogin() {
   isLoading.value = true
@@ -148,19 +107,8 @@ async function handleLogin() {
     navigateTo('/dashboard')
   } catch (err: any) {
     errorMsg.value = err.data?.message || t('auth.login.error')
-    hintAvailable.value = Number(
-      err?.statusCode
-      || err?.status
-      || err?.response?.status
-      || err?.data?.statusCode,
-    ) === 401
   } finally {
     isLoading.value = false
   }
 }
-
-watch(() => form.username, () => {
-  hintAvailable.value = false
-  hintMessage.value = ''
-})
 </script>

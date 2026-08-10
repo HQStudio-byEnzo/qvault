@@ -4,7 +4,7 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  enforceRateLimit(event, 'auth-change-password', 5, 60 * 60 * 1000, String(session.user.id))
+  await enforceRateLimit(event, 'auth-change-password', 5, 60 * 60 * 1000, String(session.user.id))
   const body = requireRecord(await readBody(event))
   const currentPassword = requireString(body.currentPassword, 'Current password', { min: 1, max: 128, trim: false })
   const newPassword = requireNewAccountPassword(body.newPassword, 'New password')

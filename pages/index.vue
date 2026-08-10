@@ -46,7 +46,7 @@
         <div>
           <dt>02 / cipher</dt>
           <dd>AES-256-GCM</dd>
-          <small>PBKDF2 · 100 000</small>
+          <small>PBKDF2 · 600 000</small>
         </div>
         <div>
           <dt>03 / storage</dt>

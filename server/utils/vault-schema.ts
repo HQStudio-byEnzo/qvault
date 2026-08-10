@@ -62,6 +62,8 @@ async function ensureBaseSchema(db: ReturnType<typeof createClient>) {
     `CREATE TABLE IF NOT EXISTS webauthn_credentials (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, credential_id TEXT NOT NULL, public_key TEXT NOT NULL, encrypted_unlock_key TEXT, unlock_iv TEXT, label TEXT NOT NULL DEFAULT 'Passkey', sign_count INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')), UNIQUE(user_id, credential_id), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
     `CREATE TABLE IF NOT EXISTS extension_tokens (user_id TEXT PRIMARY KEY, token_hash TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL DEFAULT (datetime('now')), last_used_at TEXT, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
     `CREATE TABLE IF NOT EXISTS accepted_terms (user_id TEXT PRIMARY KEY, terms_version TEXT NOT NULL, accepted_at TEXT NOT NULL DEFAULT (datetime('now')), user_agent TEXT, ip_address TEXT, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
+    `CREATE TABLE IF NOT EXISTS rate_limits (key_hash TEXT PRIMARY KEY, count INTEGER NOT NULL, reset_at INTEGER NOT NULL)`,
+    'CREATE INDEX IF NOT EXISTS idx_rate_limits_reset_at ON rate_limits(reset_at)',
   ], 'write')
 }
 
@@ -85,38 +87,48 @@ function isCurrentItemSchema(sql: string) {
 }
 
 async function migrateItems(db: ReturnType<typeof createClient>) {
-  const tableInfo = await db.execute({ sql: "PRAGMA table_info('vault_items')" })
-  if (tableInfo.rows.length === 0) return
-
-  const columns = new Set(tableInfo.rows.map(row => String((row as any).name || '')))
-  const master = await db.execute({ sql: "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'vault_items'" })
-  const currentSql = String((master.rows[0] as any)?.sql || '')
-  if (columns.has('vault_id') && columns.has('folder_id') && isCurrentItemSchema(currentSql)) return
-
-  const selections = ITEM_COLUMNS.map((column) => {
-    if (columns.has(column)) return column
-    if (column === 'vault_id' || column === 'folder_id' || column === 'url') return `NULL AS ${column}`
-    if (column === 'favorite') return '0 AS favorite'
-    if (column === 'created_at' || column === 'updated_at') return `datetime('now') AS ${column}`
-    return column
-  })
-
-  await db.execute({ sql: 'BEGIN IMMEDIATE' })
+  const transaction = await db.transaction('write')
+  let committed = false
   try {
-    await db.execute({ sql: 'DROP TABLE IF EXISTS vault_items_migrated' })
-    await db.execute({ sql: `CREATE TABLE vault_items_migrated (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, vault_id TEXT, folder_id TEXT, type TEXT NOT NULL CHECK (type IN ('link', 'password', 'crypto', 'recovery', 'note', 'totp')), label TEXT NOT NULL DEFAULT '', is_encrypted INTEGER NOT NULL DEFAULT 0, payload TEXT NOT NULL, iv TEXT, url TEXT, favorite INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE, FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL)` })
-    await db.execute({ sql: `INSERT INTO vault_items_migrated (${ITEM_COLUMNS.join(', ')}) SELECT ${selections.join(', ')} FROM vault_items` })
-    await db.execute({ sql: 'DROP TABLE vault_items' })
-    await db.execute({ sql: 'ALTER TABLE vault_items_migrated RENAME TO vault_items' })
-    await db.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_user_id ON vault_items(user_id)' })
-    await db.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_user_type ON vault_items(user_id, type)' })
-    await db.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_favorite ON vault_items(user_id, favorite)' })
-    await db.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_vault ON vault_items(user_id, vault_id)' })
-    await db.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_folder ON vault_items(user_id, folder_id)' })
-    await db.execute({ sql: 'COMMIT' })
-  } catch (error) {
-    await db.execute({ sql: 'ROLLBACK' }).catch(() => {})
-    throw error
+    const tableInfo = await transaction.execute({ sql: "PRAGMA table_info('vault_items')" })
+    if (tableInfo.rows.length === 0) {
+      await transaction.commit()
+      committed = true
+      return
+    }
+
+    const columns = new Set(tableInfo.rows.map(row => String((row as any).name || '')))
+    const master = await transaction.execute({ sql: "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'vault_items'" })
+    const currentSql = String((master.rows[0] as any)?.sql || '')
+    if (columns.has('vault_id') && columns.has('folder_id') && isCurrentItemSchema(currentSql)) {
+      await transaction.commit()
+      committed = true
+      return
+    }
+
+    const selections = ITEM_COLUMNS.map((column) => {
+      if (columns.has(column)) return column
+      if (column === 'vault_id' || column === 'folder_id' || column === 'url') return `NULL AS ${column}`
+      if (column === 'favorite') return '0 AS favorite'
+      if (column === 'created_at' || column === 'updated_at') return `datetime('now') AS ${column}`
+      return column
+    })
+
+    await transaction.execute({ sql: 'DROP TABLE IF EXISTS vault_items_migrated' })
+    await transaction.execute({ sql: `CREATE TABLE vault_items_migrated (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, vault_id TEXT, folder_id TEXT, type TEXT NOT NULL CHECK (type IN ('link', 'password', 'crypto', 'recovery', 'note', 'totp')), label TEXT NOT NULL DEFAULT '', is_encrypted INTEGER NOT NULL DEFAULT 0, payload TEXT NOT NULL, iv TEXT, url TEXT, favorite INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE, FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL)` })
+    await transaction.execute({ sql: `INSERT INTO vault_items_migrated (${ITEM_COLUMNS.join(', ')}) SELECT ${selections.join(', ')} FROM vault_items` })
+    await transaction.execute({ sql: 'DROP TABLE vault_items' })
+    await transaction.execute({ sql: 'ALTER TABLE vault_items_migrated RENAME TO vault_items' })
+    await transaction.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_user_id ON vault_items(user_id)' })
+    await transaction.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_user_type ON vault_items(user_id, type)' })
+    await transaction.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_favorite ON vault_items(user_id, favorite)' })
+    await transaction.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_vault ON vault_items(user_id, vault_id)' })
+    await transaction.execute({ sql: 'CREATE INDEX IF NOT EXISTS idx_vault_items_folder ON vault_items(user_id, folder_id)' })
+    await transaction.commit()
+    committed = true
+  } finally {
+    if (!committed) await transaction.rollback().catch(() => {})
+    transaction.close()
   }
 }
 
@@ -129,6 +141,7 @@ async function runVaultSchemaMigration(db: ReturnType<typeof createClient>) {
     })
   }
   await migrateUsernames(db)
+  await db.execute({ sql: 'UPDATE users SET password_hint = NULL WHERE password_hint IS NOT NULL' })
   await migrateItems(db)
   await ensureItemIndexes(db)
   await seedDefaultVaults(db)

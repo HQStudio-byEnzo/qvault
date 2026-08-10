@@ -16,7 +16,7 @@ export async function requireExtensionAuth(
   }
 
   const tokenHash = createHash('sha256').update(token).digest('hex')
-  enforceRateLimit(event, `extension-${scope}`, limit, 60 * 1000, tokenHash)
+  await enforceRateLimit(event, `extension-${scope}`, limit, 60 * 1000, tokenHash)
 
   const db = useDB(event)
   const owner = await db.execute({

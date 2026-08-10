@@ -207,10 +207,10 @@ async function handleExport() {
     const protectedBackup = await encrypt(JSON.stringify(content), masterPassword.value)
     const exportData = {
       format: 'bitlock-backup',
-      version: 3,
+      version: 4,
       exportedAt: new Date().toISOString(),
       cipher: 'AES-256-GCM',
-      kdf: 'PBKDF2-SHA256-100000',
+      kdf: 'PBKDF2-SHA256-600000',
       salt: protectedBackup.salt,
       iv: protectedBackup.iv,
       payload: protectedBackup.ciphertext,
@@ -257,7 +257,7 @@ async function handleImport(event: Event) {
 
     if (
       envelope?.format !== 'bitlock-backup' ||
-      envelope?.version !== 3 ||
+      ![3, 4].includes(envelope?.version) ||
       typeof envelope.payload !== 'string' ||
       typeof envelope.iv !== 'string' ||
       typeof envelope.salt !== 'string'
@@ -268,7 +268,8 @@ async function handleImport(event: Event) {
     const sourcePassword = backupPassword.value || masterPassword.value
     let content: BackupContent
     try {
-      content = JSON.parse(await decrypt(envelope.payload, envelope.iv, sourcePassword, envelope.salt))
+      const iterations = envelope.version === 3 ? 100_000 : 600_000
+      content = JSON.parse(await decrypt(envelope.payload, envelope.iv, sourcePassword, envelope.salt, iterations))
     } catch {
       throw new Error(t('export.invalidBackupPassword'))
     }
@@ -304,6 +305,7 @@ async function handleImport(event: Event) {
             item.iv,
             sourcePassword,
             parsedPayload.salt,
+            parsedPayload.iterations,
           )
         }
 

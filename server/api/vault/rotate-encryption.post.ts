@@ -4,7 +4,7 @@
  */
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  enforceRateLimit(event, 'vault-rotate', 5, 60 * 60 * 1000, String(session.user.id))
+  await enforceRateLimit(event, 'vault-rotate', 5, 60 * 60 * 1000, String(session.user.id))
   const body = requireRecord(await readBody(event))
   const items = body.items
   const history = body.history

@@ -1,17 +1,11 @@
+import { createHash } from 'node:crypto'
 import type { H3Event } from 'h3'
-
-interface RateLimitEntry {
-  count: number
-  resetAt: number
-}
-
-const store = new Map<string, RateLimitEntry>()
 
 function clientAddress(event: H3Event) {
   return getRequestIP(event, { xForwardedFor: true }) || 'unknown'
 }
 
-export function enforceRateLimit(
+export async function enforceRateLimit(
   event: H3Event,
   scope: string,
   limit: number,
@@ -19,17 +13,32 @@ export function enforceRateLimit(
   discriminator = '',
 ) {
   const now = Date.now()
-  const key = `${scope}:${clientAddress(event)}:${discriminator}`
-  const current = store.get(key)
+  const resetAt = now + windowMs
+  const keyHash = createHash('sha256')
+    .update(`${scope}:${clientAddress(event)}:${discriminator}`)
+    .digest('hex')
+  const db = useDB(event)
+  const result = await db.execute({
+    sql: `INSERT INTO rate_limits (key_hash, count, reset_at)
+          VALUES (?, 1, ?)
+          ON CONFLICT(key_hash) DO UPDATE SET
+            count = CASE
+              WHEN rate_limits.reset_at <= ? THEN 1
+              ELSE rate_limits.count + 1
+            END,
+            reset_at = CASE
+              WHEN rate_limits.reset_at <= ? THEN excluded.reset_at
+              ELSE rate_limits.reset_at
+            END
+          RETURNING count, reset_at`,
+    args: [keyHash, resetAt, now, now],
+  })
+  const current = result.rows[0]
+  const count = Number(current?.count || 0)
+  const currentResetAt = Number(current?.reset_at || resetAt)
 
-  if (!current || current.resetAt <= now) {
-    store.set(key, { count: 1, resetAt: now + windowMs })
-    return
-  }
-
-  current.count += 1
-  if (current.count > limit) {
-    const retryAfter = Math.max(1, Math.ceil((current.resetAt - now) / 1000))
+  if (count > limit) {
+    const retryAfter = Math.max(1, Math.ceil((currentResetAt - now) / 1000))
     setResponseHeader(event, 'Retry-After', retryAfter)
     throw createError({
       statusCode: 429,
@@ -37,10 +46,11 @@ export function enforceRateLimit(
     })
   }
 
-  // Prevent unbounded growth on long-lived development/server processes.
-  if (store.size > 10_000) {
-    for (const [entryKey, entry] of store) {
-      if (entry.resetAt <= now) store.delete(entryKey)
-    }
+  // Opportunistic cleanup keeps the shared table bounded without a cron job.
+  if (count === 1 && Math.random() < 0.02) {
+    await db.execute({
+      sql: 'DELETE FROM rate_limits WHERE reset_at <= ?',
+      args: [now],
+    }).catch(() => {})
   }
 }

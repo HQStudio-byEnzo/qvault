@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const legal = await getLegalAcceptance(event, session.user.id)
 
   const result = await db.execute({
-    sql: 'SELECT id, username, password_hint, created_at FROM users WHERE id = ?',
+    sql: 'SELECT id, username, created_at FROM users WHERE id = ?',
     args: [session.user.id],
   })
 

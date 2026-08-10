@@ -8,8 +8,8 @@ export default defineEventHandler(async (event) => {
   const body = requireRecord(await readBody(event))
   const identifier = normalizeLoginIdentifier(body.username)
   const password = requireString(body.password, 'Password', { min: 1, max: 128, trim: false })
-  enforceRateLimit(event, 'auth-login-ip', 50, 15 * 60 * 1000)
-  enforceRateLimit(event, 'auth-login-account', 10, 15 * 60 * 1000, identifier)
+  await enforceRateLimit(event, 'auth-login-ip', 50, 15 * 60 * 1000)
+  await enforceRateLimit(event, 'auth-login-account', 10, 15 * 60 * 1000, identifier)
 
   const db = useDB()
   const result = await db.execute({
@@ -18,15 +18,6 @@ export default defineEventHandler(async (event) => {
   })
 
   async function rejectLogin() {
-    const current = await getUserSession(event)
-    if (!current?.user?.id) {
-      await setUserSession(event, {
-        hintChallenge: {
-          identifier,
-          expiresAt: Date.now() + 5 * 60 * 1000,
-        },
-      })
-    }
     throw createError({ statusCode: 401, message: 'Username ou mot de passe incorrect.' })
   }
 

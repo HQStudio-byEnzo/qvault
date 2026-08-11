@@ -164,7 +164,7 @@ async function handleExport() {
     }
     const [, organization] = await Promise.all([
       fetchItems(),
-      $fetch<OrganizationData>('/api/organization'),
+      $fetch('/api/organization') as Promise<OrganizationData>,
     ])
 
     const content: BackupContentV2 = {
@@ -388,7 +388,7 @@ function isValidOrganization(value: any) {
 }
 
 async function importOrganization(backup: BackupContentV2['organization']) {
-  const current = await $fetch<OrganizationData>('/api/organization')
+  const current: OrganizationData = await $fetch('/api/organization')
   const vaults = new Map<string, string>()
   const folders = new Map<string, string>()
   const tags = new Map<string, string>()
@@ -399,7 +399,7 @@ async function importOrganization(backup: BackupContentV2['organization']) {
       ? defaultVault
       : current.vaults.find(vault => vault.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
     if (!target) {
-      const created = await $fetch<{ id: string }>('/api/organization', {
+      const created: { id: string } = await $fetch('/api/organization', {
         method: 'POST',
         body: { kind: 'vault', name: source.name, color: source.color },
       })
@@ -412,7 +412,7 @@ async function importOrganization(backup: BackupContentV2['organization']) {
   for (const source of backup.tags) {
     let target = current.tags.find(tag => tag.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
     if (!target) {
-      const created = await $fetch<{ id: string }>('/api/organization', {
+      const created: { id: string } = await $fetch('/api/organization', {
         method: 'POST',
         body: { kind: 'tag', name: source.name, color: source.color },
       })
@@ -435,7 +435,7 @@ async function importOrganization(backup: BackupContentV2['organization']) {
       : null
     let target = current.folders.find(folder => folder.vault_id === targetVaultId && folder.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
     if (!target) {
-      const created = await $fetch<{ id: string }>('/api/organization', {
+      const created: { id: string } = await $fetch('/api/organization', {
         method: 'POST',
         body: { kind: 'folder', name: source.name, vault_id: targetVaultId, parent_id: parentId },
       })

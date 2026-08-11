@@ -50,7 +50,7 @@ export function useMasterPassword() {
     verifying.value = true
 
     try {
-      const state = await $fetch<MasterVerifierResponse>('/api/security/master-verifier')
+      const state: MasterVerifierResponse = await $fetch('/api/security/master-verifier')
 
       if (state.configured && state.verifier) {
         const result = await decryptEnvelope(state.verifier, value)

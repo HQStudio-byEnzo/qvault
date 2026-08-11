@@ -28,7 +28,7 @@
     "@scure/bip39": "^2.2.0",
     "@types/qrcode": "^1.5.6",
     "bcryptjs": "^3.0.3",
-    "nuxt": "~3.15.0",
+    "nuxt": "^3.21.11",
     "nuxt-auth-utils": "^0.5.29",
     "qrcode": "^1.5.4",
     "vue": "^3.5.0",

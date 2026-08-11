@@ -635,7 +635,7 @@ function disablePasskey() { removePasskey(); passkeyMessage.value = t('settings.
 
 async function loadExtensionTokenStatus() {
   try {
-    const status = await $fetch<{ configured: boolean }>('/api/security/extension-token')
+    const status: { configured: boolean } = await $fetch('/api/security/extension-token')
     extensionConfigured.value = status.configured
   } catch {}
 }
@@ -645,7 +645,7 @@ async function generateExtensionToken() {
   extensionMessage.value = ''
   extensionFailed.value = false
   try {
-    const response = await $fetch<{ token: string }>('/api/security/extension-token', { method: 'POST' })
+    const response: { token: string } = await $fetch('/api/security/extension-token', { method: 'POST' })
     extensionToken.value = response.token
     extensionConfigured.value = true
     extensionMessage.value = t('settings.extensionGenerated')

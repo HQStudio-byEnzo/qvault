@@ -66,9 +66,7 @@ export function useVault() {
       if (filters?.favorites) query.set('favorites', 'true')
       if (filters?.search) query.set('search', filters.search)
 
-      const response = await $fetch<{ items: VaultItem[]; count: number }>(
-        `/api/vault?${query.toString()}`
-      )
+      const response = await $fetch(`/api/vault?${query.toString()}`) as { items: VaultItem[]; count: number }
       items.value = response.items
     } catch (err: any) {
       error.value = err.data?.message || 'Erreur lors du chargement.'
@@ -82,7 +80,7 @@ export function useVault() {
    */
   async function fetchStats() {
     try {
-      stats.value = await $fetch<VaultStats>('/api/vault/stats')
+      stats.value = await $fetch('/api/vault/stats') as VaultStats
     } catch (err: any) {
       console.error('Erreur stats:', err)
     }
@@ -122,7 +120,7 @@ export function useVault() {
     }
 
     try {
-      const response = await $fetch<{ id: string }>('/api/vault', {
+      const response: { id: string } = await $fetch('/api/vault', {
         method: 'POST',
         body: {
           type: data.type,
@@ -219,9 +217,7 @@ export function useVault() {
 
     }
 
-    const history = await $fetch<{ history: Array<{ id: string; payload: string; iv: string | null; is_encrypted: boolean | number }> }>(
-      '/api/vault/history',
-    )
+    const history = await $fetch('/api/vault/history') as { history: Array<{ id: string; payload: string; iv: string | null; is_encrypted: boolean | number }> }
     for (const snapshot of history.history.filter(entry => Boolean(entry.is_encrypted))) {
       if (!snapshot.iv) throw new Error('Une ancienne version chiffrée est corrompue.')
       let envelope

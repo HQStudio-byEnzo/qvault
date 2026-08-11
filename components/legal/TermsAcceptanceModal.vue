@@ -70,7 +70,7 @@ const { signOut } = useAuthClient()
 
 onMounted(async () => {
   try {
-    const me = await $fetch<{ termsAccepted: boolean }>('/api/auth/me')
+    const me: { termsAccepted: boolean } = await $fetch('/api/auth/me')
     visible.value = !me.termsAccepted
   } catch {
     visible.value = false

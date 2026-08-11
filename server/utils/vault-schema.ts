@@ -141,7 +141,9 @@ async function runVaultSchemaMigration(db: ReturnType<typeof createClient>) {
     })
   }
   await migrateUsernames(db)
-  await db.execute({ sql: 'UPDATE users SET password_hint = NULL WHERE password_hint IS NOT NULL' })
+  if (userInfo.rows.some(row => String((row as any).name) === 'password_hint')) {
+    await db.execute({ sql: 'UPDATE users SET password_hint = NULL WHERE password_hint IS NOT NULL' })
+  }
   await migrateItems(db)
   await ensureItemIndexes(db)
   await seedDefaultVaults(db)

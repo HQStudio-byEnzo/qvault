@@ -171,12 +171,30 @@ function isStale(item: VaultItem) {
   return Number.isFinite(date) && Date.now() - date > 180 * 24 * 60 * 60 * 1000
 }
 
+const TYPE_ICONS: Record<VaultItem['type'], string> = {
+  link: 'lucide:link',
+  password: 'lucide:key-round',
+  crypto: 'lucide:bitcoin',
+  recovery: 'lucide:ticket-check',
+  note: 'lucide:notebook-text',
+  totp: 'lucide:clock',
+}
+
+const TYPE_LABELS: Record<VaultItem['type'], string> = {
+  link: t('dash.links'),
+  password: t('dash.passwords'),
+  crypto: t('dash.crypto'),
+  recovery: t('dash.recovery'),
+  note: t('dash.notes'),
+  totp: t('dash.totp'),
+}
+
 function typeIcon(type: VaultItem['type']) {
-  return ({ link: 'lucide:link', password: 'lucide:key-round', crypto: 'lucide:bitcoin', recovery: 'lucide:ticket-check' })[type]
+  return TYPE_ICONS[type]
 }
 
 function typeLabel(type: VaultItem['type']) {
-  return ({ link: t('dash.links'), password: t('dash.passwords'), crypto: t('dash.crypto'), recovery: t('dash.recovery') })[type]
+  return TYPE_LABELS[type]
 }
 
 function formatDate(value: string) {

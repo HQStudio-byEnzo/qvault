@@ -43,6 +43,19 @@ const structuredData = computed(() => JSON.stringify({
   ],
 }))
 
+// First-party organization node, separate from the author reference above, so
+// search engines and AI models can resolve the publisher entity on its own.
+const organizationData = computed(() => JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'QVault',
+  url: `${siteUrl.value}/`,
+  logo: `${siteUrl.value}/qvault-social.png`,
+  description: 'Éditeur du coffre-fort numérique QVault, gratuit et open source.',
+  foundingDate: '2026',
+  sameAs: ['https://github.com/HQStudio-byEnzo/qvault'],
+}))
+
 useHead({
   link: [{ rel: 'canonical', href: canonicalUrl }],
   meta: [
@@ -52,6 +65,7 @@ useHead({
   ],
   script: [
     { type: 'application/ld+json', innerHTML: structuredData },
+    { type: 'application/ld+json', innerHTML: organizationData },
   ],
 })
 </script>

@@ -39,6 +39,53 @@
           </div>
         </section>
 
+        <section class="guide-related">
+          <h2>{{ ui.securityTitle }}</h2>
+          <div class="guide-related__grid">
+            <NuxtLink to="/features/encryption" class="card guide-security__item">
+              <span class="guide-related__icon"><Icon name="hugeicons:lock" class="h-4 w-4" /></span>
+              <strong>{{ ui.encryptionTitle }}</strong>
+              <small>{{ ui.encryptionDesc }}</small>
+            </NuxtLink>
+            <NuxtLink to="/features/passwords" class="card guide-security__item">
+              <span class="guide-related__icon"><Icon name="hugeicons:key-round" class="h-4 w-4" /></span>
+              <strong>{{ ui.passwordsTitle }}</strong>
+              <small>{{ ui.passwordsDesc }}</small>
+            </NuxtLink>
+          </div>
+        </section>
+
+        <section v-if="guideRelatedPages.length" class="guide-related">
+          <h2>{{ t('guides.crossTitle') }}</h2>
+          <div class="guide-related__grid">
+            <NuxtLink v-for="link in guideRelatedPages" :key="link.to" :to="link.to" class="card guide-related__item">
+              <span class="guide-related__icon"><Icon :name="link.icon" class="h-4 w-4" /></span>
+              <span>{{ link.label }}</span>
+            </NuxtLink>
+          </div>
+        </section>
+
+        <section class="guide-related">
+          <h2>{{ ui.toolsTitle }}</h2>
+          <div class="guide-related__grid">
+            <NuxtLink to="/generateur-mot-de-passe" class="card guide-security__item">
+              <span class="guide-related__icon"><Icon name="hugeicons:sparkles" class="h-4 w-4" /></span>
+              <strong>{{ ui.generatorTitle }}</strong>
+              <small>{{ ui.generatorDesc }}</small>
+            </NuxtLink>
+            <NuxtLink to="/audit-securite" class="card guide-security__item">
+              <span class="guide-related__icon"><Icon name="hugeicons:shield-alert" class="h-4 w-4" /></span>
+              <strong>{{ ui.auditTitle }}</strong>
+              <small>{{ ui.auditDesc }}</small>
+            </NuxtLink>
+            <NuxtLink to="/generateur-seed-phrase" class="card guide-security__item">
+              <span class="guide-related__icon"><Icon name="hugeicons:list-ordered" class="h-4 w-4" /></span>
+              <strong>{{ ui.seedTitle }}</strong>
+              <small>{{ ui.seedDesc }}</small>
+            </NuxtLink>
+          </div>
+        </section>
+
         <section class="guide-cta">
           <div>
             <h2>{{ ui.ctaTitle }}</h2>
@@ -58,7 +105,7 @@ import { getGuide, getGuides, guideUi } from '~/utils/guides'
 definePageMeta({ layout: 'default' })
 
 const route = useRoute()
-const locale = useLang().locale
+const { locale, t } = useLang()
 const slug = String(route.params.slug)
 const guide = getGuide(slug)
 if (!guide) {
@@ -83,6 +130,22 @@ const relatedLinks = computed(() => {
     compare: { to: '/generateur-mot-de-passe', label: locale.value === 'en' ? 'Password generator' : 'Générateur de mot de passe', icon: 'hugeicons:sparkles' },
   }
   return [tools[guide.category], ...others]
+})
+
+/**
+ * Links every guide to the feature pages it illustrates, so the feature pages
+ * keep receiving contextual inbound links from the editorial content.
+ */
+const guideRelatedPages = computed(() => {
+  const fr = locale.value !== 'en'
+  return [
+    { to: '/features/passwords', label: fr ? 'Stockage de mots de passe' : 'Password storage', icon: 'hugeicons:key-round' },
+    { to: '/features/encryption', label: fr ? 'Chiffrement dans le navigateur' : 'Encryption in the browser', icon: 'hugeicons:lock' },
+    { to: '/features/recovery', label: fr ? 'Codes de récupération' : 'Recovery codes', icon: 'hugeicons:ticket-check' },
+    { to: '/features/favorites', label: fr ? 'Favoris et recherche' : 'Favourites and search', icon: 'hugeicons:star' },
+    { to: '/features/links', label: fr ? 'Liens et favoris' : 'Links and favourites', icon: 'hugeicons:link' },
+    { to: '/guides/alternative-bitwarden', label: fr ? 'Alternative à Bitwarden' : 'Bitwarden alternative', icon: 'hugeicons:refresh' },
+  ]
 })
 
 function slugify(value: string) {
@@ -245,6 +308,31 @@ useHead(() => ({
   text-decoration: none;
 }
 
+.guide-security__item {
+  align-items: flex-start;
+  color: var(--color-text);
+  display: grid;
+  gap: var(--space-1) var(--space-3);
+  grid-template-columns: auto 1fr;
+  padding: var(--space-4);
+  text-decoration: none;
+}
+
+.guide-security__item strong {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.guide-security__item small {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  grid-column: 2;
+  line-height: 1.55;
+}
+
 .guide-related__icon {
   align-items: center;
   background: var(--color-accent-soft);
@@ -259,6 +347,7 @@ useHead(() => ({
 
 @media (hover: hover) and (pointer: fine) {
   .guide-related__item:hover { border-color: var(--color-accent-rule); background: var(--color-panel-raised); }
+  .guide-security__item:hover { border-color: var(--color-accent-rule); background: var(--color-panel-raised); }
 }
 
 .guide-cta {
@@ -286,5 +375,6 @@ useHead(() => ({
 
 @media (min-width: 40rem) {
   .guide-related__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .guide-security__item { grid-template-columns: auto 1fr; }
 }
 </style>

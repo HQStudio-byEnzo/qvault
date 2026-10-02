@@ -82,7 +82,9 @@
       <p>QVault · {{ copy.voluntary }}</p>
       <nav aria-label="Liens de pied de page">
         <NuxtLink to="/">{{ copy.home }}</NuxtLink>
+        <NuxtLink to="/features">{{ t('nav.features') }}</NuxtLink>
         <NuxtLink to="/guides">{{ t('nav.guides') }}</NuxtLink>
+        <NuxtLink to="/guides/comparatif-coffre-fort-mots-de-passe">{{ copy.compare }}</NuxtLink>
         <NuxtLink to="/legal/confidentialite">{{ t('footer.privacy') }}</NuxtLink>
         <a
           href="https://github.com/HQStudio-byEnzo/qvault"
@@ -131,6 +133,7 @@ const copy = computed(() => locale.value === 'fr' ? {
   ruleTwo: 'Aucune ouverture automatique, lecture forcée ou redirection cachée.',
   ruleThree: 'Les commissions éventuelles sont signalées avant le clic.',
   home: 'Accueil',
+  compare: 'Comparatif des coffres-forts',
 } : {
   navLabel: 'Support navigation',
   seoTitle: 'Support QVault',
@@ -155,6 +158,7 @@ const copy = computed(() => locale.value === 'fr' ? {
   ruleTwo: 'No automatic opening, forced playback, or hidden redirect.',
   ruleThree: 'Any potential commission is disclosed before the click.',
   home: 'Home',
+  compare: 'Password vault comparison',
 })
 
 useSeoMeta({

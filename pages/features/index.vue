@@ -27,6 +27,45 @@
           </span>
         </NuxtLink>
       </section>
+
+      <section class="mt-12" :aria-label="t('featuresIndex.crossLabel')">
+        <h2 class="font-display text-2xl font-semibold tracking-tight text-surface-50">{{ t('featuresIndex.crossTitle') }}</h2>
+        <p class="mt-2 max-w-2xl text-sm leading-relaxed text-surface-500">{{ t('featuresIndex.crossDesc') }}</p>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+          <NuxtLink to="/features/encryption" class="card cross">
+            <strong>{{ t('featuresIndex.crossEncryptionTitle') }}</strong>
+            <span>{{ t('featuresIndex.crossEncryptionDesc') }}</span>
+          </NuxtLink>
+          <NuxtLink to="/features/passwords" class="card cross">
+            <strong>{{ t('featuresIndex.crossPasswordsTitle') }}</strong>
+            <span>{{ t('featuresIndex.crossPasswordsDesc') }}</span>
+          </NuxtLink>
+          <NuxtLink to="/features/recovery" class="card cross">
+            <strong>{{ t('featuresIndex.crossRecoveryTitle') }}</strong>
+            <span>{{ t('featuresIndex.crossRecoveryDesc') }}</span>
+          </NuxtLink>
+          <NuxtLink to="/features/crypto" class="card cross">
+            <strong>{{ t('featuresIndex.crossCryptoTitle') }}</strong>
+            <span>{{ t('featuresIndex.crossCryptoDesc') }}</span>
+          </NuxtLink>
+          <NuxtLink to="/guides/comparatif-coffre-fort-mots-de-passe" class="card cross">
+            <strong>{{ t('featuresIndex.crossCompareTitle') }}</strong>
+            <span>{{ t('featuresIndex.crossCompareDesc') }}</span>
+          </NuxtLink>
+          <NuxtLink to="/guides/alternative-bitwarden" class="card cross">
+            <strong>{{ t('featuresIndex.crossBitwardenTitle') }}</strong>
+            <span>{{ t('featuresIndex.crossBitwardenDesc') }}</span>
+          </NuxtLink>
+          <NuxtLink to="/features/links" class="card cross">
+            <strong>{{ t('featuresIndex.crossLinksTitle') }}</strong>
+            <span>{{ t('featuresIndex.crossLinksDesc') }}</span>
+          </NuxtLink>
+          <NuxtLink to="/features/favorites" class="card cross">
+            <strong>{{ t('featuresIndex.crossFavoritesTitle') }}</strong>
+            <span>{{ t('featuresIndex.crossFavoritesDesc') }}</span>
+          </NuxtLink>
+        </div>
+      </section>
     </main>
   </div>
 </template>
@@ -43,3 +82,12 @@ useSeoMeta({
 
 const { features } = useFeatureCatalog()
 </script>
+
+<style scoped>
+.cross {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  text-decoration: none;
+}
+</style>

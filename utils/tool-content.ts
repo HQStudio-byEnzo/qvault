@@ -67,6 +67,14 @@ export const toolContent: Record<'passwordGenerator' | 'seedGenerator' | 'passwo
             'Activez la double authentification quand elle est disponible.',
             'Ne transmettez jamais un mot de passe par e-mail ou messagerie.',
           ],
+          paragraphs: [
+            {
+              text: 'Pour aller plus loin, voyez {comment bien gérer vos mots de passe} : la méthode complète, du choix d’un gestionnaire à la migration de vos comptes.',
+              links: [
+                { href: '/guides/gerer-ses-mots-de-passe', label: 'comment bien gérer vos mots de passe' },
+              ],
+            },
+          ],
         },
       ],
       faq: [
@@ -127,6 +135,14 @@ export const toolContent: Record<'passwordGenerator' | 'seedGenerator' | 'passwo
             'Enable two-factor authentication when available.',
             'Never send a password by email or chat.',
           ],
+          paragraphs: [
+            {
+              text: 'To go further, read {how to manage your passwords properly}: the full method, from picking a manager to migrating your accounts.',
+              links: [
+                { href: '/guides/gerer-ses-mots-de-passe', label: 'how to manage your passwords properly' },
+              ],
+            },
+          ],
         },
       ],
       faq: [
@@ -175,7 +191,12 @@ export const toolContent: Record<'passwordGenerator' | 'seedGenerator' | 'passwo
           heading: 'Après la génération, que faire ?',
           paragraphs: [
             'Ne laissez pas la phrase affichée à l’écran. Notez-la, puis rangez-la selon une méthode de sauvegarde maîtrisée.',
-            'Pour choisir entre papier, métal ou stockage chiffré, consultez notre guide dédié : Où et comment stocker une seed phrase. Vous pouvez aussi la conserver chiffrée dans QVault, en gardant malgré tout une copie hors ligne.',
+            {
+              text: 'Pour choisir entre papier, métal ou stockage chiffré, consultez notre guide dédié : {où stocker votre seed phrase en sécurité}. Vous pouvez aussi la conserver chiffrée dans QVault, en gardant malgré tout une copie hors ligne.',
+              links: [
+                { href: '/guides/stocker-seed-phrase', label: 'où stocker votre seed phrase en sécurité' },
+              ],
+            },
           ],
         },
         {
@@ -230,7 +251,12 @@ export const toolContent: Record<'passwordGenerator' | 'seedGenerator' | 'passwo
           heading: 'After generating, what next?',
           paragraphs: [
             'Do not leave the phrase on screen. Write it down, then store it using a method you control.',
-            'To choose between paper, metal or encrypted storage, read our dedicated guide: Where and how to store a seed phrase. You can also keep it encrypted in QVault, while still holding an offline copy.',
+            {
+              text: 'To choose between paper, metal or encrypted storage, read our dedicated guide: {where to store your seed phrase safely}. You can also keep it encrypted in QVault, while still holding an offline copy.',
+              links: [
+                { href: '/guides/stocker-seed-phrase', label: 'where to store your seed phrase safely' },
+              ],
+            },
           ],
         },
         {
@@ -288,6 +314,15 @@ export const toolContent: Record<'passwordGenerator' | 'seedGenerator' | 'passwo
             'Activez la double authentification sur les comptes sensibles.',
             'Sauvegardez les codes de récupération, chiffrés, dans votre coffre.',
           ],
+          paragraphs: [
+            {
+              text: 'Deux raccourcis : {générer un mot de passe fort} pour remplacer un identifiant faible, et {comparer les coffres-forts de mots de passe} pour choisir où stocker le reste de vos comptes.',
+              links: [
+                { href: '/generateur-mot-de-passe', label: 'générer un mot de passe fort' },
+                { href: '/guides/comparatif-coffre-fort-mots-de-passe', label: 'comparer les coffres-forts de mots de passe' },
+              ],
+            },
+          ],
         },
       ],
       faq: [
@@ -330,6 +365,15 @@ export const toolContent: Record<'passwordGenerator' | 'seedGenerator' | 'passwo
             'One unique password per service.',
             'Enable two-factor authentication on sensitive accounts.',
             'Back up your recovery codes, encrypted, in your vault.',
+          ],
+          paragraphs: [
+            {
+              text: 'Two shortcuts: {generate a strong password} to replace a weak credential, and {compare password vaults} to choose where to store the rest of your accounts.',
+              links: [
+                { href: '/generateur-mot-de-passe', label: 'generate a strong password' },
+                { href: '/guides/comparatif-coffre-fort-mots-de-passe', label: 'compare password vaults' },
+              ],
+            },
           ],
         },
       ],

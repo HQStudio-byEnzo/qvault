@@ -7,7 +7,7 @@ export type GuideLang = 'fr' | 'en'
 
 export interface GuideBlock {
   heading: string
-  paragraphs?: string[]
+  paragraphs?: GuideParagraphInput[]
   bullets?: string[]
   table?: { headers: string[]; rows: string[][] }
 }
@@ -16,6 +16,18 @@ export interface GuideFaq {
   q: string
   a: string
 }
+
+/**
+ * Inline contextual links. A paragraph is a plain string, or { text, links }
+ * when it must carry an internal link. Anchors live in the paragraph so they
+ * read naturally and stay unique across the site.
+ */
+export interface GuideParagraph {
+  text: string
+  links?: { href: string; label: string }[]
+}
+
+export type GuideParagraphInput = string | GuideParagraph
 
 export interface GuideLocale {
   title: string
@@ -53,6 +65,18 @@ export const guideUi = {
     indexSeoTitle: 'Guides : mots de passe et crypto',
     indexSubtitle: 'Des réponses claires sur la gestion des mots de passe et la protection de vos clés crypto.',
     indexEyebrow: 'Ressources',
+    securityTitle: 'Pour aller plus loin',
+    encryptionTitle: 'Chiffrement dans le navigateur',
+    encryptionDesc: 'Le détail de la chaîne de chiffrement, du mot de passe maître au contenu stocké.',
+    passwordsTitle: 'Stockage de mots de passe',
+    passwordsDesc: 'Identifiants chiffrés côté client, recherche rapide et audit de robustesse.',
+    toolsTitle: 'Les outils',
+    generatorTitle: 'Générateur de mot de passe',
+    generatorDesc: 'Créer un mot de passe aléatoire, sans connexion et sans envoi serveur.',
+    auditTitle: 'Audit de mot de passe',
+    auditDesc: 'Repérer les mots de passe faibles, anciens ou réutilisés.',
+    seedTitle: 'Générateur de seed phrase',
+    seedDesc: 'Générer une phrase BIP-39 localement, puis la chiffrer dans le coffre.',
   },
   en: {
     navLabel: 'Guides',
@@ -69,6 +93,18 @@ export const guideUi = {
     indexSeoTitle: 'Guides: passwords and crypto',
     indexSubtitle: 'Clear answers on managing passwords and protecting your crypto keys.',
     indexEyebrow: 'Resources',
+    securityTitle: 'Go further',
+    encryptionTitle: 'Encryption in the browser',
+    encryptionDesc: 'The full chain, from the master password to the stored ciphertext.',
+    passwordsTitle: 'Password storage',
+    passwordsDesc: 'Client-side encrypted credentials, fast search and strength audit.',
+    toolsTitle: 'The tools',
+    generatorTitle: 'Password generator',
+    generatorDesc: 'Create a random password, offline, without sending anything to a server.',
+    auditTitle: 'Password audit',
+    auditDesc: 'Spot weak, old or reused passwords.',
+    seedTitle: 'Seed phrase generator',
+    seedDesc: 'Generate a BIP-39 phrase locally, then encrypt it in the vault.',
   },
 } as const
 
@@ -125,7 +161,13 @@ export const guides: Guide[] = [
           heading: 'Stocker une seed phrase en ligne : le bon compromis',
           paragraphs: [
             'Le numérique n’est pas interdit, à condition que le contenu soit chiffré avant de quitter votre appareil. C’est le principe du chiffrement « zero-knowledge » : le serveur stocke des données illisibles et ne reçoit jamais votre mot de passe maître.',
-            'QVault fonctionne ainsi : vous générez ou collez votre phrase, elle est chiffrée en AES-256-GCM dans votre navigateur, et seul le contenu chiffré est enregistré. Gardez malgré tout une copie hors ligne : si vous oubliez votre mot de passe maître, personne ne peut restaurer vos secrets.',
+            {
+              text: 'QVault fonctionne ainsi : vous générez ou collez votre phrase, elle est chiffrée en AES-256-GCM dans votre navigateur, et seul le contenu chiffré est enregistré. Voyez {chiffrement dans le navigateur} pour le détail de la chaîne, et {générer votre seed phrase} si vous partez de zéro. Gardez malgré tout une copie hors ligne : si vous oubliez votre mot de passe maître, personne ne peut restaurer vos secrets.',
+              links: [
+                { href: '/features/encryption', label: 'chiffrement dans le navigateur' },
+                { href: '/generateur-seed-phrase', label: 'générer votre seed phrase' },
+              ],
+            },
           ],
         },
         {
@@ -205,7 +247,13 @@ export const guides: Guide[] = [
           heading: 'Storing a seed phrase online: the right trade-off',
           paragraphs: [
             'Digital is not forbidden, as long as the content is encrypted before it leaves your device. That is the zero-knowledge principle: the server stores unreadable data and never receives your master password.',
-            'QVault works this way: you generate or paste your phrase, it is encrypted with AES-256-GCM in your browser, and only the ciphertext is saved. Still keep an offline copy: if you forget your master password, nobody can restore your secrets.',
+            {
+              text: 'QVault works this way: you generate or paste your phrase, it is encrypted with AES-256-GCM in your browser, and only the ciphertext is saved. See {encryption in the browser} for the full chain, and {generate your seed phrase} if you are starting from scratch. Still keep an offline copy: if you forget your master password, nobody can restore your secrets.',
+              links: [
+                { href: '/features/encryption', label: 'encryption in the browser' },
+                { href: '/generateur-seed-phrase', label: 'generate your seed phrase' },
+              ],
+            },
           ],
         },
         {
@@ -289,7 +337,13 @@ export const guides: Guide[] = [
           heading: 'Gratuit ou payant ?',
           paragraphs: [
             'Le gratuit couvre largement l’usage personnel : QVault est gratuit et illimité. On paie généralement pour du partage familial ou d’équipe, du support prioritaire ou des fonctionnalités avancées.',
-            'Méfiez-vous des « gratuits » qui limitent le nombre d’entrées ou synchronisent mal : la contrainte pousse souvent à réutiliser des mots de passe.',
+            {
+              text: 'Méfiez-vous des « gratuits » qui limitent le nombre d’entrées ou synchronisent mal : la contrainte pousse souvent à réutiliser des mots de passe. Pour comparer les approches, lisez {voir le comparatif complet} et le détail du {stockage de mots de passe} proposé par QVault.',
+              links: [
+                { href: '/guides/comparatif-coffre-fort-mots-de-passe', label: 'voir le comparatif complet' },
+                { href: '/features/passwords', label: 'stockage de mots de passe' },
+              ],
+            },
           ],
         },
         {
@@ -297,10 +351,18 @@ export const guides: Guide[] = [
           bullets: [
             'Choisissez un mot de passe maître long (une phrase de passe) et unique.',
             'Créez votre coffre et ajoutez vos comptes principaux.',
-            'Remplacez les mots de passe faibles ou réutilisés par des mots de passe générés.',
             'Activez la double authentification sur les comptes sensibles.',
             'Lancez l’audit de sécurité du coffre pour repérer les doublons.',
             'Sauvegardez les codes de récupération.',
+          ],
+          paragraphs: [
+            {
+              text: 'Remplacez les mots de passe faibles ou réutilisés par ceux du {essayer le générateur de mot de passe}, et comparez les approches sur la page {stockage de mots de passe} chiffrée côté client.',
+              links: [
+                { href: '/generateur-mot-de-passe', label: 'essayer le générateur de mot de passe' },
+                { href: '/features/passwords', label: 'stockage de mots de passe' },
+              ],
+            },
           ],
         },
         {
@@ -366,6 +428,13 @@ export const guides: Guide[] = [
           paragraphs: [
             'Free covers personal use in most cases: QVault is free and unlimited. You usually pay for family or team sharing, priority support or advanced features.',
             'Beware of “free” tools that cap the number of entries or sync poorly: the constraint pushes you back to reusing passwords.',
+            {
+              text: 'To compare the approaches, read the {see the full comparison} and the {password storage} details offered by QVault.',
+              links: [
+                { href: '/guides/comparatif-coffre-fort-mots-de-passe', label: 'see the full comparison' },
+                { href: '/features/passwords', label: 'password storage' },
+              ],
+            },
           ],
         },
         {
@@ -373,10 +442,18 @@ export const guides: Guide[] = [
           bullets: [
             'Pick a long, unique master password (a passphrase).',
             'Create your vault and add your main accounts.',
-            'Replace weak or reused passwords with generated ones.',
             'Turn on two-factor authentication on sensitive accounts.',
             'Run the vault security audit to spot duplicates.',
             'Back up your recovery codes.',
+          ],
+          paragraphs: [
+            {
+              text: 'Replace weak or reused passwords with ones from the {try the password generator}, and compare approaches on the client-side {password storage} page.',
+              links: [
+                { href: '/generateur-mot-de-passe', label: 'try the password generator' },
+                { href: '/features/passwords', label: 'password storage' },
+              ],
+            },
           ],
         },
         {
@@ -472,6 +549,13 @@ export const guides: Guide[] = [
           heading: 'Comment décider',
           paragraphs: [
             'Listez vos trois priorités réelles (gratuité, langue, crypto, local, simplicité). Comparez uniquement sur ces critères : la plupart des différences mises en avant par les comparatifs n’ont aucun impact sur votre usage.',
+            {
+              text: 'Le {voir le comparatif complet} reprend la grille critère par critère, et la page {chiffrement dans le navigateur} détaille la chaîne technique utilisée par QVault.',
+              links: [
+                { href: '/guides/comparatif-coffre-fort-mots-de-passe', label: 'voir le comparatif complet' },
+                { href: '/features/encryption', label: 'chiffrement dans le navigateur' },
+              ],
+            },
           ],
         },
       ],
@@ -548,6 +632,13 @@ export const guides: Guide[] = [
           heading: 'How to decide',
           paragraphs: [
             'List your three real priorities (free tier, language, crypto, local, simplicity). Compare only on those: most of the differences highlighted by roundups have no impact on your use.',
+            {
+              text: 'The {see the full comparison} goes through the grid criterion by criterion, and the {encryption in the browser} page details the technical chain QVault uses.',
+              links: [
+                { href: '/guides/comparatif-coffre-fort-mots-de-passe', label: 'see the full comparison' },
+                { href: '/features/encryption', label: 'encryption in the browser' },
+              ],
+            },
           ],
         },
       ],
@@ -596,6 +687,15 @@ export const guides: Guide[] = [
               ['Import / export', 'Vous n’êtes pas prisonnier du service'],
             ],
           },
+          paragraphs: [
+            {
+              text: 'Le {chiffrement côté client} est le critère qui départage le plus de candidats ; QVault détaille le {chiffrement dans le navigateur} sur une page dédiée. Pour le reste, ce comparatif s’applique aussi bien aux {chiffrement côté client} qu’aux gestionnaires d’entreprise.',
+              links: [
+                { href: '/features/passwords', label: 'chiffrement côté client' },
+                { href: '/features/encryption', label: 'chiffrement dans le navigateur' },
+              ],
+            },
+          ],
         },
         {
           heading: 'Comment vérifier soi-même',
@@ -605,6 +705,15 @@ export const guides: Guide[] = [
             'Vérifiez l’existence d’un dépôt public et lisez le code du chiffrement.',
             'Testez l’export : si vous ne pouvez pas sortir vos données, passez votre chemin.',
             'Méfiez-vous d’un support qui propose de « récupérer » votre mot de passe maître : c’est impossible en zero-knowledge.',
+          ],
+          paragraphs: [
+            {
+              text: 'Deux outils gratuits accélèrent la vérification : le {générer un mot de passe fort} pour remplacer un identifiant faible, et l’audit pour repérer les doublons, complété par la page {chiffrement côté client} sur le stockage des identifiants.',
+              links: [
+                { href: '/generateur-mot-de-passe', label: 'générer un mot de passe fort' },
+                { href: '/features/passwords', label: 'chiffrement côté client' },
+              ],
+            },
           ],
         },
         {
@@ -674,6 +783,15 @@ export const guides: Guide[] = [
               ['Import / export', 'You are not locked into the service'],
             ],
           },
+          paragraphs: [
+            {
+              text: 'The {client-side encryption} criterion rules out the most candidates; QVault details the {encryption in the browser} on a dedicated page. The rest of this comparison applies to both consumer and enterprise managers.',
+              links: [
+                { href: '/features/passwords', label: 'client-side encryption' },
+                { href: '/features/encryption', label: 'encryption in the browser' },
+              ],
+            },
+          ],
         },
         {
           heading: 'How to check yourself',
@@ -683,6 +801,15 @@ export const guides: Guide[] = [
             'Check that a public repository exists and read the encryption code.',
             'Test the export: if you cannot get your data out, walk away.',
             'Beware of support offering to “recover” your master password: that is impossible in zero-knowledge.',
+          ],
+          paragraphs: [
+            {
+              text: 'Two free tools speed up the check: the {generate a strong password} to replace a weak credential, and the password audit to spot duplicates, alongside the {client-side encryption} page on how credentials are stored.',
+              links: [
+                { href: '/generateur-mot-de-passe', label: 'generate a strong password' },
+                { href: '/features/passwords', label: 'client-side encryption' },
+              ],
+            },
           ],
         },
         {

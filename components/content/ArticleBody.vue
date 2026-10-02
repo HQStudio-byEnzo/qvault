@@ -7,7 +7,15 @@
       class="article__section"
     >
       <h2>{{ section.heading }}</h2>
-      <p v-for="(paragraph, index) in section.paragraphs" :key="`p-${index}`">{{ paragraph }}</p>
+      <p v-for="(paragraph, index) in section.paragraphs" :key="`p-${index}`">
+        <template v-if="isLinked(paragraph)">
+          <template v-for="(part, partIndex) in splitParagraph(paragraph)" :key="partIndex">
+            <NuxtLink v-if="part.href" :to="part.href" class="article__link">{{ part.text }}</NuxtLink>
+            <template v-else>{{ part.text }}</template>
+          </template>
+        </template>
+        <template v-else>{{ paragraph }}</template>
+      </p>
       <ul v-if="section.bullets">
         <li v-for="(bullet, index) in section.bullets" :key="`b-${index}`">{{ bullet }}</li>
       </ul>
@@ -38,13 +46,41 @@
 </template>
 
 <script setup lang="ts">
-import type { GuideBlock, GuideFaq } from '~/utils/guides'
+import type { GuideBlock, GuideFaq, GuideParagraph } from '~/utils/guides'
 
 defineProps<{
   sections: GuideBlock[]
   faq?: GuideFaq[]
   faqTitle?: string
 }>()
+
+function isLinked(paragraph: unknown): paragraph is GuideParagraph {
+  return typeof paragraph === 'object' && paragraph !== null && 'text' in paragraph
+}
+
+interface ParagraphPart {
+  text: string
+  href?: string
+  label?: string
+}
+
+/** Replaces each {label} placeholder with its link, keeping the text in order. */
+function splitParagraph(paragraph: GuideParagraph): ParagraphPart[] {
+  const parts: ParagraphPart[] = []
+  let rest = paragraph.text
+
+  for (const link of paragraph.links ?? []) {
+    const marker = `{${link.label}}`
+    const at = rest.indexOf(marker)
+    if (at === -1) continue
+    if (at > 0) parts.push({ text: rest.slice(0, at) })
+    parts.push({ text: link.label, href: link.href })
+    rest = rest.slice(at + marker.length)
+  }
+
+  if (rest) parts.push({ text: rest })
+  return parts
+}
 
 function slugify(value: string) {
   return value
@@ -84,6 +120,16 @@ function slugify(value: string) {
 }
 
 .article__section li::marker { color: var(--color-accent-strong); }
+
+.article__link {
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .article__link:hover { text-decoration: none; }
+}
 
 .article__table-wrap {
   margin-top: var(--space-4);

@@ -6,6 +6,7 @@ export interface FeatureEntry {
   slug: FeatureSlug
   title: string
   summary: string
+  seoTitle: string
   icon: string
   accent: string
   badgeClass: string
@@ -21,6 +22,7 @@ export function useFeatureCatalog() {
       slug: 'links',
       title: t('featuresCatalog.links.title'),
       summary: t('featuresCatalog.links.summary'),
+      seoTitle: t('featuresCatalog.links.seoTitle'),
       icon: 'hugeicons:link',
       accent: 'blue',
       badgeClass: 'bg-blue-500/10',
@@ -35,6 +37,7 @@ export function useFeatureCatalog() {
       slug: 'passwords',
       title: t('featuresCatalog.passwords.title'),
       summary: t('featuresCatalog.passwords.summary'),
+      seoTitle: t('featuresCatalog.passwords.seoTitle'),
       icon: 'hugeicons:key-round',
       accent: 'amber',
       badgeClass: 'bg-amber-500/10',
@@ -49,6 +52,7 @@ export function useFeatureCatalog() {
       slug: 'crypto',
       title: t('featuresCatalog.crypto.title'),
       summary: t('featuresCatalog.crypto.summary'),
+      seoTitle: t('featuresCatalog.crypto.seoTitle'),
       icon: 'hugeicons:bitcoin',
       accent: 'orange',
       badgeClass: 'bg-orange-500/10',
@@ -63,6 +67,7 @@ export function useFeatureCatalog() {
       slug: 'encryption',
       title: t('featuresCatalog.encryption.title'),
       summary: t('featuresCatalog.encryption.summary'),
+      seoTitle: t('featuresCatalog.encryption.seoTitle'),
       icon: 'hugeicons:lock',
       accent: 'emerald',
       badgeClass: 'bg-emerald-500/10',
@@ -77,6 +82,7 @@ export function useFeatureCatalog() {
       slug: 'favorites',
       title: t('featuresCatalog.favorites.title'),
       summary: t('featuresCatalog.favorites.summary'),
+      seoTitle: t('featuresCatalog.favorites.seoTitle'),
       icon: 'hugeicons:star',
       accent: 'purple',
       badgeClass: 'bg-purple-500/10',
@@ -91,6 +97,7 @@ export function useFeatureCatalog() {
       slug: 'recovery',
       title: t('featuresCatalog.recovery.title'),
       summary: t('featuresCatalog.recovery.summary'),
+      seoTitle: t('featuresCatalog.recovery.seoTitle'),
       icon: 'hugeicons:ticket-check',
       accent: 'rose',
       badgeClass: 'bg-rose-500/10',

@@ -31,6 +31,15 @@
             <NuxtLink v-if="feature.slug === 'recovery'" to="/dashboard/recovery-codes" class="btn-primary w-full">{{ t('featuresIndex.openRecoveryCodes') }}</NuxtLink>
             <NuxtLink v-else to="/auth/register" class="btn-primary w-full">{{ t('featuresIndex.createVault') }}</NuxtLink>
             <NuxtLink v-if="feature.slug === 'passwords'" to="/generateur-mot-de-passe" class="btn-secondary w-full">{{ t('featuresIndex.useGenerator') }}</NuxtLink>
+            <NuxtLink v-if="featureGuide" :to="featureGuide.to" class="btn-secondary w-full">{{ featureGuide.label }}</NuxtLink>
+          </div>
+
+          <div v-if="crossLinks.length" class="mt-6 space-y-3 border-t border-surface-800 pt-5">
+            <h2 class="font-display text-sm font-semibold text-surface-50">{{ t('featuresIndex.nextTitle') }}</h2>
+            <NuxtLink v-for="link in crossLinks" :key="link.to" :to="link.to" class="cross">
+              <strong>{{ link.title }}</strong>
+              <span>{{ link.desc }}</span>
+            </NuxtLink>
           </div>
         </aside>
       </div>
@@ -54,13 +63,94 @@ import { useLang } from '~/composables/useI18n'
 
 definePageMeta({ layout: 'default' })
 
-const { t } = useLang()
+const { t, locale } = useLang()
 const route = useRoute()
 const { getFeature } = useFeatureCatalog()
 const feature = computed(() => getFeature(String(route.params.slug)))
 
+/**
+ * Cross-promotion between feature pages. Each target is linked from at least
+ * two other feature pages, so no feature page stays an orphan.
+ */
+const FEATURE_LINKS: Record<string, { to: string; title: string; desc: string }[]> = {
+  links: [
+    { to: '/features/favorites', title: 'featuresIndex.crossFavoritesTitle', desc: 'featuresIndex.crossFavoritesDesc' },
+    { to: '/features/passwords', title: 'featuresIndex.crossPasswordsTitle', desc: 'featuresIndex.crossPasswordsDesc' },
+    { to: '/features/crypto', title: 'featuresIndex.crossCryptoTitle', desc: 'featuresIndex.crossCryptoDesc' },
+  ],
+  passwords: [
+    { to: '/features/recovery', title: 'featuresIndex.crossRecoveryTitle', desc: 'featuresIndex.crossRecoveryDesc' },
+    { to: '/features/encryption', title: 'featuresIndex.crossEncryptionTitle', desc: 'featuresIndex.crossEncryptionDesc' },
+    { to: '/features/crypto', title: 'featuresIndex.crossCryptoTitle', desc: 'featuresIndex.crossCryptoDesc' },
+  ],
+  crypto: [
+    { to: '/features/encryption', title: 'featuresIndex.crossEncryptionTitle', desc: 'featuresIndex.crossEncryptionDesc' },
+    { to: '/features/recovery', title: 'featuresIndex.crossRecoveryTitle', desc: 'featuresIndex.crossRecoveryDesc' },
+    { to: '/features/passwords', title: 'featuresIndex.crossPasswordsTitle', desc: 'featuresIndex.crossPasswordsDesc' },
+  ],
+  encryption: [
+    { to: '/features/passwords', title: 'featuresIndex.crossPasswordsTitle', desc: 'featuresIndex.crossPasswordsDesc' },
+    { to: '/features/crypto', title: 'featuresIndex.crossCryptoTitle', desc: 'featuresIndex.crossCryptoDesc' },
+  ],
+  favorites: [
+    { to: '/features/links', title: 'featuresIndex.crossLinksTitle', desc: 'featuresIndex.crossLinksDesc' },
+    { to: '/features/passwords', title: 'featuresIndex.crossPasswordsTitle', desc: 'featuresIndex.crossPasswordsDesc' },
+    { to: '/features/crypto', title: 'featuresIndex.crossCryptoTitle', desc: 'featuresIndex.crossCryptoDesc' },
+  ],
+  recovery: [
+    { to: '/features/passwords', title: 'featuresIndex.crossPasswordsTitle', desc: 'featuresIndex.crossPasswordsDesc' },
+    { to: '/features/crypto', title: 'featuresIndex.crossCryptoTitle', desc: 'featuresIndex.crossCryptoDesc' },
+  ],
+}
+
+const crossLinks = computed(() =>
+  (FEATURE_LINKS[String(route.params.slug)] ?? []).map(link => ({
+    to: link.to,
+    title: t(link.title),
+    desc: t(link.desc),
+  })),
+)
+
+const guides: Record<string, { to: string; labelFr: string; labelEn: string }> = {
+  seed: { to: '/guides/stocker-seed-phrase', labelFr: 'Où stocker une seed phrase', labelEn: 'Where to store a seed phrase' },
+  passwords: { to: '/guides/gerer-ses-mots-de-passe', labelFr: 'Gérer ses mots de passe', labelEn: 'Managing your passwords' },
+  compare: { to: '/guides/comparatif-coffre-fort-mots-de-passe', labelFr: 'Comparatif des coffres-forts', labelEn: 'Password vault comparison' },
+}
+
+const featureGuide = computed(() => {
+  const found = guides[feature.value?.slug ?? '']
+  if (!found) return null
+  return { to: found.to, label: locale.value === 'en' ? found.labelEn : found.labelFr }
+})
+
 useSeoMeta({
-  title: feature.value ? feature.value.title : t('featuresIndex.seoTitle'),
+  title: feature.value ? feature.value.seoTitle : t('featuresIndex.seoTitle'),
   description: feature.value?.summary || t('featuresIndex.seoDesc'),
 })
 </script>
+
+<style scoped>
+.cross {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  text-decoration: none;
+}
+
+.cross strong {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.cross span {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cross:hover { border-color: var(--color-accent-rule); }
+}
+</style>

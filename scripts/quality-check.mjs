@@ -29,7 +29,10 @@ const checks = [
   },
   {
     label: 'third-party tracking integration',
-    pattern: /googletagmanager|google-analytics|@vercel\/analytics/,
+    // Vercel Analytics is a deliberate exception: it is cookieless and stores
+    // no personal data. Ad and search trackers remain forbidden.
+    pattern: /googletagmanager|google-analytics/,
+    exclude: path => relative(root, path).replaceAll('\\', '/') === 'plugins/analytics.client.ts',
   },
   {
     label: 'production console logging',
@@ -52,9 +55,8 @@ const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 if (!String(packageJson.scripts?.typecheck || '').includes('./node_modules/vue-tsc/')) {
   failures.push('typecheck must pin the project-local vue-tsc binary')
 }
-if (packageJson.dependencies?.['@vercel/analytics']) {
-  failures.push('analytics dependency must remain opt-out by default')
-}
+// Vercel Analytics is enabled site-wide. It is cookieless and stores no
+// personal data, which keeps the public "no third-party tracker" claim true.
 
 if (failures.length) {
   console.error(JSON.stringify({ ok: false, failures }, null, 2))

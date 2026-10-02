@@ -1,0 +1,29 @@
+# QVault
+
+> QVault est un coffre-fort numérique gratuit et open source. Mots de passe, notes, codes TOTP, seed phrases et clés crypto sont chiffrés dans le navigateur (AES-256-GCM, dérivation PBKDF2-SHA256) avant d'être envoyés. Le serveur ne détient jamais la clé de déchiffrement : même compromis, il reste illisible.
+
+## Pages clés
+
+- [Accueil](https://qvault.hqmerchant.xyz/) — présentation du coffre-fort, des fonctions et des questions fréquentes.
+- [Générateur de mot de passe](https://qvault.hqmerchant.xyz/generateur-mot-de-passe) — créer un mot de passe aléatoire dans le navigateur, sans connexion ni envoi serveur.
+- [Générateur de seed phrase](https://qvault.hqmerchant.xyz/generateur-seed-phrase) — générer une phrase BIP-39 localement, puis la chiffrer dans le coffre.
+- [Audit de mot de passe](https://qvault.hqmerchant.xyz/audit-securite) — mesurer la robustesse d'un mot de passe et repérer les réutilisations.
+
+## Guides
+
+- [Où et comment stocker une seed phrase en sécurité](https://qvault.hqmerchant.xyz/guides/stocker-seed-phrase) — méthodes de sauvegarde, erreurs à éviter, bonnes pratiques crypto.
+- [Gérer et stocker ses mots de passe gratuitement](https://qvault.hqmerchant.xyz/guides/gerer-ses-mots-de-passe) — méthodes, choix d'un gestionnaire, mise en place.
+- [Alternative à Bitwarden](https://qvault.hqmerchant.xyz/guides/alternative-bitwarden) — critères de choix et migration depuis Bitwarden.
+- [Comparatif des coffres-forts de mots de passe](https://qvault.hqmerchant.xyz/guides/comparatif-coffre-fort-mots-de-passe) — grille de critères objective, sans classement sponsorisé.
+
+## Fonctionnalités
+
+- [Toutes les fonctionnalités](https://qvault.hqmerchant.xyz/features) — vue d'ensemble des six capacités du coffre.
+- [Stockage de mots de passe](https://qvault.hqmerchant.xyz/features/passwords) — identifiants chiffrés côté client, recherche et audit de robustesse.
+- [Chiffrement dans le navigateur](https://qvault.hqmerchant.xyz/features/encryption) — la chaîne complète, du mot de passe maître au contenu stocké.
+
+## Informations
+
+- [Code source](https://github.com/HQStudio-byEnzo/qvault) — dépôt public, licence MIT.
+- [Politique de confidentialité](https://qvault.hqmerchant.xyz/legal/confidentialite) — données conservées, base légale, exercice des droits.
+- [Conditions d'utilisation](https://qvault.hqmerchant.xyz/legal/cgu) — usage du service, compte, garanties.

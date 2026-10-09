@@ -63,6 +63,10 @@
             {{ isResending ? t('auth.login.resending') : t('auth.login.resend') }}
           </button>
           <p v-if="resendMsg" class="text-xs text-amber-700">{{ resendMsg }}</p>
+          <NuxtLink to="/guides/depannage" class="inline-flex items-center gap-1.5 text-xs text-amber-700 underline hover:text-amber-800">
+            <Icon name="hugeicons:lifebuoy" class="h-3.5 w-3.5" />
+            {{ t('auth.login.troubleLink') }}
+          </NuxtLink>
         </div>
 
         <button

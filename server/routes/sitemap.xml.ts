@@ -16,6 +16,7 @@ const publicRoutes = [
   { loc: '/guides/gerer-ses-mots-de-passe', priority: '0.8', changefreq: 'monthly' },
   { loc: '/guides/alternative-bitwarden', priority: '0.7', changefreq: 'monthly' },
   { loc: '/guides/comparatif-coffre-fort-mots-de-passe', priority: '0.7', changefreq: 'monthly' },
+  { loc: '/guides/depannage', priority: '0.6', changefreq: 'monthly' },
   { loc: '/legal/cgu', priority: '0.4', changefreq: 'monthly' },
   { loc: '/legal/confidentialite', priority: '0.4', changefreq: 'monthly' },
   { loc: '/legal/mentions-legales', priority: '0.4', changefreq: 'monthly' },

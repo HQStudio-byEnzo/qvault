@@ -15,6 +15,7 @@
 - [Gérer et stocker ses mots de passe gratuitement](https://qvault.hqmerchant.xyz/guides/gerer-ses-mots-de-passe) — méthodes, choix d'un gestionnaire, mise en place.
 - [Alternative à Bitwarden](https://qvault.hqmerchant.xyz/guides/alternative-bitwarden) — critères de choix et migration depuis Bitwarden.
 - [Comparatif des coffres-forts de mots de passe](https://qvault.hqmerchant.xyz/guides/comparatif-coffre-fort-mots-de-passe) — grille de critères objective, sans classement sponsorisé.
+- [Dépannage](https://qvault.hqmerchant.xyz/guides/depannage) — codes 2FA refusés, coffre reverrouillé, e-mail manquant, extension déconnectée : causes et solutions.
 
 ## Fonctionnalités
 

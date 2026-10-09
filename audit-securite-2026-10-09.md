@@ -169,14 +169,47 @@ Les trois critiques passent toutes par Nuxt DevTools, désactivé en production 
 
 ---
 
-## Ordre de traitement conseillé
+## Corrections appliquées le 9 octobre 2026
 
-1. **F1** — le seul vrai contournement de contrôle. Correctif serveur, une quinzaine de lignes.
-2. **F2** — mise à jour de `vue`, une ligne, supprime une XSS potentielle sur le chemin de production.
-3. **F3** — une ligne dans le batch de suppression, enlève une fuite de donnée personnelle.
-4. **F4**, **F5**, **F7** — trois correctifs courts et indépendants.
-5. **F6**, **F8** — à arbitrer : ils réduisent la surface d'attaque hors ligne sans corriger une faille.
-6. Dépendances — montée de version groupée, puis `bun audit` de nouveau.
+F1, F2 et F3 sont traités. Après correctif : `bun run test` au vert, `bun run build` au vert, test fumée au vert avec une régression ajoutée pour F1.
+
+### F1 — correction
+
+Le contrôle d'activation est remonté dans `requireAuth`, la seule brique que traversent toutes les routes protégées. Il relit `email` et `email_verified` en base à chaque appel, donc il ne dépend plus du drapeau `needsEmail` de la session ni du middleware de route.
+
+`server/utils/auth.ts` est scindé en deux gardes :
+
+- `requireSession` : session valide, rien de plus.
+- `requireAuth` : appelle `requireSession`, puis refuse en 403 si `needsEmailCompletion(email, email_verified)`.
+
+Quatre routes gardent `requireSession` parce qu'elles doivent rester accessibles avant l'activation : lecture de session, `claim-email`, `refresh-email-state`, et `delete-account` (le droit à l'effacement ne doit pas dépendre de l'état de l'e-mail). `logout` n'utilisait aucune garde.
+
+Régression ajoutée au test fumée : un compte incomplet reçoit bien 403 sur `/api/vault` et `/api/organization`, et redevient autorisé après confirmation du lien.
+
+### F2 — correction, avec un piège à connaître
+
+`bun add vue@3.5.43` n'a pas suffi. Le dépôt portait **trois copies** de Vue : la racine passée en 3.5.43, mais `node_modules/nuxt/node_modules/vue` et `node_modules/@nuxt/nitro-server/node_modules/vue` restaient en 3.5.41, chacune avec son propre `@vue/server-renderer`. Le serveur de développement affichait encore `Vue 3.5.41` et `bun audit` signalait toujours la faille.
+
+Construction du correctif :
+
+1. `overrides.vue = 3.5.43` dans `package.json`, plus `brace-expansion` porté à 5.0.11.
+2. Suppression manuelle des deux arbres imbriqués, puis `bun install` : Bun considère alors la racine 3.5.43 comme satisfaisant la contrainte `^3.5.40` de Nuxt et ne recrée pas de doublon.
+
+Résultat vérifié : une seule copie de `vue`, en 3.5.43, `@vue/server-renderer` hors du rapport d'audit, et la bannière du serveur affiche `Vue 3.5.43`. Le total d'avis passe de **14 à 11**.
+
+À retenir : `bun audit` lit tout l'arbre, copies imbriquées incluses. Monter la dépendance directe ne prouve rien tant que les copies imbriquées et la bannière du serveur ne sont pas vérifiées.
+
+### F3 — correction, et précision sur la portée
+
+Deux tables manquaient dans le batch de suppression, pas une : `extension_pair_codes` et `email_verification_tokens`. Les deux portent un `user_id` et stockent une donnée identifiable (code d'appairage, adresse e-mail en clair).
+
+Portée réelle, mesurée sur la base de développement : avec `PRAGMA foreign_keys = ON` (valeur constatée en local), la cascade suffit et aucune ligne orpheline n'apparaît. Avec les contraintes désactivées, un compte de test créé puis supprimé laissait ses **deux** lignes intactes. L'endpoint supprime manuellement toutes les autres tables précisément parce que l'application des contraintes n'est pas garantie chez l'hébergeur : l'omission est donc un défaut réel, mais son exploitabilité dépend de cette configuration. Les deux `DELETE` ont été ajoutés au batch.
+
+## Ordre de traitement du reste
+
+1. **F4**, **F5**, **F7** — trois correctifs courts et indépendants.
+2. **F6**, **F8** — à arbitrer : ils réduisent la surface d'attaque hors ligne sans corriger une faille.
+3. Dépendances — les 11 avis restants sont tous en build ou en développement. Les trois critiques (`shell-quote`, `simple-git`, `@simple-git/argv-parser`) passent par Nuxt DevTools, désactivé en production. `seroval` et `node-forge` méritent une montée de version groupée.
 
 ## Non vérifié
 

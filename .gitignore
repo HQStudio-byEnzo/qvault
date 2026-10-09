@@ -38,3 +38,6 @@ dev.pid
 
 # TypeScript
 *.tsbuildinfo
+
+# Outil externe (hors projet)
+.freebuff/

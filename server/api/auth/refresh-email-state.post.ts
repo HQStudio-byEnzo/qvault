@@ -6,7 +6,7 @@
  * une reconnexion.
  */
 export default defineEventHandler(async (event) => {
-  const session = await requireAuth(event)
+  const session = await requireSession(event)
   const db = useDB(event)
   const result = await db.execute({
     sql: 'SELECT email, email_verified FROM users WHERE id = ?',

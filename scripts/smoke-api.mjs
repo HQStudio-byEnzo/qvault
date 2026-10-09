@@ -160,6 +160,13 @@ try {
   const legacySession = (await request('/api/auth/session')).data
   assert(legacySession.user?.needsEmail === true, 'The email gate was not carried by the session')
 
+  // The gate must hold server-side: a session that is still missing a confirmed
+  // address cannot read the vault, whatever the client does.
+  const blockedVault = await requestRaw('/api/vault?type=note')
+  assert(blockedVault.response.status === 403, 'An incomplete account could read the vault')
+  const blockedOrg = await requestRaw('/api/organization')
+  assert(blockedOrg.response.status === 403, 'An incomplete account could read the organization')
+
   const claimed = await request('/api/auth/claim-email', {
     method: 'POST',
     body: JSON.stringify({ email: `smoke-legacy-${Date.now()}@example.com` }),

@@ -5,7 +5,7 @@
  */
 export default defineEventHandler(async (event) => {
   await enforceRateLimit(event, 'auth-claim-email', 10, 60 * 60 * 1000)
-  const session = await requireAuth(event)
+  const session = await requireSession(event)
   const body = requireRecord(await readBody(event))
   const email = normalizeEmail(body.email)
   const locale = body.locale === 'en' ? 'en' : 'fr'

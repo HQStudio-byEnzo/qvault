@@ -3,7 +3,7 @@
  * Supprime définitivement le compte et toutes les données
  */
 export default defineEventHandler(async (event) => {
-  const session = await requireAuth(event)
+  const session = await requireSession(event)
   await enforceRateLimit(event, 'auth-delete-account', 5, 60 * 60 * 1000, String(session.user.id))
   const body = requireRecord(await readBody(event))
   const password = requireString(body.password, 'Password', { min: 1, max: 128, trim: false })
@@ -27,7 +27,8 @@ export default defineEventHandler(async (event) => {
   }
 
   // Delete all account-owned data atomically. This also works when SQLite
-  // foreign-key enforcement is not enabled by the hosting environment.
+  // foreign-key enforcement is not enabled by the hosting environment, so every
+  // table that carries a user_id must be listed here explicitly.
   await db.batch([
     { sql: 'DELETE FROM vault_item_tags WHERE item_id IN (SELECT id FROM vault_items WHERE user_id = ?)', args: [session.user.id] },
     { sql: 'DELETE FROM vault_item_history WHERE user_id = ?', args: [session.user.id] },
@@ -37,6 +38,8 @@ export default defineEventHandler(async (event) => {
     { sql: 'DELETE FROM vaults WHERE user_id = ?', args: [session.user.id] },
     { sql: 'DELETE FROM master_verifiers WHERE user_id = ?', args: [session.user.id] },
     { sql: 'DELETE FROM extension_tokens WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM extension_pair_codes WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM email_verification_tokens WHERE user_id = ?', args: [session.user.id] },
     { sql: 'DELETE FROM accepted_terms WHERE user_id = ?', args: [session.user.id] },
     { sql: 'DELETE FROM users WHERE id = ?', args: [session.user.id] },
   ], 'write')

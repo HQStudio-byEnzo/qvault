@@ -9,6 +9,13 @@
       <button class="btn-primary self-start" @click="showAdd = true"><Icon name="hugeicons:plus" class="w-4 h-4" /> {{ t('totp.add') }}</button>
     </section>
 
+    <p class="text-sm text-surface-400">
+      <NuxtLink to="/guides/depannage" class="inline-flex items-center gap-1.5 text-accent-text hover:text-accent-text-strong underline">
+        <Icon name="hugeicons:lifebuoy" class="h-4 w-4" />
+        {{ t('totp.troubleLink') }}
+      </NuxtLink>
+    </p>
+
     <div v-if="!isUnlocked" class="glass-panel p-5 flex flex-col sm:flex-row gap-4 sm:items-center">
       <Icon name="hugeicons:lock-keyhole" class="w-6 h-6 text-amber-700" />
       <p class="flex-1 text-sm text-surface-300">{{ t('totp.unlock') }}</p>

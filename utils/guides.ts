@@ -42,7 +42,7 @@ export interface GuideLocale {
 
 export interface Guide {
   slug: string
-  category: 'seed' | 'passwords' | 'compare'
+  category: 'seed' | 'passwords' | 'compare' | 'troubleshoot'
   icon: string
   accent: string
   fr: GuideLocale
@@ -848,6 +848,196 @@ export const guides: Guide[] = [
         { q: 'Which is the safest?', a: 'The safest is the one with a zero-knowledge architecture and a strong master password. The vendor must never be able to read your data.' },
         { q: 'Is QVault open source?', a: 'Yes, the code is public on GitHub, so the encryption and the absence of a backdoor can be verified.' },
         { q: 'Can I store my crypto in it?', a: 'Yes, QVault has a dedicated section for seed phrases and private keys, encrypted like the rest of the vault.' },
+      ],
+    },
+  },
+  {
+    slug: 'depannage',
+    category: 'troubleshoot',
+    icon: 'hugeicons:lifebuoy',
+    accent: 'slate',
+    fr: {
+      title: 'Dépannage : les problèmes courants et leurs solutions',
+      description: 'Horloge décalée, codes 2FA refusés, coffre reverrouillé, e-mail de vérification manquant, extension déconnectée : les causes et les solutions, une par une.',
+      eyebrow: 'Dépannage',
+      h1: 'Que faire quand quelque chose ne fonctionne pas',
+      intro: 'Chaque problème ci-dessous a une cause précise et une solution vérifiable. La plupart viennent de l’environnement (horloge du système, navigateur, double démarrage) et non de vos données. Rien n’est jamais perdu : votre coffre reste chiffré, et vos secrets restent les vôtres.',
+      updated: '9 octobre 2026',
+      sections: [
+        {
+          heading: 'Mes codes 2FA sont refusés par les sites',
+          paragraphs: [
+            'La cause est presque toujours l’horloge de votre machine, pas vos clés. Un code TOTP est valable 30 secondes et se calcule à partir de l’heure du système : si celle-ci est décalée de plus de 30 secondes, le code est faux même si la clé est correcte.',
+            'Sur un ordinateur qui démarre à la fois Linux et Windows, le conflit d’horloge matérielle est le coupable classique. Linux règle l’horloge du BIOS en UTC, Windows la relit en la prenant pour de l’heure locale. Résultat : Windows affiche exactement une heure de retard (ou deux en été).',
+          ],
+          bullets: [
+            'Vérifiez votre décalage sur time.is : il affiche « votre horloge est en retard de X » ou « synchronisée ».',
+            'Sous Linux, alignez l’horloge matérielle sur Windows : `sudo timedatectl set-local-rtc --adjust-system-clock`.',
+            'Sous Windows, vérifiez que le fuseau est le bon et que « Régler l’heure automatiquement » est actif.',
+            'Pour débloquer immédiatement sans redémarrer : `w32tm /resync` dans PowerShell.',
+          ],
+        },
+        {
+          heading: 'Mon coffre se reverrouille dès que je recharge la page',
+          paragraphs: [
+            'C’est volontaire, et c’est ce qui rend le chiffrement crédible. Votre mot de passe maître n’est jamais stocké : il vit seulement dans la mémoire de l’onglet. Recharger la page, fermer l’onglet ou redémarrer le navigateur l’efface, donc le coffre se reverrouille.',
+            'Si c’est pénible au quotidien, activez le déverrouillage par passkey dans les paramètres de sécurité. La clé reste protégée par votre biométrie et ne quitte pas votre appareil.',
+          ],
+        },
+        {
+          heading: 'Je n’ai pas reçu l’e-mail de vérification',
+          paragraphs: [
+            'Trois causes, par ordre de fréquence : l’e-mail est dans les indésirables, l’adresse contient une coquille, ou il a été envoyé alors que le domaine n’était pas encore vérifié.',
+          ],
+          bullets: [
+            'Ouvrez d’abord le dossier indésirables et recherchez « QVault ».',
+            'Vérifiez l’adresse caractère par caractère sur l’écran de connexion.',
+            'Utilisez le bouton « Renvoyer l’e-mail » : un nouveau lien est généré et l’ancien est invalidé.',
+            'Le lien est valable 24 heures et ne sert qu’une fois. S’il a expiré, redemandez-en un.',
+          ],
+        },
+        {
+          heading: 'Je suis bloqué sur « Ajoutez votre adresse e-mail »',
+          paragraphs: [
+            'Votre compte a été créé avant que QVault ne demande une adresse e-mail. Il fonctionne, mais il porte une adresse interne qui ne peut rien recevoir. L’écran vous demande donc la vôtre, puis un lien de confirmation.',
+            'Ce blocage est appliqué côté serveur : tant que l’adresse n’est pas confirmée, aucune donnée du coffre n’est accessible. C’est le comportement voulu, pas un bug. Il n’y a aucun moyen de le contourner, et c’est ce qui garantit que chaque compte est rattachable à une adresse réelle.',
+          ],
+        },
+        {
+          heading: 'Mon extension ne se connecte plus',
+          paragraphs: [
+            'Le jeton de l’extension expire après 30 jours, et il est révoqué dès que vous changez votre mot de passe de compte. Dans les deux cas, la solution est la même : régénérer le jeton.',
+          ],
+          bullets: [
+            'Dans les paramètres de sécurité, révoquez puis régénérez le jeton d’extension.',
+            'Re saisissez le code à 6 chiffres affiché dans l’application, valable 5 minutes.',
+            'Le jeton donne accès à vos mots de passe chiffrés : traitez-le comme un mot de passe, ne le collez nulle part.',
+          ],
+        },
+        {
+          heading: 'J’ai oublié mon mot de passe maître',
+          paragraphs: [
+            'Personne ne peut le récupérer, y compris QVault. C’est la conséquence directe du chiffrement zero-knowledge : la clé est dérivée dans votre navigateur et le serveur ne reçoit que des données déjà illisibles. Il n’existe aucune porte dérobée, car une porte dérobée serait précisément ce que le modèle est censé empêcher.',
+            'Si vous avez exporté une sauvegarde chiffrée `.qvault`, elle est inutilisable sans ce mot de passe. La seule issue est de recréer un compte et un nouveau mot de passe maître, puis de réimporter ce que vous avez en clair.',
+          ],
+        },
+        {
+          heading: 'La copie dans le presse-papier ne fonctionne pas',
+          paragraphs: [
+            'QVault efface le presse-papier quelques secondes après la copie, pour éviter qu’un secret traîne. Si rien n’est copié du tout, c’est généralement une autorisation du navigateur.',
+          ],
+          bullets: [
+            'Vérifiez que la page est bien en https et que le site est autorisé à utiliser le presse-papier.',
+            'Recliquez sur le code ou le champ : la copie peut exiger une interaction utilisateur récente.',
+            'En dernier recours, sélectionnez le texte à la main et copiez.',
+          ],
+        },
+        {
+          heading: 'Je ne peux pas importer ma sauvegarde',
+          paragraphs: [
+            'Une sauvegarde `.qvault` est un conteneur chiffré : l’import demande le mot de passe maître qui était actif à l’export. Vérifiez aussi que le fichier n’a pas été tronqué par un transfert incomplet.',
+          ],
+        },
+      ],
+      faq: [
+        { q: 'Pourquoi mes codes 2FA ne fonctionnent que sur un seul de mes ordinateurs ?', a: 'Parce que l’un des deux a une horloge décalée. Les codes se calculent à partir de l’heure du système. Sur un double démarrage Linux et Windows, l’horloge matérielle est souvent décalée d’une heure sur Windows. Vérifiez sur time.is, puis appliquez `sudo timedatectl set-local-rtc --adjust-system-clock` côté Linux.' },
+        { q: 'Puis-je désactiver le verrouillage automatique du coffre ?', a: 'Le verrouillage au rechargement ne se désactive pas : le mot de passe maître n’est jamais conservé. Vous pouvez en revanche activer le déverrouillage par passkey pour éviter de le retaper.' },
+        { q: 'QVault peut-il récupérer mon mot de passe maître ?', a: 'Non. En zero-knowledge, la clé est dérivée dans votre navigateur et le serveur ne stocke que des données illisibles. Aucune récupération n’est techniquement possible, par personne.' },
+        { q: 'Combien de temps est valable un lien de vérification ?', a: '24 heures, et il ne sert qu’une fois. Si vous redemandez un lien, le précédent est invalidé immédiatement.' },
+        { q: 'Combien de temps dure un jeton d’extension ?', a: '30 jours. Il est aussi révoqué automatiquement si vous changez votre mot de passe de compte. Régénérez-le depuis les paramètres de sécurité.' },
+        { q: 'Que faire si mon adresse e-mail n’est plus accessible ?', a: 'Contactez le support depuis la page de contact pour faire modifier l’adresse. Le mot de passe maître et le contenu du coffre restent inchangés : ils ne dépendent pas de l’e-mail.' },
+      ],
+    },
+    en: {
+      title: 'Troubleshooting: common problems and their fixes',
+      description: 'Clock skew, rejected 2FA codes, a vault that re-locks, a missing verification email, a disconnected extension: the causes and the fixes, one by one.',
+      eyebrow: 'Troubleshooting',
+      h1: 'What to do when something does not work',
+      intro: 'Every problem below has a precise cause and a verifiable fix. Most come from the environment (system clock, browser, dual boot) and not from your data. Nothing is ever lost: your vault stays encrypted and your secrets stay yours.',
+      updated: 'October 9, 2026',
+      sections: [
+        {
+          heading: 'My 2FA codes are rejected by websites',
+          paragraphs: [
+            'The cause is almost always your machine clock, not your keys. A TOTP code is valid for 30 seconds and is computed from the system time: if that is off by more than 30 seconds, the code is wrong even though the key is right.',
+            'On a computer that boots both Linux and Windows, the hardware clock conflict is the classic culprit. Linux sets the BIOS clock to UTC, Windows reads it back as local time, so Windows ends up exactly one hour behind (two in summer).',
+          ],
+          bullets: [
+            'Check your offset on time.is: it tells you whether your clock is behind or synchronised.',
+            'On Linux, align the hardware clock with Windows: `sudo timedatectl set-local-rtc --adjust-system-clock`.',
+            'On Windows, check the time zone is correct and that "Set time automatically" is on.',
+            'To fix it right now without rebooting: `w32tm /resync` in PowerShell.',
+          ],
+        },
+        {
+          heading: 'My vault re-locks as soon as I reload the page',
+          paragraphs: [
+            'That is deliberate, and it is what makes the encryption credible. Your master password is never stored: it lives only in the memory of the tab. Reloading, closing the tab or restarting the browser wipes it, so the vault re-locks.',
+            'If that is annoying day to day, enable passkey unlock in the security settings. The key stays protected by your biometrics and never leaves your device.',
+          ],
+        },
+        {
+          heading: 'I did not receive the verification email',
+          paragraphs: [
+            'Three causes, most frequent first: the email is in spam, the address has a typo, or it was sent before the sending domain was verified.',
+          ],
+          bullets: [
+            'Open the spam folder first and search for "QVault".',
+            'Check the address character by character on the sign-in screen.',
+            'Use the "Resend the email" button: a new link is generated and the old one is invalidated.',
+            'The link is valid for 24 hours and can be used once. If it expired, request a new one.',
+          ],
+        },
+        {
+          heading: 'I am stuck on "Add your email address"',
+          paragraphs: [
+            'Your account was created before QVault started asking for an email address. It works, but it carries an internal address that cannot receive anything. The screen therefore asks for yours, then a confirmation link.',
+            'This gate is enforced on the server: until the address is confirmed, no vault data is reachable. That is intended behaviour, not a bug. There is no way around it, and that is what guarantees every account maps to a real address.',
+          ],
+        },
+        {
+          heading: 'My extension stopped connecting',
+          paragraphs: [
+            'The extension token expires after 30 days, and it is revoked as soon as you change your account password. In both cases the fix is the same: regenerate the token.',
+          ],
+          bullets: [
+            'In the security settings, revoke then regenerate the extension token.',
+            'Type the 6 digit code shown in the app again, valid for 5 minutes.',
+            'The token grants access to your encrypted passwords: treat it like a password, do not paste it anywhere.',
+          ],
+        },
+        {
+          heading: 'I forgot my master password',
+          paragraphs: [
+            'Nobody can recover it, QVault included. That is the direct consequence of zero-knowledge encryption: the key is derived in your browser and the server only ever receives data that is already unreadable. There is no back door, because a back door is exactly what the model exists to prevent.',
+            'If you exported an encrypted `.qvault` backup, it is unusable without that password. The only way out is to create a new account and a new master password, then re-import whatever you still have in plain text.',
+          ],
+        },
+        {
+          heading: 'Copying to the clipboard does not work',
+          paragraphs: [
+            'QVault clears the clipboard a few seconds after copying, so a secret does not linger. If nothing is copied at all, it is usually a browser permission.',
+          ],
+          bullets: [
+            'Check the page is served over https and that the site is allowed to use the clipboard.',
+            'Click the code or field again: copying may require a recent user interaction.',
+            'As a last resort, select the text manually and copy.',
+          ],
+        },
+        {
+          heading: 'I cannot import my backup',
+          paragraphs: [
+            'A `.qvault` backup is an encrypted container: importing requires the master password that was active when it was exported. Also check the file was not truncated by an incomplete transfer.',
+          ],
+        },
+      ],
+      faq: [
+        { q: 'Why do my 2FA codes only work on one of my computers?', a: 'Because one of them has a skewed clock. Codes are computed from the system time. On a Linux and Windows dual boot, the hardware clock is often an hour off on Windows. Check on time.is, then run `sudo timedatectl set-local-rtc --adjust-system-clock` on the Linux side.' },
+        { q: 'Can I disable the automatic vault lock?', a: 'Reload locking cannot be disabled: the master password is never kept. You can however enable passkey unlock so you do not have to type it every time.' },
+        { q: 'Can QVault recover my master password?', a: 'No. In zero-knowledge, the key is derived in your browser and the server only stores unreadable data. No recovery is technically possible, by anyone.' },
+        { q: 'How long is a verification link valid?', a: '24 hours, and it can be used once. If you request a new link, the previous one is invalidated immediately.' },
+        { q: 'How long does an extension token last?', a: '30 days. It is also revoked automatically if you change your account password. Regenerate it from the security settings.' },
+        { q: 'What if I can no longer access my email address?', a: 'Contact support from the contact page to have the address changed. The master password and the vault content are unaffected: they do not depend on the email.' },
       ],
     },
   },

@@ -128,6 +128,7 @@ const relatedLinks = computed(() => {
     seed: { to: '/generateur-seed-phrase', label: locale.value === 'en' ? 'Seed phrase generator' : 'Générateur de seed phrase', icon: 'hugeicons:list-ordered' },
     passwords: { to: '/audit-securite', label: locale.value === 'en' ? 'Password audit' : 'Audit de mot de passe', icon: 'hugeicons:shield-alert' },
     compare: { to: '/generateur-mot-de-passe', label: locale.value === 'en' ? 'Password generator' : 'Générateur de mot de passe', icon: 'hugeicons:sparkles' },
+    troubleshoot: { to: '/guides/depannage', label: locale.value === 'en' ? 'Troubleshooting' : 'Dépannage', icon: 'hugeicons:lifebuoy' },
   }
   return [tools[guide.category], ...others]
 })
@@ -145,6 +146,7 @@ const guideRelatedPages = computed(() => {
     { to: '/features/favorites', label: fr ? 'Favoris et recherche' : 'Favourites and search', icon: 'hugeicons:star' },
     { to: '/features/links', label: fr ? 'Liens et favoris' : 'Links and favourites', icon: 'hugeicons:link' },
     { to: '/guides/alternative-bitwarden', label: fr ? 'Alternative à Bitwarden' : 'Bitwarden alternative', icon: 'hugeicons:refresh' },
+    { to: '/guides/depannage', label: fr ? 'Dépannage' : 'Troubleshooting', icon: 'hugeicons:lifebuoy' },
   ]
 })
 

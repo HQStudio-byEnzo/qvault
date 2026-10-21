@@ -2,6 +2,7 @@ import { useCrypto } from '../composables/useCrypto.ts'
 import { useTotp } from '../composables/useTotp.ts'
 import { forgetPasskeyUnlock } from '../composables/usePasskeyUnlock.ts'
 import { parsePasswordEntry, serializePasswordEntry } from '../utils/password-entry.ts'
+import { isPrivateAnalyticsPath } from '../utils/analytics.ts'
 import { CREDENTIAL_SCHEMA, LEGACY_CREDENTIAL_SCHEMA } from '../utils/brand.ts'
 
 function assert(condition, message) {
@@ -55,6 +56,14 @@ const { generateTotp } = useTotp()
 const vector = await generateTotp('otpauth://totp/RFC?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ&digits=8&period=30', 59_000)
 assert(vector.code === '94287082', `RFC 6238 vector mismatch: ${vector.code}`)
 
+// Analytics : aucun script tiers ni événement sur le coffre ou les écrans de connexion.
+for (const path of ['/dashboard', '/dashboard/vault', '/auth', '/auth/locked']) {
+  assert(isPrivateAnalyticsPath(path), `Analytics autorisé sur une route privée : ${path}`)
+}
+for (const path of ['/', '/features', '/guides/creer-un-coffre', '/audit-securite', '/support', '/dashboardx']) {
+  assert(!isPrivateAnalyticsPath(path), `Analytics bloqué sur une route publique : ${path}`)
+}
+
 console.log(JSON.stringify({
   ok: true,
   aesGcm: true,
@@ -64,4 +73,5 @@ console.log(JSON.stringify({
   credentialSchema: true,
   rfc6238: true,
   passkeyForgottenOnSignOut: true,
+  analyticsPrivateRoutes: true,
 }))

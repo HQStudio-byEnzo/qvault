@@ -59,8 +59,9 @@ export default defineEventHandler((event) => {
   const origin = getRequestHeader(event, 'origin')
   if (!origin) {
     // Fail closed: without an Origin header, only trust an explicit same-origin
-    // Sec-Fetch-Site signal from a browser.
-    if (fetchSite === 'same-origin' || fetchSite === 'same-site') return
+    // Sec-Fetch-Site signal. `same-site` also covers sibling subdomains, which
+    // this app does not control (audit F7).
+    if (fetchSite === 'same-origin') return
     throw createError({ statusCode: 403, message: 'Missing request origin.' })
   }
 

@@ -42,8 +42,12 @@ export function useAuthClient() {
    * Déconnexion
    */
   async function signOut() {
+    const owner = user.value?.id || user.value?.username
+    // Ferme la session côté serveur : un cookie copié ne sert plus (audit F10).
+    await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
     await clear()
     clearMasterPassword()
+    if (import.meta.client) forgetPasskeyUnlock(owner)
     navigateTo('/auth/login')
   }
 

@@ -156,3 +156,13 @@ CREATE TABLE IF NOT EXISTS email_verification_tokens (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS idx_email_verification_user ON email_verification_tokens(user_id);
+
+-- Sessions ouvertes : seul le SHA-256 de l'identifiant est stocké (audit F10).
+CREATE TABLE IF NOT EXISTS user_sessions (
+  id_hash TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  expires_at TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions(user_id);

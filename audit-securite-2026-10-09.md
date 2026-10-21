@@ -217,3 +217,33 @@ Portée réelle, mesurée sur la base de développement : avec `PRAGMA foreign_k
 - Attaque réelle du formulaire de connexion (pas d'essai d'énumération en production).
 - `bun audit` ne dit rien d'un paquet nouvellement malveillant : seules les publications d'avis connus sont couvertes.
 - Le rendu connecté (tableau de bord, modales) n'a pas été inspecté au navigateur dans cette session.
+
+## Corrections appliquées le 21 octobre 2026
+
+Vérifiées par `bun run test` et par `scripts/security-api-test.mjs` (`bun run test:security-api`,
+contre un serveur lancé, comme `test:smoke`).
+
+- **F4** : `assertEncryptedPayload` refuse l'ancien format `<sel>:<chiffré>` à l'écriture. Il reste
+  accepté pour décrire une valeur déjà en base (`previousPayload` de la rotation, modification d'un
+  élément sans toucher à sa charge). `scripts/smoke-api.mjs` écrit désormais au format `v2`.
+- **F5** : `signOut()` oublie le déverrouillage par passkey du compte sur l'appareil
+  (`forgetPasskeyUnlock`). Il faut le réactiver après une déconnexion.
+- **F7** : sans en-tête `Origin`, seul `Sec-Fetch-Site: same-origin` est accepté.
+- **F10** : registre serveur des sessions (`user_sessions`, `server/utils/session-registry.ts`).
+  Chaque connexion reçoit un identifiant aléatoire gardé dans `session.secure` (jamais renvoyé au
+  navigateur, `/api/auth/session` le retire), dont seul le SHA-256 est stocké, valable 30 jours.
+  `/api/auth/logout` le supprime : un cookie copié ne sert plus. Les autres appareils restent
+  connectés. `signOut()` appelait la route intégrée `DELETE /api/_auth/session`, qui n'efface que
+  le cookie : il appelle désormais `/api/auth/logout` d'abord.
+  **Effet du déploiement** : les sessions ouvertes avant n'ont pas d'identifiant, chacun devra se
+  reconnecter une fois.
+- **F14** : le code d'appairage passe de 6 chiffres (10⁶) à 10 caractères sur 30 (~49 bits),
+  saisie tolérante (`ABCDE-FGHJK`, minuscules). La limite par IP reste ; pas de plafond global, qui
+  permettrait de bloquer l'appairage de tout le monde. **L'extension doit être mise à jour en même
+  temps** (version 3.2.0) : l'ancienne n'accepte que 6 chiffres.
+- **Dépendances** : `bun audit fix` (sans changement de version majeure) : 24 → 8 avis. Restent
+  `simple-git` et `node-forge` (Nuxt DevTools, `listhen`), `braces`, `brace-expansion`,
+  `postcss-selector-parser` : outils de développement et de build, absents du serveur déployé.
+
+Toujours ouverts : F6 (plancher serveur du mot de passe maître, impossible à vérifier côté serveur
+sans connaître le mot de passe : à documenter), F8 (limites de débit manquantes), F11 à F13.

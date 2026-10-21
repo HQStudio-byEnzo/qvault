@@ -1,4 +1,5 @@
-import { createHash, randomInt } from 'node:crypto'
+import { createHash } from 'node:crypto'
+import { generatePairCode } from '../../utils/pair-code'
 
 const PAIR_CODE_TTL_MINUTES = 5
 
@@ -12,7 +13,7 @@ export default defineEventHandler(async (event) => {
   await enforceRateLimit(event, 'extension-pair-create', 10, 60 * 60 * 1000, String(session.user.id))
   const db = useDB()
 
-  const code = String(randomInt(0, 1_000_000)).padStart(6, '0')
+  const code = generatePairCode()
   const codeHash = createHash('sha256').update(code).digest('hex')
 
   await db.execute({

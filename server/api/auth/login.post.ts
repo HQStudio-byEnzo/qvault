@@ -44,14 +44,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  await setUserSession(event, {
-    user: {
-      id: user.id,
-      username: user.username,
-      sessionVersion: Number(user.session_version) || 0,
-      created_at: user.created_at,
-      needsEmail,
-    },
+  await openUserSession(event, {
+    id: user.id,
+    username: user.username,
+    sessionVersion: Number(user.session_version) || 0,
+    created_at: user.created_at,
+    needsEmail,
   })
 
   return { user: { id: user.id, username: user.username }, needsEmail }

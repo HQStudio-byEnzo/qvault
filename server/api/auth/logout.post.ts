@@ -3,6 +3,6 @@
  * Déconnexion
  */
 export default defineEventHandler(async (event) => {
-  await clearUserSession(event)
+  await closeUserSession(event)
   return { message: 'Déconnecté.' }
 })

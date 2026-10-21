@@ -96,11 +96,16 @@ function validBase64(value: string) {
   return value.length % 4 === 0 && BASE64_PATTERN.test(value)
 }
 
-export function assertEncryptedPayload(payload: unknown, iv: unknown) {
+/**
+ * Valide une enveloppe chiffrée. Le format historique `<sel>:<chiffré>`
+ * (100 000 itérations) n'est accepté que pour décrire une valeur déjà en base,
+ * jamais pour en écrire une nouvelle (audit F4).
+ */
+export function assertEncryptedPayload(payload: unknown, iv: unknown, { allowLegacy = false } = {}) {
   const encrypted = requireString(payload, 'Encrypted payload', { min: 1, max: 350_000, trim: false })
   const vector = requireString(iv, 'IV', { min: 1, max: 64 })
   const parts = encrypted.split(':')
-  const legacyParts = parts.length === 2 ? parts : null
+  const legacyParts = allowLegacy && parts.length === 2 ? parts : null
   const currentParts = parts.length === 4 && parts[0] === 'v2' && parts[1] === '600000'
     ? [parts[2], parts[3]]
     : null

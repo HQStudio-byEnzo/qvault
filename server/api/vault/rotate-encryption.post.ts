@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, message: 'Données de rotation invalides.' })
     }
     assertEncryptedPayload(item.payload, item.iv)
-    assertEncryptedPayload(item.previousPayload, item.previousIv)
+    assertEncryptedPayload(item.previousPayload, item.previousIv, { allowLegacy: true })
     ids.add(item.id)
   }
 
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, message: 'Données d’historique invalides.' })
     }
     assertEncryptedPayload(snapshot.payload, snapshot.iv)
-    assertEncryptedPayload(snapshot.previousPayload, snapshot.previousIv)
+    assertEncryptedPayload(snapshot.previousPayload, snapshot.previousIv, { allowLegacy: true })
     historyIds.add(snapshot.id)
   }
 

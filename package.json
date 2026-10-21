@@ -13,6 +13,7 @@
     "postinstall": "nuxt prepare",
     "test": "bun run test:security && bun run test:migration && bun run test:i18n && bun run test:quality && bun run typecheck",
     "test:smoke": "bun scripts/smoke-api.mjs",
+    "test:security-api": "bun scripts/security-api-test.mjs",
     "test:i18n": "bun scripts/check-i18n.mjs",
     "test:security": "bun scripts/security-self-test.mjs",
     "test:migration": "node scripts/migration-self-test.mjs",

@@ -53,7 +53,11 @@ async function loadSession(event: H3Event): Promise<LoadedSession> {
   const currentVersion = Number(result.rows[0]?.session_version ?? -1)
   const sessionVersion = Number(raw.user.sessionVersion ?? 0)
 
-  if (result.rows.length === 0 || currentVersion !== sessionVersion) {
+  if (
+    result.rows.length === 0 ||
+    currentVersion !== sessionVersion ||
+    !(await isSessionOpen(event, String(raw.user.id), (raw as any).secure?.sid))
+  ) {
     await clearUserSession(event)
     throw createError({ statusCode: 401, message: 'Session expired. Please sign in again.' })
   }

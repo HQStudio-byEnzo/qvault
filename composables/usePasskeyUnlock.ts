@@ -8,6 +8,20 @@ interface StoredPasskey {
 
 const STORAGE_KEY = 'qvault.security.passkeyUnlock'
 
+function storageKeyFor(owner: unknown) {
+  return `${STORAGE_KEY}:${encodeURIComponent(String(owner || 'anonymous'))}`
+}
+
+/**
+ * Oublie le déverrouillage par passkey de ce compte sur cet appareil (audit F5) :
+ * après une déconnexion, la personne suivante ne doit pas pouvoir rouvrir le
+ * coffre avec la seule vérification de l'appareil.
+ */
+export function forgetPasskeyUnlock(owner: unknown) {
+  if (!owner) return
+  localStorage.removeItem(storageKeyFor(owner))
+}
+
 function toBase64(value: ArrayBuffer | Uint8Array) {
   const bytes = value instanceof Uint8Array ? value : new Uint8Array(value)
   let binary = ''
@@ -26,8 +40,7 @@ export function usePasskeyUnlock() {
   const configured = useState('passkey-configured', () => false)
 
   function storageKey() {
-    const owner = user.value?.id || user.value?.username || 'anonymous'
-    return `${STORAGE_KEY}:${encodeURIComponent(String(owner))}`
+    return storageKeyFor(user.value?.id || user.value?.username)
   }
 
   function refreshConfigured() {

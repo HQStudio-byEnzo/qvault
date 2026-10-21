@@ -1,5 +1,6 @@
 import { useCrypto } from '../composables/useCrypto.ts'
 import { useTotp } from '../composables/useTotp.ts'
+import { forgetPasskeyUnlock } from '../composables/usePasskeyUnlock.ts'
 import { parsePasswordEntry, serializePasswordEntry } from '../utils/password-entry.ts'
 import { CREDENTIAL_SCHEMA, LEGACY_CREDENTIAL_SCHEMA } from '../utils/brand.ts'
 
@@ -37,6 +38,19 @@ assert(
   'Legacy credential schema is rejected',
 )
 
+// F5 : se déconnecter oublie le déverrouillage par passkey de ce compte.
+const storage = new Map()
+globalThis.localStorage = {
+  getItem: key => storage.get(key) ?? null,
+  setItem: (key, value) => storage.set(key, String(value)),
+  removeItem: key => storage.delete(key),
+}
+storage.set('qvault.security.passkeyUnlock:user-1', '{"version":1}')
+storage.set('qvault.security.passkeyUnlock:user-2', '{"version":1}')
+forgetPasskeyUnlock('user-1')
+assert(!storage.has('qvault.security.passkeyUnlock:user-1'), 'Passkey unlock survives sign-out')
+assert(storage.has('qvault.security.passkeyUnlock:user-2'), 'Sign-out forgot another account passkey')
+
 const { generateTotp } = useTotp()
 const vector = await generateTotp('otpauth://totp/RFC?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ&digits=8&period=30', 59_000)
 assert(vector.code === '94287082', `RFC 6238 vector mismatch: ${vector.code}`)
@@ -49,4 +63,5 @@ console.log(JSON.stringify({
   legacyPayloadCompatible: true,
   credentialSchema: true,
   rfc6238: true,
+  passkeyForgottenOnSignOut: true,
 }))

@@ -55,6 +55,8 @@ export default defineEventHandler(async (event) => {
       sessionVersion: Number(versionResult.rows[0]?.session_version) || 0,
     },
   })
+  // Les autres appareils sont déjà déconnectés par session_version ; on nettoie leurs lignes.
+  await closeOtherSessions(event, String(session.user.id), (session as any).secure?.sid)
 
   return { message: 'Mot de passe modifié avec succès.' }
 })

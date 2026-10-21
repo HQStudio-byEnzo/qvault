@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto'
-
-const CODE_PATTERN = /^\d{6}$/
+import { normalizePairCode } from '../../utils/pair-code'
 
 /**
  * POST /api/extension/pair
@@ -10,8 +9,8 @@ const CODE_PATTERN = /^\d{6}$/
 export default defineEventHandler(async (event) => {
   await enforceRateLimit(event, 'extension-pair', 15, 15 * 60 * 1000)
   const body = requireRecord(await readBody(event))
-  const code = requireString(body.code, 'Code', { min: 6, max: 6 })
-  if (!CODE_PATTERN.test(code)) {
+  const code = normalizePairCode(body.code)
+  if (!code) {
     throw createError({ statusCode: 400, message: 'Code d’appairage invalide.' })
   }
 

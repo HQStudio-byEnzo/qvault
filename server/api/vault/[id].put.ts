@@ -18,7 +18,8 @@ export default defineEventHandler(async (event) => {
   if (body.is_encrypted === false) throw createError({ statusCode: 400, message: 'Un élément chiffré ne peut pas être repassé en clair.' })
   if (!encrypted && (body.payload !== undefined || body.iv !== undefined)) throw createError({ statusCode: 400, message: 'Chiffrez cet ancien élément avant de modifier son contenu.' })
   if (current.type !== 'link' && !encrypted) throw createError({ statusCode: 400, message: 'Cet élément doit rester chiffré.' })
-  if (encrypted) assertEncryptedPayload(payload, iv)
+  // Une valeur déjà en base peut rester à l'ancien format ; une nouvelle, non.
+  if (encrypted) assertEncryptedPayload(payload, iv, { allowLegacy: body.payload === undefined && body.iv === undefined })
 
   const updates: string[] = []
   const args: any[] = []

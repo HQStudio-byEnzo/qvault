@@ -287,7 +287,7 @@
           </div>
           <div v-if="pairingCode" class="system-note space-y-2 text-center">
             <p class="text-xs text-surface-500">{{ t('settings.pairHint') }}</p>
-            <p class="font-mono text-3xl tracking-[0.35em] text-foreground">{{ pairingCode }}</p>
+            <p class="font-mono text-2xl tracking-[0.2em] text-foreground">{{ pairingCode.length === 10 ? `${pairingCode.slice(0, 5)}-${pairingCode.slice(5)}` : pairingCode }}</p>
           </div>
           <p v-if="pairMessage" class="text-sm" :class="pairFailed ? 'text-red-600' : 'text-accent-text'">{{ pairMessage }}</p>
         </div>

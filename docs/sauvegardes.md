@@ -18,6 +18,11 @@ Le fichier est écrit dans `~/qvault-backups/qvault-<date>.json.gz`, en
 | `TURSO_DB_TOKEN` | jeton Turso | requis pour une base distante |
 | `QVAULT_BACKUP_DIR` | dossier de sortie | `~/qvault-backups` |
 | `QVAULT_BACKUP_RETENTION_DAYS` | purge au-delà de N jours (`0` = jamais) | `14` |
+| `QVAULT_ENV_FILE` | fichier d'identifiants à charger | `~/.config/qvault/backup.env` |
+
+Les variables sont lues dans l'environnement, puis dans le fichier
+`~/.config/qvault/backup.env` s'il existe (sans écraser une variable déjà
+définie). Ce fichier doit être en `chmod 600`.
 
 ## Restaurer
 

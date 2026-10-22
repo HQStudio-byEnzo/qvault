@@ -6,7 +6,7 @@
 // distante (libsql:// ou https://) exige en plus --yes-remote, parce que
 // l'opération remplace les données existantes.
 import { createClient } from '@libsql/client'
-import { countRows, readBackup, restoreDatabase } from './backup-lib.mjs'
+import { countRows, loadEnvFile, readBackup, restoreDatabase } from './backup-lib.mjs'
 
 const args = process.argv.slice(2)
 const path = args.find(arg => !arg.startsWith('--'))
@@ -17,6 +17,8 @@ if (!path) {
   console.error('Usage : bun scripts/restore-backup.mjs <fichier.json.gz> [--reset] [--yes-remote]')
   process.exit(1)
 }
+
+loadEnvFile()
 
 const url = String(process.env.QVAULT_RESTORE_URL || process.env.TURSO_DB_URL || '').trim()
 if (!url) {

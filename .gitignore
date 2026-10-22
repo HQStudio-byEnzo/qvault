@@ -41,3 +41,6 @@ dev.pid
 
 # Outil externe (hors projet)
 .freebuff/
+
+# Sauvegardes locales
+backups/

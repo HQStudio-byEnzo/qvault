@@ -158,7 +158,7 @@ export function pruneBackups(directory, days) {
  * Charge un fichier d'environnement simple (KEY=VALUE) sans écraser les
  * variables déjà définies. Les secrets restent hors du dépôt.
  */
-export function loadEnvFile(path = process.env.QVAULT_ENV_FILE || join(homedir(), '.config', 'qvault', 'backup.env')) {
+export function loadEnvFile(path = process.env.QVAULT_ENV_FILE || join(homedir(), '.config', 'qvault', 'backup-credentials.txt')) {
   let content
   try {
     content = readFileSync(path, 'utf8')

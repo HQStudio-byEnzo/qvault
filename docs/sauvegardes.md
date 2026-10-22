@@ -18,10 +18,10 @@ Le fichier est écrit dans `~/qvault-backups/qvault-<date>.json.gz`, en
 | `TURSO_DB_TOKEN` | jeton Turso | requis pour une base distante |
 | `QVAULT_BACKUP_DIR` | dossier de sortie | `~/qvault-backups` |
 | `QVAULT_BACKUP_RETENTION_DAYS` | purge au-delà de N jours (`0` = jamais) | `14` |
-| `QVAULT_ENV_FILE` | fichier d'identifiants à charger | `~/.config/qvault/backup.env` |
+| `QVAULT_ENV_FILE` | fichier d'identifiants à charger | `~/.config/qvault/backup-credentials.txt` |
 
 Les variables sont lues dans l'environnement, puis dans le fichier
-`~/.config/qvault/backup.env` s'il existe (sans écraser une variable déjà
+`~/.config/qvault/backup-credentials.txt` s'il existe (sans écraser une variable déjà
 définie). Ce fichier doit être en `chmod 600`.
 
 ## Restaurer
@@ -58,5 +58,5 @@ dépôt public. Le dossier créé est en `700`.
 
 Une routine OpenBot quotidienne peut lancer la commande de sauvegarde une fois
 que `TURSO_DB_URL` et `TURSO_DB_TOKEN` sont disponibles sur le VPS, par exemple
-dans `~/.config/qvault/backup.env` (lisible par le seul propriétaire). Aucun
+dans `~/.config/qvault/backup-credentials.txt` (lisible par le seul propriétaire). Aucun
 secret ne doit être stocké dans le dépôt.

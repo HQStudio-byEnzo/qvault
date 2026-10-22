@@ -6,7 +6,9 @@
 //   QVAULT_BACKUP_DIR             dossier de sortie (défaut ~/qvault-backups)
 //   QVAULT_BACKUP_RETENTION_DAYS  purge au-delà de N jours (défaut 14, 0 = jamais)
 import { createClient } from '@libsql/client'
-import { dumpDatabase, pruneBackups, resolveDirectory, writeBackup } from './backup-lib.mjs'
+import { dumpDatabase, loadEnvFile, pruneBackups, resolveDirectory, writeBackup } from './backup-lib.mjs'
+
+loadEnvFile()
 
 const url = String(process.env.TURSO_DB_URL || '').trim()
 const authToken = String(process.env.TURSO_DB_TOKEN || '').trim()

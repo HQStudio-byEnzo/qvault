@@ -7,6 +7,7 @@
 // fichier doit rester lisible par son propriétaire uniquement (chmod 600).
 import { createHash } from 'node:crypto'
 import { mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
+import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { gzipSync, gunzipSync } from 'node:zlib'
 
@@ -151,6 +152,32 @@ export function pruneBackups(directory, days) {
     removed.push(path)
   }
   return removed
+}
+
+/**
+ * Charge un fichier d'environnement simple (KEY=VALUE) sans écraser les
+ * variables déjà définies. Les secrets restent hors du dépôt.
+ */
+export function loadEnvFile(path = process.env.QVAULT_ENV_FILE || join(homedir(), '.config', 'qvault', 'backup.env')) {
+  let content
+  try {
+    content = readFileSync(path, 'utf8')
+  } catch {
+    return { path, loaded: false }
+  }
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const separator = trimmed.indexOf('=')
+    if (separator < 1) continue
+    const key = trimmed.slice(0, separator).trim()
+    let value = trimmed.slice(separator + 1).trim()
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1)
+    }
+    if (process.env[key] === undefined) process.env[key] = value
+  }
+  return { path, loaded: true }
 }
 
 export function resolveDirectory(value) {

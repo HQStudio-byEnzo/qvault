@@ -4,7 +4,7 @@ import { mkdtempSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createClient } from '@libsql/client'
-import { countRows, dumpDatabase, pruneBackups, readBackup, restoreDatabase, writeBackup } from './backup-lib.mjs'
+import { countRows, dumpDatabase, loadEnvFile, pruneBackups, readBackup, restoreDatabase, writeBackup } from './backup-lib.mjs'
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
@@ -83,6 +83,18 @@ try {
   assert(removed.includes(oldPath), 'Ancienne sauvegarde non purgée')
   assert(readdirSync(join(directory, 'backups')).includes(backup.path.split('/').pop()), 'Sauvegarde récente purgée à tort')
 
+  // Fichier d'identifiants : chargé, sans écraser une variable déjà définie.
+  const envPath = join(directory, 'backup.env')
+  writeFileSync(envPath, '# commentaire\nTURSO_DB_URL=file:/tmp/exemple.db\nTURSO_DB_TOKEN="jeton"\n')
+  delete process.env.TURSO_DB_TOKEN
+  process.env.TURSO_DB_URL = 'deja-defini'
+  const env = loadEnvFile(envPath)
+  assert(env.loaded, 'Fichier d’identifiants non chargé')
+  assert(process.env.TURSO_DB_URL === 'deja-defini', 'Une variable existante a été écrasée')
+  assert(process.env.TURSO_DB_TOKEN === 'jeton', 'Jeton non chargé')
+  delete process.env.TURSO_DB_URL
+  delete process.env.TURSO_DB_TOKEN
+
   console.log(JSON.stringify({
     ok: true,
     tables: dump.tables.length,
@@ -94,6 +106,7 @@ try {
     indexRestored: true,
     overwriteRefused: true,
     retention: true,
+    envFile: true,
   }))
 } finally {
   rmSync(directory, { recursive: true, force: true })

@@ -55,8 +55,9 @@ const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 if (!String(packageJson.scripts?.typecheck || '').includes('./node_modules/vue-tsc/')) {
   failures.push('typecheck must pin the project-local vue-tsc binary')
 }
-// Vercel Analytics is enabled site-wide. It is cookieless and stores no
-// personal data, which keeps the public "no third-party tracker" claim true.
+// Vercel Analytics is limited to public pages. It is cookieless and stores no
+// personal data, and it is not loaded at all on the dashboard or auth pages,
+// which keeps the public "no third-party tracker" claim true.
 
 if (failures.length) {
   console.error(JSON.stringify({ ok: false, failures }, null, 2))

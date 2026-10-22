@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests et typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+
+  build:
+    name: Build de production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+
+  security-api:
+    name: Régressions API
+    runs-on: ubuntu-latest
+    env:
+      NUXT_SESSION_PASSWORD: ci-only-session-password-at-least-32-chars
+      TURSO_DB_URL: file:./qvault-ci.db
+      APP_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+      - run: bun install --frozen-lockfile
+      - name: Initialiser la base de test
+        run: bun run test:db:init
+      - name: Démarrer le serveur de test
+        run: |
+          bun run dev > /tmp/qvault-dev.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://localhost:3000/ >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/qvault-dev.log
+          exit 1
+      - name: Tests de sécurité de l'API
+        env:
+          SECURITY_BASE_URL: http://localhost:3000
+          SECURITY_DB_URL: file:./qvault-ci.db
+        run: bun run test:security-api
+      - name: Journal du serveur en cas d'échec
+        if: failure()
+        run: cat /tmp/qvault-dev.log
+
+  audit:
+    name: Avis de sécurité des dépendances
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+      - run: bun install --frozen-lockfile
+      - run: bun run test:audit

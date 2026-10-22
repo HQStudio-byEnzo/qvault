@@ -1,0 +1,34 @@
+{
+  "advisories": [
+    {
+      "url": "https://github.com/advisories/GHSA-v5rq-49vh-5v5c",
+      "package": "@simple-git/argv-parser",
+      "reason": "Dépendance de dev (Nuxt devtools). Corrigée seulement dans simple-git 4, qui casse @nuxt/devtools 3.4.1 (plus d'export ESM par défaut). N'entre pas dans le bundle de production."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-858h-whjf-mvg5",
+      "package": "simple-git",
+      "reason": "Dépendance de dev (Nuxt devtools). Corrigée seulement dans simple-git 4, qui casse @nuxt/devtools 3.4.1 (plus d'export ESM par défaut). N'entre pas dans le bundle de production."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-x6jw-m9v5-85vh",
+      "package": "simple-git",
+      "reason": "Dépendance de dev (Nuxt devtools). Corrigée seulement dans simple-git 4, qui casse @nuxt/devtools 3.4.1 (plus d'export ESM par défaut). N'entre pas dans le bundle de production."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-g4wm-2vf7-vfgr",
+      "package": "simple-git",
+      "reason": "Dépendance de dev (Nuxt devtools). Corrigée seulement dans simple-git 4, qui casse @nuxt/devtools 3.4.1 (plus d'export ESM par défaut). N'entre pas dans le bundle de production."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "reason": "Dépendance de dev (chokidar, watch de Nuxt). Aucune version corrigée publiée (3.0.3 est la dernière). N'entre pas dans le bundle de production."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+      "package": "node-forge",
+      "reason": "Dépendance de dev (listhen, serveur local de Nuxt). Aucune version corrigée publiée (1.4.0 est la dernière). N'entre pas dans le bundle de production."
+    }
+  ]
+}

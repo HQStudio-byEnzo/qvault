@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { useCrypto } from '../composables/useCrypto.ts'
 import { useTotp } from '../composables/useTotp.ts'
 import { forgetPasskeyUnlock } from '../composables/usePasskeyUnlock.ts'
@@ -64,6 +65,13 @@ for (const path of ['/', '/features', '/guides/creer-un-coffre', '/audit-securit
   assert(!isPrivateAnalyticsPath(path), `Analytics bloqué sur une route publique : ${path}`)
 }
 
+// Aucun indice de mot de passe : la colonne n'est plus créée et aucun libellé
+// ne propose d'en enregistrer un.
+const schemaSql = readFileSync(new URL('../server/database/schema.sql', import.meta.url), 'utf8')
+assert(!/password_hint/.test(schemaSql), 'password_hint est encore créé par le schéma')
+const i18nSource = readFileSync(new URL('../composables/useI18n.ts', import.meta.url), 'utf8')
+assert(!/'[a-zA-Z.]*hint[A-Z][^']*':/.test(i18nSource), 'Un libellé d’indice de mot de passe subsiste')
+
 console.log(JSON.stringify({
   ok: true,
   aesGcm: true,
@@ -74,4 +82,5 @@ console.log(JSON.stringify({
   rfc6238: true,
   passkeyForgottenOnSignOut: true,
   analyticsPrivateRoutes: true,
+  noPasswordHintSurface: true,
 }))

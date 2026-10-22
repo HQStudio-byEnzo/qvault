@@ -10,13 +10,6 @@ declare module '#auth-utils' {
      */
     needsEmail?: boolean
   }
-
-  interface UserSession {
-    hintChallenge?: {
-      identifier: string
-      expiresAt: number
-    }
-  }
 }
 
 export {}

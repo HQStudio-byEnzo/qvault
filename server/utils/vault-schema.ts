@@ -50,7 +50,7 @@ async function migrateUsernames(db: ReturnType<typeof createClient>) {
 
 async function ensureBaseSchema(db: ReturnType<typeof createClient>) {
   await db.batch([
-    `CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, username TEXT NOT NULL UNIQUE, email TEXT NOT NULL UNIQUE, email_verified INTEGER NOT NULL DEFAULT 0, password TEXT NOT NULL, password_hint TEXT, session_version INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, username TEXT NOT NULL UNIQUE, email TEXT NOT NULL UNIQUE, email_verified INTEGER NOT NULL DEFAULT 0, password TEXT NOT NULL, session_version INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')))`,
     `CREATE TABLE IF NOT EXISTS vaults (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, name TEXT NOT NULL, color TEXT NOT NULL DEFAULT '#4ade80', is_default INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')), UNIQUE(user_id, name), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
     `CREATE TABLE IF NOT EXISTS folders (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, vault_id TEXT NOT NULL, name TEXT NOT NULL, parent_id TEXT, created_at TEXT DEFAULT (datetime('now')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE, FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE SET NULL)`,
     `CREATE TABLE IF NOT EXISTS vault_items (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, vault_id TEXT, folder_id TEXT, type TEXT NOT NULL CHECK (type IN ('link', 'password', 'crypto', 'recovery', 'note', 'totp')), label TEXT NOT NULL DEFAULT '', is_encrypted INTEGER NOT NULL DEFAULT 0, payload TEXT NOT NULL, iv TEXT, url TEXT, favorite INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE, FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL)`,
@@ -157,6 +157,8 @@ async function runVaultSchemaMigration(db: ReturnType<typeof createClient>) {
     })
   }
   await migrateUsernames(db)
+  // Colonne héritée : plus aucun écran ni endpoint ne lit ou n'écrit d'indice
+  // de mot de passe. On efface les valeurs restantes des anciennes bases.
   if (userInfo.rows.some(row => String((row as any).name) === 'password_hint')) {
     await db.execute({ sql: 'UPDATE users SET password_hint = NULL WHERE password_hint IS NOT NULL' })
   }

@@ -12,6 +12,7 @@ required to operate the account.
 - AES-256-GCM encryption with a PBKDF2-derived key
 - Passwords, links, encrypted notes, TOTP, crypto secrets, and recovery codes
 - Multiple vaults, folders, tags, favorites, search, and item history
+- Vault, folder, and tag names encrypted in the browser before they leave it
 - Encrypted `.qvault` backup import/export
 - Password strength and reuse audit performed in the browser
 - Revocable browser-extension token

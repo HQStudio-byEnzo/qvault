@@ -4,12 +4,16 @@ export default defineEventHandler(async (event) => {
   const db = useDB()
   const body = requireRecord(await readBody(event))
   const kind = body.kind
-  const name = requireString(body.name, 'Name', { min: 1, max: 80 })
+  // Un nom chiffré est une enveloppe opaque ; un nom hérité reste limité à 80
+  // caractères lisibles. Les deux cohabitent le temps de la migration.
+  const encryptedName = body.name_encrypted === true
+  const name = encryptedName ? assertEncryptedName(body.name) : requireString(body.name, 'Name', { min: 1, max: 80 })
+  const nameEncrypted = encryptedName ? 1 : 0
   const color = typeof body.color === 'string' && /^#[0-9a-f]{6}$/i.test(body.color) ? body.color : '#4ade80'
   const id = crypto.randomUUID()
 
   if (kind === 'vault') {
-    await db.execute({ sql: "INSERT INTO vaults (id, user_id, name, color, is_default, created_at, updated_at) VALUES (?, ?, ?, ?, 0, datetime('now'), datetime('now'))", args: [id, session.user.id, name, color] })
+    await db.execute({ sql: "INSERT INTO vaults (id, user_id, name, name_encrypted, color, is_default, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 0, datetime('now'), datetime('now'))", args: [id, session.user.id, name, nameEncrypted, color] })
   } else if (kind === 'folder') {
     const vaultId = requireString(body.vault_id, 'Vault', { min: 1, max: 128 })
     const vault = await db.execute({ sql: 'SELECT id FROM vaults WHERE id = ? AND user_id = ?', args: [vaultId, session.user.id] })
@@ -22,9 +26,9 @@ export default defineEventHandler(async (event) => {
       })
       if (!parent.rows.length) throw createError({ statusCode: 400, message: 'Dossier parent introuvable.' })
     }
-    await db.execute({ sql: "INSERT INTO folders (id, user_id, vault_id, name, parent_id, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))", args: [id, session.user.id, vaultId, name, parentId] })
+    await db.execute({ sql: "INSERT INTO folders (id, user_id, vault_id, name, name_encrypted, parent_id, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))", args: [id, session.user.id, vaultId, name, nameEncrypted, parentId] })
   } else if (kind === 'tag') {
-    await db.execute({ sql: "INSERT INTO tags (id, user_id, name, color, created_at) VALUES (?, ?, ?, ?, datetime('now'))", args: [id, session.user.id, name, color] })
+    await db.execute({ sql: "INSERT INTO tags (id, user_id, name, name_encrypted, color, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))", args: [id, session.user.id, name, nameEncrypted, color] })
   } else {
     throw createError({ statusCode: 400, message: 'Type d’organisation invalide.' })
   }

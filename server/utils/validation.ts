@@ -126,6 +126,34 @@ export function assertEncryptedPayload(payload: unknown, iv: unknown, { allowLeg
   return { payload: encrypted, iv: vector }
 }
 
+/**
+ * Valide l'enveloppe d'un nom d'organisation chiffré côté client :
+ * `n1:<sel base64>:<iv base64>:<chiffré base64>`.
+ *
+ * Le serveur ne peut pas vérifier le contenu, seulement la forme : un nom
+ * chiffré est un identifiant opaque de 16 octets de sel, 12 octets d'IV et au
+ * moins 16 octets de texte chiffré.
+ */
+export function assertEncryptedName(name: unknown) {
+  const value = requireString(name, 'Name', { min: 1, max: 2_048, trim: false })
+  const parts = value.split(':')
+  if (parts.length !== 4 || parts[0] !== 'n1') {
+    throw createError({ statusCode: 400, message: 'Invalid encrypted name.' })
+  }
+  const [, salt, iv, ciphertext] = parts
+  if (
+    !validBase64(salt) ||
+    decodedBase64Length(salt) !== 16 ||
+    !validBase64(iv) ||
+    decodedBase64Length(iv) !== 12 ||
+    !validBase64(ciphertext) ||
+    decodedBase64Length(ciphertext) < 16
+  ) {
+    throw createError({ statusCode: 400, message: 'Invalid encrypted name.' })
+  }
+  return value
+}
+
 export function escapeLikePattern(value: string) {
   return value.replace(/[\\%_]/g, match => `\\${match}`)
 }

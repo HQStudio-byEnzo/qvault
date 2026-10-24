@@ -3,6 +3,8 @@
  * Gère les appels API et le chiffrement/déchiffrement côté client
  */
 import { MASTER_VERIFIER_TEXT } from '~/utils/brand'
+import { parseEncryptedName, serializeEncryptedName } from '~/utils/encrypted-name'
+import { isLegacyEncryptedPayload } from '~/utils/payload-version'
 import { MIN_MASTER_PASSWORD_LENGTH } from '~/utils/security-policy'
 
 export interface VaultItem {
@@ -50,6 +52,7 @@ export function useVault() {
   const loading = useState('vault-loading', () => false)
   const error = useState<string | null>('vault-error', () => null)
   const { masterPassword, setMasterPassword } = useMasterPassword()
+  const { load: loadOrganization, upgradeLegacyNames } = useOrganization()
 
   const { encrypt, decrypt, serializeEncryptedPayload, parseEncryptedPayload } = useCrypto()
 
@@ -278,11 +281,42 @@ export function useVault() {
 
     const verifier = await encrypt(MASTER_VERIFIER_TEXT, newPassword)
 
+    // Les noms d'organisation chiffrés doivent suivre la même rotation, sinon
+    // ils deviendraient illisibles après le changement de mot de passe.
+    const organization = await loadOrganization(true, sourcePassword || '')
+    // Attendre la migration des noms encore en clair évite qu'elle modifie une
+    // ligne pendant la rotation.
+    await upgradeLegacyNames()
+    const organizationUpdates: Array<{ kind: string; id: string; previousPayload: string; payload: string }> = []
+    for (const [kind, entries] of [
+      ['vault', organization.vaults],
+      ['folder', organization.folders],
+      ['tag', organization.tags],
+    ] as const) {
+      for (const entry of entries) {
+        if (!entry.name_encrypted || !entry.envelope) continue
+        const parts = parseEncryptedName(entry.envelope)
+        const plain = await decrypt(parts.ciphertext, parts.iv, sourcePassword || '', parts.salt)
+        const encrypted = await encrypt(plain, newPassword)
+        organizationUpdates.push({
+          kind,
+          id: entry.id,
+          previousPayload: entry.envelope,
+          payload: serializeEncryptedName({
+            salt: encrypted.salt,
+            iv: encrypted.iv,
+            ciphertext: encrypted.ciphertext,
+          }),
+        })
+      }
+    }
+
     await $fetch('/api/vault/rotate-encryption', {
       method: 'POST',
       body: {
         items: replacements,
         history: historyReplacements,
+        organization: organizationUpdates,
         verifier: {
           payload: serializeEncryptedPayload(verifier),
           iv: verifier.iv,
@@ -293,6 +327,7 @@ export function useVault() {
     setMasterPassword(newPassword)
     await fetchItems()
     await fetchStats()
+    await loadOrganization(true)
   }
 
   /**
@@ -360,6 +395,43 @@ export function useVault() {
     }
   }
 
+  /**
+   * Re-chiffre les éléments encore protégés par l'ancien facteur de travail
+   * (100 000 itérations) avec le facteur courant, sans changer de mot de passe.
+   *
+   * Appelé au déverrouillage : une fois la migration faite, l'appel suivant ne
+   * trouve plus rien à mettre à jour. Plafonné pour ne jamais bloquer un
+   * déverrouillage sur un très gros coffre ; le reste part à la session
+   * suivante.
+   */
+  async function upgradeLegacyEncryption(): Promise<number> {
+    const secret = masterPassword.value
+    if (!secret) return 0
+
+    await fetchItems()
+    const legacy = items.value
+      .filter(item => item.is_encrypted && item.iv && isLegacyEncryptedPayload(item.payload))
+      .slice(0, 100)
+    if (legacy.length === 0) return 0
+
+    const upgrades = []
+    for (const item of legacy) {
+      const envelope = parseEncryptedPayload(item.payload)
+      const plaintext = await decrypt(envelope.ciphertext, item.iv as string, secret, envelope.salt, envelope.iterations)
+      const encrypted = await encrypt(plaintext, secret)
+      upgrades.push({
+        id: item.id,
+        previousPayload: item.payload,
+        payload: serializeEncryptedPayload(encrypted),
+        iv: encrypted.iv,
+      })
+    }
+
+    await $fetch('/api/vault/upgrade-encryption', { method: 'POST', body: { items: upgrades } })
+    await fetchItems()
+    return upgrades.length
+  }
+
   return {
     items,
     stats,
@@ -370,6 +442,7 @@ export function useVault() {
     addItem,
     decryptItem,
     reencryptVault,
+    upgradeLegacyEncryption,
     updateItem,
     toggleFavorite,
     deleteItem,

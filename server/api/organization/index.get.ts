@@ -7,8 +7,8 @@ export default defineEventHandler(async (event) => {
     db.execute({ sql: 'SELECT * FROM tags WHERE user_id = ? ORDER BY name COLLATE NOCASE', args: [session.user.id] }),
   ])
   return {
-    vaults: vaults.rows.map(row => ({ ...row, is_default: Boolean(row.is_default) })),
-    folders: folders.rows,
-    tags: tags.rows,
+    vaults: vaults.rows.map(row => ({ ...row, is_default: Boolean(row.is_default), name_encrypted: Boolean(row.name_encrypted) })),
+    folders: folders.rows.map(row => ({ ...row, name_encrypted: Boolean(row.name_encrypted) })),
+    tags: tags.rows.map(row => ({ ...row, name_encrypted: Boolean(row.name_encrypted) })),
   }
 })

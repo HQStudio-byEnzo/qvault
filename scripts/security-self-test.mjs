@@ -5,6 +5,8 @@ import { forgetPasskeyUnlock } from '../composables/usePasskeyUnlock.ts'
 import { parsePasswordEntry, serializePasswordEntry } from '../utils/password-entry.ts'
 import { isPrivateAnalyticsPath } from '../utils/analytics.ts'
 import { CREDENTIAL_SCHEMA, LEGACY_CREDENTIAL_SCHEMA } from '../utils/brand.ts'
+import { isEncryptedNameValue, parseEncryptedName, serializeEncryptedName } from '../utils/encrypted-name.ts'
+import { isLegacyEncryptedPayload } from '../utils/payload-version.ts'
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
@@ -22,6 +24,26 @@ const serializedEnvelope = cryptoTools.serializeEncryptedPayload(envelope)
 const parsedEnvelope = cryptoTools.parseEncryptedPayload(serializedEnvelope)
 assert(parsedEnvelope.iterations === 600_000, 'Versioned payload lost its KDF work factor')
 assert(cryptoTools.parseEncryptedPayload(`${envelope.salt}:${envelope.ciphertext}`).iterations === 100_000, 'Legacy payloads are no longer readable')
+
+// Noms d'organisation chiffrés : enveloppe autonome, sans dépendance Nuxt.
+const encryptedName = serializeEncryptedName({
+  salt: envelope.salt,
+  iv: envelope.iv,
+  ciphertext: envelope.ciphertext,
+})
+assert(parseEncryptedName(encryptedName).salt === envelope.salt, 'Encrypted name lost its salt')
+assert(parseEncryptedName(encryptedName).ciphertext === envelope.ciphertext, 'Encrypted name lost its payload')
+assert(isEncryptedNameValue(encryptedName), 'A valid encrypted name is rejected')
+assert(!isEncryptedNameValue('Principal'), 'A plaintext name is mistaken for an encrypted one')
+assert(!isEncryptedNameValue(`n2:${envelope.salt}`), 'An unknown name version is accepted')
+let rejectedName = false
+try { parseEncryptedName(`${envelope.salt}:${envelope.iv}`) } catch { rejectedName = true }
+assert(rejectedName, 'An incomplete encrypted name is accepted')
+
+// Détection des charges encore dérivées avec l'ancien facteur de travail.
+assert(isLegacyEncryptedPayload(`${envelope.salt}:${envelope.ciphertext}`), 'Legacy payload not detected')
+assert(!isLegacyEncryptedPayload(serializedEnvelope), 'Current payload mistaken for a legacy one')
+assert(!isLegacyEncryptedPayload(encryptedName), 'Encrypted name mistaken for a legacy payload')
 
 let rejectedWrongPassword = false
 try { await cryptoTools.decrypt(envelope.ciphertext, envelope.iv, 'wrong password', envelope.salt) }

@@ -121,10 +121,7 @@ const deleteError = ref('')
 const searchQuery = ref(typeof route.query.q === 'string' ? route.query.q : '')
 const activeFilter = ref('')
 
-const { data: orgData } = await useFetch<{
-  vaults: { id: string; name: string }[]
-  folders: { id: string; name: string; vault_id: string }[]
-}>('/api/organization')
+const { organization: orgData, load: loadOrganization } = useOrganization()
 
 const vaultFilter = ref('')
 const folderFilter = ref('')
@@ -223,6 +220,7 @@ async function confirmDelete(secret: string) {
 
 onMounted(() => {
   fetchItems()
+  loadOrganization()
   if (route.query.add) {
     showAddModal.value = true
     router.replace({ path: route.path, query: { ...route.query, add: undefined } })

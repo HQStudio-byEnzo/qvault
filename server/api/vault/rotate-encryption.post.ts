@@ -1,18 +1,31 @@
 /**
  * POST /api/vault/rotate-encryption
  * Replaces every encrypted current payload and history snapshot atomically.
+ * Les noms d'organisation chiffrés (`organization`) suivent la même
+ * transaction : un changement de mot de passe maître ne peut pas laisser des
+ * libellés illisibles sur l'ancienne clé.
  */
+const ORGANIZATION_TABLES = {
+  vault: 'vaults',
+  folder: 'folders',
+  tag: 'tags',
+} as const
+
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
   await enforceRateLimit(event, 'vault-rotate', 5, 60 * 60 * 1000, String(session.user.id))
   const body = requireRecord(await readBody(event))
   const items = body.items
   const history = body.history
+  const organization = body.organization === undefined ? [] : body.organization
   const verifierBody = requireRecord(body.verifier)
   const verifier = assertEncryptedPayload(verifierBody.payload, verifierBody.iv)
 
   if (!Array.isArray(items) || items.length > 10_000 || !Array.isArray(history) || history.length > 50_000) {
     throw createError({ statusCode: 400, message: 'Les listes chiffrées sont requises.' })
+  }
+  if (!Array.isArray(organization) || organization.length > 1_000) {
+    throw createError({ statusCode: 400, message: 'Noms d’organisation invalides.' })
   }
 
   const ids = new Set<string>()
@@ -34,6 +47,29 @@ export default defineEventHandler(async (event) => {
     assertEncryptedPayload(snapshot.previousPayload, snapshot.previousIv, { allowLegacy: true })
     historyIds.add(snapshot.id)
   }
+
+  const organizationIds = new Set<string>()
+  const organizationUpdates = organization.map((entry) => {
+    if (!entry || typeof entry !== 'object') {
+      throw createError({ statusCode: 400, message: 'Noms d’organisation invalides.' })
+    }
+    const name = entry as Record<string, unknown>
+    const kind = name.kind
+    if (typeof kind !== 'string' || !Object.hasOwn(ORGANIZATION_TABLES, kind)) {
+      throw createError({ statusCode: 400, message: 'Noms d’organisation invalides.' })
+    }
+    const id = requireString(name.id, 'Id', { min: 1, max: 128 })
+    if (organizationIds.has(id)) {
+      throw createError({ statusCode: 400, message: 'Noms d’organisation invalides.' })
+    }
+    organizationIds.add(id)
+    return {
+      table: ORGANIZATION_TABLES[kind as keyof typeof ORGANIZATION_TABLES],
+      id,
+      previousPayload: assertEncryptedName(name.previousPayload),
+      payload: assertEncryptedName(name.payload),
+    }
+  })
 
   const db = useDB()
   const transaction = await db.transaction('write')
@@ -84,6 +120,18 @@ export default defineEventHandler(async (event) => {
       : []
     if (historyResults.some(result => result.rowsAffected !== 1)) {
       throw createError({ statusCode: 409, message: 'L’historique a changé pendant la rotation.' })
+    }
+
+    for (const table of ['vaults', 'folders', 'tags'] as const) {
+      const updates = organizationUpdates.filter(entry => entry.table === table)
+      if (updates.length === 0) continue
+      const results = await transaction.batch(updates.map(entry => ({
+        sql: `UPDATE ${table} SET name = ? WHERE id = ? AND user_id = ? AND name = ? AND name_encrypted = 1`,
+        args: [entry.payload, entry.id, session.user.id, entry.previousPayload],
+      })))
+      if (results.some(result => result.rowsAffected !== 1)) {
+        throw createError({ statusCode: 409, message: 'Les noms d’organisation ont changé pendant la rotation.' })
+      }
     }
 
     await transaction.execute({

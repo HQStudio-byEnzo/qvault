@@ -88,6 +88,7 @@ definePageMeta({
 
 const { t } = useLang()
 const { items, fetchItems, addItem } = useVault()
+const { load: loadOrganization, create: createOrganization } = useOrganization()
 const { masterPassword, isUnlocked } = useMasterPassword()
 const { encrypt, decrypt, parseEncryptedPayload } = useCrypto()
 
@@ -132,12 +133,6 @@ interface BackupTag {
   color: string
 }
 
-interface OrganizationData {
-  vaults: Array<BackupVault & { is_default: boolean | number }>
-  folders: BackupFolder[]
-  tags: BackupTag[]
-}
-
 interface BackupContentV2 {
   dataVersion: 2
   items: BackupItem[]
@@ -165,7 +160,7 @@ async function handleExport() {
     }
     const [, organization] = await Promise.all([
       fetchItems(),
-      $fetch('/api/organization') as Promise<OrganizationData>,
+      loadOrganization(true),
     ])
 
     const content: BackupContentV2 = {
@@ -188,19 +183,19 @@ async function handleExport() {
         vaults: organization.vaults.map(vault => ({
           id: vault.id,
           name: vault.name,
-          color: vault.color,
+          color: vault.color || '#4ade80',
           is_default: Boolean(vault.is_default),
         })),
         folders: organization.folders.map(folder => ({
           id: folder.id,
-          vault_id: folder.vault_id,
+          vault_id: folder.vault_id || '',
           name: folder.name,
           parent_id: folder.parent_id || null,
         })),
         tags: organization.tags.map(tag => ({
           id: tag.id,
           name: tag.name,
-          color: tag.color,
+          color: tag.color || '#4ade80',
         })),
       },
     }
@@ -388,36 +383,33 @@ function isValidOrganization(value: any) {
 }
 
 async function importOrganization(backup: BackupContentV2['organization']) {
-  const current: OrganizationData = await $fetch('/api/organization')
+  const current = await loadOrganization(true)
+  const vaultList = [...current.vaults]
+  const folderList = [...current.folders]
+  const tagList = [...current.tags]
   const vaults = new Map<string, string>()
   const folders = new Map<string, string>()
   const tags = new Map<string, string>()
-  const defaultVault = current.vaults.find(vault => Boolean(vault.is_default)) || current.vaults[0]
+  const defaultVault = vaultList.find(vault => Boolean(vault.is_default)) || vaultList[0]
 
   for (const source of backup.vaults) {
     let target = source.is_default
       ? defaultVault
-      : current.vaults.find(vault => vault.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
+      : vaultList.find(vault => vault.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
     if (!target) {
-      const created: { id: string } = await $fetch('/api/organization', {
-        method: 'POST',
-        body: { kind: 'vault', name: source.name, color: source.color },
-      })
-      target = { ...source, id: created.id }
-      current.vaults.push(target)
+      const id = await createOrganization('vault', source.name, { color: source.color })
+      target = { id, name: source.name, name_encrypted: true, color: source.color, is_default: source.is_default }
+      vaultList.push(target)
     }
     if (target) vaults.set(source.id, target.id)
   }
 
   for (const source of backup.tags) {
-    let target = current.tags.find(tag => tag.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
+    let target = tagList.find(tag => tag.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
     if (!target) {
-      const created: { id: string } = await $fetch('/api/organization', {
-        method: 'POST',
-        body: { kind: 'tag', name: source.name, color: source.color },
-      })
-      target = { ...source, id: created.id }
-      current.tags.push(target)
+      const id = await createOrganization('tag', source.name, { color: source.color })
+      target = { id, name: source.name, name_encrypted: true, color: source.color }
+      tagList.push(target)
     }
     tags.set(source.id, target.id)
   }
@@ -433,14 +425,11 @@ async function importOrganization(backup: BackupContentV2['organization']) {
     const parentId = source.parent_id
       ? await ensureFolder(byId.get(source.parent_id)!, visiting).catch(() => null)
       : null
-    let target = current.folders.find(folder => folder.vault_id === targetVaultId && folder.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
+    let target = folderList.find(folder => folder.vault_id === targetVaultId && folder.name.toLocaleLowerCase() === source.name.toLocaleLowerCase())
     if (!target) {
-      const created: { id: string } = await $fetch('/api/organization', {
-        method: 'POST',
-        body: { kind: 'folder', name: source.name, vault_id: targetVaultId, parent_id: parentId },
-      })
-      target = { ...source, id: created.id, vault_id: targetVaultId, parent_id: parentId }
-      current.folders.push(target)
+      const id = await createOrganization('folder', source.name, { vaultId: targetVaultId, parentId })
+      target = { id, name: source.name, name_encrypted: true, vault_id: targetVaultId, parent_id: parentId }
+      folderList.push(target)
     }
     folders.set(source.id, target.id)
     return target.id

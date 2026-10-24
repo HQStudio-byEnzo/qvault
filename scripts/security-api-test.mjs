@@ -92,6 +92,50 @@ try {
   assert((await call(`/api/vault/${legacyId}`, { method: 'PUT', cookie, body: { payload: `${salt}:${ct}`, iv } })).status === 400, 'F4: réécriture à l’ancien format acceptée')
   results.f4LegacyWriteRejected = true
 
+  // Re-chiffrement ciblé : l'ancienne enveloppe doit être celle stockée.
+  const upgradeBody = { items: [{ id: legacyId, previousPayload: `${salt}:${ct}`, payload: `v2:600000:${salt}:${ct}`, iv }] }
+  assert((await call('/api/vault/upgrade-encryption', { method: 'POST', cookie, body: upgradeBody })).status === 200, 'upgrade: charge héritée refusée')
+  assert((await call('/api/vault/upgrade-encryption', { method: 'POST', cookie, body: upgradeBody })).status === 409, 'upgrade: charge déjà remplacée acceptée')
+  results.legacyUpgradeGuarded = true
+
+  // Noms d'organisation : le clair reste accepté pour les lignes héritées,
+  // l'enveloppe n1 est stockée telle quelle, la migration vérifie l'ancien nom.
+  const nameEnvelope = `n1:${salt}:${iv}:${ct}`
+  const nameEnvelope2 = `n1:${salt}:${iv}:${b64(new Uint8Array(32).fill(4))}`
+  const legacyTag = await call('/api/organization', { method: 'POST', cookie, body: { kind: 'tag', name: 'herite', color: '#4ade80' } })
+  assert(legacyTag.status === 200, `org: nom en clair refusé (${legacyTag.status})`)
+  assert((await call('/api/organization', { method: 'POST', cookie, body: { kind: 'tag', name: 'n1:pas:valide', name_encrypted: true } })).status === 400, 'org: enveloppe invalide acceptée')
+  const sealedTag = await call('/api/organization', { method: 'POST', cookie, body: { kind: 'tag', name: nameEnvelope, name_encrypted: true, color: '#4ade80' } })
+  assert(sealedTag.status === 200, `org: enveloppe refusée (${sealedTag.status})`)
+  const org = await call('/api/organization', { cookie })
+  const storedTag = org.data.tags.find(entry => entry.id === sealedTag.data.id)
+  assert(storedTag?.name === nameEnvelope && storedTag?.name_encrypted === true, 'org: nom stocké transformé')
+  assert((await call('/api/organization/encrypt-name', { method: 'POST', cookie, body: { kind: 'tag', id: legacyTag.data.id, previous_name: 'faux', name: nameEnvelope2 } })).status === 409, 'org: migration avec un ancien nom erroné acceptée')
+  assert((await call('/api/organization/encrypt-name', { method: 'POST', cookie, body: { kind: 'tag', id: legacyTag.data.id, previous_name: 'herite', name: nameEnvelope2 } })).status === 200, 'org: migration refusée')
+  results.organizationNamesEncrypted = true
+
+  // Rotation du mot de passe maître : les noms d'organisation changent dans la
+  // même transaction que les éléments et l'historique.
+  const allItems = await call('/api/vault', { cookie })
+  const encryptedItems = allItems.data.items.filter(item => item.is_encrypted)
+  const allHistory = await call('/api/vault/history?limit=1000', { cookie })
+  const encryptedHistory = allHistory.data.history.filter(snapshot => snapshot.is_encrypted)
+  const rotatedName = `n1:${salt}:${iv}:${b64(new Uint8Array(32).fill(5))}`
+  const rotation = await call('/api/vault/rotate-encryption', {
+    method: 'POST',
+    cookie,
+    body: {
+      items: encryptedItems.map(item => ({ id: item.id, previousPayload: item.payload, previousIv: item.iv, payload: item.payload, iv: item.iv })),
+      history: encryptedHistory.map(snapshot => ({ id: snapshot.id, previousPayload: snapshot.payload, previousIv: snapshot.iv, payload: snapshot.payload, iv: snapshot.iv })),
+      organization: [{ kind: 'tag', id: sealedTag.data.id, previousPayload: nameEnvelope, payload: rotatedName }],
+      verifier: { payload: `v2:600000:${salt}:${ct}`, iv },
+    },
+  })
+  assert(rotation.status === 200, `rotation: ${rotation.status}`)
+  const rotatedOrg = await call('/api/organization', { cookie })
+  assert(rotatedOrg.data.tags.find(entry => entry.id === sealedTag.data.id)?.name === rotatedName, 'rotation: nom d’organisation non mis à jour')
+  results.organizationRotationAtomic = true
+
   // La session renvoyée au navigateur ne contient pas l'identifiant de session.
   const session = await call('/api/auth/session', { cookie })
   assert(session.data?.user?.id && !JSON.stringify(session.data).includes('"secure"'), 'session: données serveur exposées')

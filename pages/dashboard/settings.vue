@@ -272,6 +272,29 @@
 
       <section class="glass-panel p-5 md:p-6 space-y-4">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+          <Icon name="hugeicons:smart-phone" class="w-5 h-5 text-accent-text" />
+          {{ t('settings.devicesTitle') }}
+        </h2>
+        <p class="text-sm text-surface-400">{{ t('settings.devicesDesc') }}</p>
+
+        <ul v-if="sessions.length" class="divide-y divide-border">
+          <li v-for="row in sessions" :key="row.id" class="flex flex-col sm:flex-row sm:items-center gap-3 py-3">
+            <Icon name="hugeicons:smart-phone" class="w-5 h-5 shrink-0 text-surface-500" />
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-foreground">{{ sessionLabel(row) }}</p>
+              <p class="text-xs text-surface-500">{{ formatDate(row.created_at) }}</p>
+            </div>
+            <span v-if="row.current" class="tech-status">{{ t('settings.deviceCurrent') }}</span>
+            <button v-else type="button" class="btn-secondary" @click="revokeSession(row.id)">{{ t('settings.deviceRevoke') }}</button>
+          </li>
+        </ul>
+
+        <button type="button" class="btn-secondary" @click="revokeOtherSessions">{{ t('settings.devicesRevokeOthers') }}</button>
+        <p v-if="sessionsMessage" class="text-sm" :class="sessionsFailed ? 'text-red-600' : 'text-accent-text'">{{ sessionsMessage }}</p>
+      </section>
+
+      <section class="glass-panel p-5 md:p-6 space-y-4">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
           <Icon name="hugeicons:unplug" class="w-5 h-5 text-accent-text" />
           {{ t('settings.extensionTitle') }}
         </h2>
@@ -473,6 +496,7 @@
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
 import { type ShortcutActionId, useShortcutPreferences } from '~/composables/useShortcuts'
+import { deviceLabel } from '~/utils/device-label'
 import {
   MIN_ACCOUNT_PASSWORD_LENGTH,
   MIN_MASTER_PASSWORD_LENGTH,
@@ -498,6 +522,57 @@ const masterPwdSuccess = ref('')
 const passkeyLoading = ref(false)
 const passkeyMessage = ref('')
 const passkeyFailed = ref(false)
+
+interface SessionRow {
+  id: string
+  current: boolean
+  user_agent: string | null
+  created_at: string
+  expires_at: string
+}
+const sessions = ref<SessionRow[]>([])
+const sessionsMessage = ref('')
+const sessionsFailed = ref(false)
+
+function sessionLabel(row: SessionRow) {
+  return deviceLabel(row.user_agent) || t('settings.deviceUnknown')
+}
+
+async function loadSessions() {
+  try {
+    const data = await $fetch<{ sessions: SessionRow[] }>('/api/security/sessions')
+    sessions.value = data.sessions
+  } catch {
+    sessionsFailed.value = true
+    sessionsMessage.value = t('settings.devicesFailed')
+  }
+}
+
+async function revokeSession(id: string) {
+  sessionsMessage.value = ''
+  sessionsFailed.value = false
+  try {
+    await $fetch(`/api/security/sessions/${id}`, { method: 'DELETE' })
+    await loadSessions()
+    sessionsMessage.value = t('settings.deviceRevoked')
+  } catch {
+    sessionsFailed.value = true
+    sessionsMessage.value = t('settings.devicesFailed')
+  }
+}
+
+async function revokeOtherSessions() {
+  sessionsMessage.value = ''
+  sessionsFailed.value = false
+  try {
+    const result = await $fetch<{ revoked: number }>('/api/security/sessions/revoke-others', { method: 'POST' })
+    await loadSessions()
+    sessionsMessage.value = t('settings.devicesRevokeOthersDone').replace('{count}', String(result.revoked))
+  } catch {
+    sessionsFailed.value = true
+    sessionsMessage.value = t('settings.devicesFailed')
+  }
+}
 const extensionConfigured = ref(false)
 const extensionLoading = ref(false)
 const extensionToken = ref('')
@@ -546,6 +621,7 @@ onMounted(async () => {
   loadShortcuts()
   await fetchItems()
   await loadExtensionTokenStatus()
+  await loadSessions()
 })
 
 // Change password

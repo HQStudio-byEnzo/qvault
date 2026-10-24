@@ -51,10 +51,10 @@ async function migrateUsernames(db: ReturnType<typeof createClient>) {
 async function ensureBaseSchema(db: ReturnType<typeof createClient>) {
   await db.batch([
     `CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, username TEXT NOT NULL UNIQUE, email TEXT NOT NULL UNIQUE, email_verified INTEGER NOT NULL DEFAULT 0, password TEXT NOT NULL, session_version INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')))`,
-    `CREATE TABLE IF NOT EXISTS vaults (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, name TEXT NOT NULL, color TEXT NOT NULL DEFAULT '#4ade80', is_default INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')), UNIQUE(user_id, name), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
-    `CREATE TABLE IF NOT EXISTS folders (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, vault_id TEXT NOT NULL, name TEXT NOT NULL, parent_id TEXT, created_at TEXT DEFAULT (datetime('now')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE, FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE SET NULL)`,
+    `CREATE TABLE IF NOT EXISTS vaults (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, name TEXT NOT NULL, name_encrypted INTEGER NOT NULL DEFAULT 0, color TEXT NOT NULL DEFAULT '#4ade80', is_default INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')), UNIQUE(user_id, name), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
+    `CREATE TABLE IF NOT EXISTS folders (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, vault_id TEXT NOT NULL, name TEXT NOT NULL, name_encrypted INTEGER NOT NULL DEFAULT 0, parent_id TEXT, created_at TEXT DEFAULT (datetime('now')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE, FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE SET NULL)`,
     `CREATE TABLE IF NOT EXISTS vault_items (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, vault_id TEXT, folder_id TEXT, type TEXT NOT NULL CHECK (type IN ('link', 'password', 'crypto', 'recovery', 'note', 'totp')), label TEXT NOT NULL DEFAULT '', is_encrypted INTEGER NOT NULL DEFAULT 0, payload TEXT NOT NULL, iv TEXT, url TEXT, favorite INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE, FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL)`,
-    `CREATE TABLE IF NOT EXISTS tags (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, name TEXT NOT NULL, color TEXT NOT NULL DEFAULT '#4ade80', created_at TEXT DEFAULT (datetime('now')), UNIQUE(user_id, name), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
+    `CREATE TABLE IF NOT EXISTS tags (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, name TEXT NOT NULL, name_encrypted INTEGER NOT NULL DEFAULT 0, color TEXT NOT NULL DEFAULT '#4ade80', created_at TEXT DEFAULT (datetime('now')), UNIQUE(user_id, name), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
     `CREATE TABLE IF NOT EXISTS vault_item_tags (item_id TEXT NOT NULL, tag_id TEXT NOT NULL, PRIMARY KEY (item_id, tag_id), FOREIGN KEY (item_id) REFERENCES vault_items(id) ON DELETE CASCADE, FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE)`,
     `CREATE TABLE IF NOT EXISTS vault_item_history (id TEXT PRIMARY KEY, item_id TEXT NOT NULL, user_id TEXT NOT NULL, version INTEGER NOT NULL, label TEXT NOT NULL, payload TEXT NOT NULL, iv TEXT, url TEXT, is_encrypted INTEGER NOT NULL, favorite INTEGER NOT NULL, created_at TEXT DEFAULT (datetime('now')), UNIQUE(item_id, version), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`,
     'CREATE INDEX IF NOT EXISTS idx_vault_history_item ON vault_item_history(user_id, item_id, version DESC)',
@@ -148,8 +148,25 @@ async function ensureExtensionTokenColumns(db: ReturnType<typeof createClient>) 
   }
 }
 
+/**
+ * Les noms de coffres, dossiers et tags peuvent désormais être chiffrés côté
+ * client. Les lignes existantes restent en clair (name_encrypted = 0) jusqu'à
+ * ce que le navigateur les re-chiffre au déverrouillage.
+ */
+async function ensureOrganizationNameColumns(db: ReturnType<typeof createClient>) {
+  for (const table of ['vaults', 'folders', 'tags']) {
+    const info = await db.execute({ sql: `PRAGMA table_info('${table}')` })
+    if (info.rows.length === 0) continue
+    if (info.rows.some(row => String((row as any).name) === 'name_encrypted')) continue
+    await db.execute({ sql: `ALTER TABLE ${table} ADD COLUMN name_encrypted INTEGER NOT NULL DEFAULT 0` }).catch((error) => {
+      if (!String((error as any)?.message || error).toLowerCase().includes('duplicate column')) throw error
+    })
+  }
+}
+
 async function runVaultSchemaMigration(db: ReturnType<typeof createClient>) {
   await ensureBaseSchema(db)
+  await ensureOrganizationNameColumns(db)
   const userInfo = await db.execute({ sql: "PRAGMA table_info('users')" })
   if (userInfo.rows.length > 0 && !userInfo.rows.some(row => String((row as any).name) === 'session_version')) {
     await db.execute({ sql: 'ALTER TABLE users ADD COLUMN session_version INTEGER NOT NULL DEFAULT 0' }).catch((error) => {

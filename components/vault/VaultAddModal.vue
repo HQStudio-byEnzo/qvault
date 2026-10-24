@@ -268,7 +268,7 @@ const masterPasswordInput = ref('')
 const dialogEl = ref<HTMLElement | null>(null)
 const recoveryFileInput = ref<HTMLInputElement | null>(null)
 
-const orgData = ref<{ vaults: { id: string; name: string }[]; folders: { id: string; name: string; vault_id: string }[] } | null>(null)
+const { organization: orgData, load: loadOrganization } = useOrganization()
 const vaultId = ref('')
 const folderId = ref('')
 const vaultOptions = computed(() => [
@@ -284,7 +284,7 @@ const folderOptions = computed(() => {
 })
 watch(vaultId, () => { folderId.value = '' })
 onMounted(async () => {
-  try { orgData.value = await $fetch('/api/organization') } catch { /* ignore */ }
+  try { await loadOrganization() } catch { /* ignore */ }
 })
 
 useModalFocus(dialogEl, () => emit('close'))

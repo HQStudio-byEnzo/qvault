@@ -184,7 +184,10 @@ const searchTarget = ref<VaultItem | null>(null)
 const mobileSheetEl = ref<HTMLElement | null>(null)
 useModalFocus(mobileSheetEl, () => { mobileMenuOpen.value = false }, { active: mobileMenuOpen })
 
-const { items, fetchItems } = useVault()
+const { items, fetchItems, upgradeLegacyEncryption } = useVault()
+const { load: loadOrganization } = useOrganization()
+const { isUnlocked } = useMasterPassword()
+const legacyUpgradeDone = useState('qvault-legacy-upgrade-done', () => false)
 let loadingItems = false
 
 const results = computed(() => {
@@ -226,6 +229,23 @@ function onSearchPointerDown(event: PointerEvent) {
 }
 onMounted(() => document.addEventListener('pointerdown', onSearchPointerDown))
 onBeforeUnmount(() => document.removeEventListener('pointerdown', onSearchPointerDown))
+
+// Migration silencieuse des charges encore dérivées à 100 000 itérations.
+// Une seule tentative par session ; un échec sera rejoué au prochain
+// déverrouillage.
+onMounted(async () => {
+  if (!isUnlocked.value) return
+  // Charge l'organisation pour chiffrer les noms hérités, même si l'utilisateur
+  // n'ouvre jamais la page Organisation.
+  try { await loadOrganization() } catch { /* les noms restent lisibles */ }
+  if (legacyUpgradeDone.value) return
+  legacyUpgradeDone.value = true
+  try {
+    await upgradeLegacyEncryption()
+  } catch {
+    legacyUpgradeDone.value = false
+  }
+})
 
 const { showWarning, remainingSeconds, resetTimers } = useAutoLock()
 const { shielded, reveal } = usePrivacyShield()

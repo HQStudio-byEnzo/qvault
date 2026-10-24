@@ -2,11 +2,11 @@ export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
   const db = useDB()
   const result = await db.execute({
-    sql: `SELECT type, COUNT(*) AS count FROM vault_items WHERE user_id = ? GROUP BY type`,
+    sql: `SELECT type, COUNT(*) AS count FROM vault_items WHERE user_id = ? AND deleted_at IS NULL GROUP BY type`,
     args: [session.user.id],
   })
   const countsByType = Object.fromEntries(result.rows.map(row => [String((row as any).type), Number((row as any).count) || 0]))
-  const favorites = await db.execute({ sql: 'SELECT COUNT(*) AS count FROM vault_items WHERE user_id = ? AND favorite = 1', args: [session.user.id] })
+  const favorites = await db.execute({ sql: 'SELECT COUNT(*) AS count FROM vault_items WHERE user_id = ? AND favorite = 1 AND deleted_at IS NULL', args: [session.user.id] })
   const counts = {
     links: countsByType.link || 0,
     passwords: countsByType.password || 0,

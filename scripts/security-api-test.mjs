@@ -164,6 +164,37 @@ try {
   assert((await call('/api/vault', { cookie })).status === 200, 'F10: la déconnexion a fermé les autres sessions')
   results.f10LogoutRevokes = true
 
+  // Corbeille : suppression réversible, restauration, purge explicite.
+  const trashed = await call('/api/vault', { method: 'POST', cookie, body: { type: 'note', label: 'corbeille', payload: `v2:600000:${salt}:${ct}`, iv } })
+  const trashId = trashed.data.id
+  assert((await call(`/api/vault/${trashId}`, { method: 'DELETE', cookie })).status === 200, 'corbeille: suppression refusée')
+  assert(!(await call('/api/vault', { cookie })).data.items.some(entry => entry.id === trashId), 'corbeille: élément encore actif')
+  assert((await call('/api/vault/trash', { cookie })).data.items.some(entry => entry.id === trashId), 'corbeille: élément absent de la liste')
+  assert((await call(`/api/vault/${trashId}/undelete`, { method: 'POST', cookie })).status === 200, 'corbeille: restauration refusée')
+  assert((await call('/api/vault', { cookie })).data.items.some(entry => entry.id === trashId), 'corbeille: élément non restauré')
+  const active = await call('/api/vault', { method: 'POST', cookie, body: { type: 'note', label: 'actif', payload: `v2:600000:${salt}:${ct}`, iv } })
+  assert((await call(`/api/vault/${active.data.id}?permanent=1`, { method: 'DELETE', cookie })).status === 400, 'corbeille: suppression définitive sans corbeille acceptée')
+  assert((await call(`/api/vault/${trashId}`, { method: 'DELETE', cookie })).status === 200, 'corbeille: mise à la corbeille refusée')
+  assert((await call(`/api/vault/${trashId}?permanent=1`, { method: 'DELETE', cookie })).status === 200, 'corbeille: suppression définitive refusée')
+  assert(!(await call('/api/vault/trash', { cookie })).data.items.some(entry => entry.id === trashId), 'corbeille: élément toujours présent après purge')
+  results.trashRestorable = true
+
+  // Sessions : liste, révocation ciblée, fermeture des autres appareils.
+  const secondDevice = await login()
+  const sessions = (await call('/api/security/sessions', { cookie })).data.sessions
+  const currentSession = sessions.find(entry => entry.current)
+  const otherSession = sessions.find(entry => !entry.current)
+  assert(currentSession && otherSession, 'sessions: liste incomplète')
+  assert((await call(`/api/security/sessions/${currentSession.id}`, { method: 'DELETE', cookie })).status === 400, 'sessions: session courante révocable')
+  assert((await call(`/api/security/sessions/${otherSession.id}`, { method: 'DELETE', cookie })).status === 200, 'sessions: révocation refusée')
+  assert((await call('/api/vault', { cookie: secondDevice })).status === 401, 'sessions: session révoquée encore valide')
+  assert((await call('/api/vault', { cookie })).status === 200, 'sessions: session courante fermée par erreur')
+  const thirdDevice = await login()
+  assert((await call('/api/security/sessions/revoke-others', { method: 'POST', cookie })).status === 200, 'sessions: fermeture des autres refusée')
+  assert((await call('/api/vault', { cookie: thirdDevice })).status === 401, 'sessions: autre session encore valide')
+  assert((await call('/api/vault', { cookie })).status === 200, 'sessions: session courante fermée')
+  results.sessionsRevocable = true
+
   console.log(JSON.stringify({ ok: true, ...results }))
 } finally {
   await cleanup()

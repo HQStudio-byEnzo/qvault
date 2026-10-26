@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS vault_items (
   iv TEXT,
   url TEXT,
   favorite INTEGER NOT NULL DEFAULT 0,
+  deleted_at TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -63,6 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_vault_items_user_type ON vault_items(user_id, typ
 CREATE INDEX IF NOT EXISTS idx_vault_items_favorite ON vault_items(user_id, favorite);
 CREATE INDEX IF NOT EXISTS idx_vault_items_vault ON vault_items(user_id, vault_id);
 CREATE INDEX IF NOT EXISTS idx_vault_items_folder ON vault_items(user_id, folder_id);
+CREATE INDEX IF NOT EXISTS idx_vault_items_deleted ON vault_items(user_id, deleted_at);
 
 CREATE TABLE IF NOT EXISTS tags (
   id TEXT PRIMARY KEY,

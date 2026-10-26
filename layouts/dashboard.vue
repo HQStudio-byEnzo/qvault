@@ -273,6 +273,7 @@ const securityNavItems = [
   { to: '/dashboard/recovery-codes', label: 'sidebar.recoveryCode', icon: 'hugeicons:life-buoy' },
   { to: '/dashboard/organization', label: 'sidebar.organization', icon: 'hugeicons:folder-tree' },
   { to: '/dashboard/history', label: 'sidebar.history', icon: 'hugeicons:history' },
+  { to: '/dashboard/trash', label: 'sidebar.trash', icon: 'hugeicons:delete-02' },
   { to: '/dashboard/export', label: 'sidebar.export', icon: 'hugeicons:download-01' },
   { to: '/dashboard/transfer', label: 'sidebar.transfer', icon: 'hugeicons:scan-line' },
 ]

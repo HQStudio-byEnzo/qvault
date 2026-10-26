@@ -15,6 +15,9 @@
           <p class="text-sm text-surface-300">
             {{ confirmText }}
           </p>
+          <p class="text-xs text-surface-500">
+            {{ t('vault.deleteTrashNote') }}
+          </p>
 
           <div v-if="item.is_encrypted" class="space-y-2">
             <label for="deleteMasterPassword" class="block text-sm font-medium text-surface-300">

@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   const body = requireRecord(await readBody(event))
   if (!id || id.length > 128) throw createError({ statusCode: 400, message: 'ID requis.' })
 
-  const existing = await db.execute({ sql: 'SELECT * FROM vault_items WHERE id = ? AND user_id = ?', args: [id, session.user.id] })
+  const existing = await db.execute({ sql: 'SELECT * FROM vault_items WHERE id = ? AND user_id = ? AND deleted_at IS NULL', args: [id, session.user.id] })
   if (!existing.rows.length) throw createError({ statusCode: 404, message: 'Élément introuvable.' })
   const current = existing.rows[0] as any
   if (body.is_encrypted !== undefined && typeof body.is_encrypted !== 'boolean') throw createError({ statusCode: 400, message: 'is_encrypted invalide.' })
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
   args.push(id, session.user.id)
 
   if (!snapshotNeeded) {
-    await db.execute({ sql: `UPDATE vault_items SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`, args })
+    await db.execute({ sql: `UPDATE vault_items SET ${updates.join(', ')} WHERE id = ? AND user_id = ? AND deleted_at IS NULL`, args })
     return { message: 'Élément mis à jour.', version: null }
   }
 
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
   const version = Number(versionResult.rows[0]?.version) || 1
   await db.batch([
     { sql: "INSERT INTO vault_item_history (id, item_id, user_id, version, label, payload, iv, url, is_encrypted, favorite, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))", args: [crypto.randomUUID(), id, session.user.id, version, current.label, current.payload, current.iv, current.url, current.is_encrypted, current.favorite] },
-    { sql: `UPDATE vault_items SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`, args },
+    { sql: `UPDATE vault_items SET ${updates.join(', ')} WHERE id = ? AND user_id = ? AND deleted_at IS NULL`, args },
     { sql: 'DELETE FROM vault_item_history WHERE item_id = ? AND user_id = ? AND id NOT IN (SELECT id FROM vault_item_history WHERE item_id = ? AND user_id = ? ORDER BY version DESC LIMIT 50)', args: [id, session.user.id, id, session.user.id] },
   ], 'write')
   return { message: 'Élément mis à jour.', version }

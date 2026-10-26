@@ -7,6 +7,8 @@ import { isPrivateAnalyticsPath } from '../utils/analytics.ts'
 import { CREDENTIAL_SCHEMA, LEGACY_CREDENTIAL_SCHEMA } from '../utils/brand.ts'
 import { isEncryptedNameValue, parseEncryptedName, serializeEncryptedName } from '../utils/encrypted-name.ts'
 import { isLegacyEncryptedPayload } from '../utils/payload-version.ts'
+import { deviceLabel } from '../utils/device-label.ts'
+import { TRASH_RETENTION_DAYS, trashExpiresAt } from '../utils/trash.ts'
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
@@ -44,6 +46,17 @@ assert(rejectedName, 'An incomplete encrypted name is accepted')
 assert(isLegacyEncryptedPayload(`${envelope.salt}:${envelope.ciphertext}`), 'Legacy payload not detected')
 assert(!isLegacyEncryptedPayload(serializedEnvelope), 'Current payload mistaken for a legacy one')
 assert(!isLegacyEncryptedPayload(encryptedName), 'Encrypted name mistaken for a legacy payload')
+
+// Corbeille : rétention et date d'expiration calculées de la même façon partout.
+assert(TRASH_RETENTION_DAYS === 30, 'Trash retention changed unexpectedly')
+const trashExpiry = trashExpiresAt('2026-01-01 00:00:00')
+assert(trashExpiry?.toISOString().startsWith('2026-01-31'), 'Trash expiry date is wrong')
+assert(trashExpiresAt('not-a-date') === null, 'Invalid deletion date accepted')
+
+// Libellé d'appareil : navigateur et système seulement, jamais l'empreinte brute.
+assert(deviceLabel('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36') === 'Chrome · Windows', 'Chrome/Windows label mismatch')
+assert(deviceLabel('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1') === 'Safari · iOS', 'Safari/iOS label mismatch')
+assert(deviceLabel(null) === '', 'Empty user agent should produce no label')
 
 let rejectedWrongPassword = false
 try { await cryptoTools.decrypt(envelope.ciphertext, envelope.iv, 'wrong password', envelope.salt) }

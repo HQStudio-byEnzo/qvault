@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const limit = Math.min(Math.max(Number(query.limit) || 500, 1), 1000)
   const offset = Math.max(Number(query.offset) || 0, 0)
 
-  let where = ''
+  let where = ' AND deleted_at IS NULL'
   const params: any[] = [session.user.id]
   if (type && ['link', 'password', 'crypto', 'recovery', 'note', 'totp'].includes(type)) { where += ' AND type = ?'; params.push(type) }
   if (query.favorites === 'true') where += ' AND favorite = 1'

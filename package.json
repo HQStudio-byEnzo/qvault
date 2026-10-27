@@ -13,7 +13,7 @@
     "generate": "nuxt generate",
     "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
-    "test": "bun run test:security && bun run test:migration && bun run test:i18n && bun run test:quality && bun run test:backup && bun run typecheck",
+    "test": "bun run test:security && bun run test:migration && bun run test:i18n && bun run test:quality && bun run test:backup && bun run test:offsite && bun run typecheck",
     "test:audit": "bun scripts/audit-check.mjs",
     "test:db:init": "bun scripts/init-test-db.mjs",
     "test:i18n": "bun scripts/check-i18n.mjs",
@@ -26,7 +26,8 @@
     "backup": "bun scripts/backup.mjs",
     "backup:restore": "bun scripts/restore-backup.mjs",
     "backup:verify": "bun scripts/verify-backup.mjs",
-    "test:backup": "bun scripts/backup-self-test.mjs"
+    "test:backup": "bun scripts/backup-self-test.mjs",
+    "test:offsite": "bun scripts/r2-self-test.mjs"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

@@ -25,6 +25,7 @@
     "typecheck": "node ./node_modules/vue-tsc/bin/vue-tsc.js --noEmit -p ./.nuxt/tsconfig.json",
     "backup": "bun scripts/backup.mjs",
     "backup:restore": "bun scripts/restore-backup.mjs",
+    "backup:verify": "bun scripts/verify-backup.mjs",
     "test:backup": "bun scripts/backup-self-test.mjs"
   },
   "dependencies": {

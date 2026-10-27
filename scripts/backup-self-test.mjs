@@ -1,10 +1,22 @@
 // Test de la sauvegarde : dump, écriture gzippée, relecture et restauration
 // dans une base neuve, puis purge des anciens fichiers.
-import { mkdtempSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createClient } from '@libsql/client'
-import { countRows, dumpDatabase, loadEnvFile, pruneBackups, readBackup, restoreDatabase, writeBackup } from './backup-lib.mjs'
+import {
+  countRows,
+  dumpDatabase,
+  encryptBackup,
+  isEncrypted,
+  latestBackup,
+  loadBackupKey,
+  loadEnvFile,
+  pruneBackups,
+  readBackup,
+  restoreDatabase,
+  writeBackup,
+} from './backup-lib.mjs'
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
@@ -18,6 +30,8 @@ const schema = [
 ]
 
 const directory = mkdtempSync(join(tmpdir(), 'qvault-backup-'))
+const keyFile = join(directory, 'backup-key.txt')
+const key = loadBackupKey({ create: true, path: keyFile })
 const sourcePath = join(directory, 'source.db')
 const targetPath = join(directory, 'target.db')
 
@@ -40,11 +54,37 @@ try {
   assert(dump.tables.length === 3, `Tables sauvegardées : ${dump.tables.length}`)
   assert(dump.indexes.length === 1, `Index sauvegardés : ${dump.indexes.length}`)
 
-  const backup = writeBackup(dump, join(directory, 'backups'))
+  const backup = writeBackup(dump, join(directory, 'backups'), { key })
   assert(backup.bytes > 0, 'Sauvegarde vide')
   assert(/^[0-9a-f]{64}$/.test(backup.sha256), 'Empreinte SHA-256 invalide')
+  assert(backup.encrypted === true, 'Sauvegarde non chiffrée')
+  assert(backup.path.endsWith('.json.gz.enc'), `Extension inattendue : ${backup.path}`)
 
-  const reloaded = readBackup(backup.path)
+  // Le fichier sur disque ne doit contenir aucune donnée lisible.
+  const onDisk = readFileSync(backup.path)
+  assert(isEncrypted(onDisk), 'En-tête de chiffrement absent')
+  assert(!onDisk.includes(Buffer.from('enzo@example.com')), 'Contenu en clair dans le fichier chiffré')
+  assert(!onDisk.includes(Buffer.from('Banque')), 'Libellé en clair dans le fichier chiffré')
+
+  // Mauvaise clé : refus net, pas de données partielles.
+  let wrongKeyRefused = false
+  try {
+    readBackup(backup.path, { key: Buffer.alloc(32, 7) })
+  } catch {
+    wrongKeyRefused = true
+  }
+  assert(wrongKeyRefused, 'Une mauvaise clé a déchiffré la sauvegarde')
+
+  // Sans clé : refus explicite.
+  let missingKeyRefused = false
+  try {
+    readBackup(backup.path)
+  } catch {
+    missingKeyRefused = true
+  }
+  assert(missingKeyRefused, 'Une sauvegarde chiffrée a été lue sans clé')
+
+  const reloaded = readBackup(backup.path, { key })
   const target = createClient({ url: `file:${targetPath}` })
   const counts = await restoreDatabase(target, reloaded, { reset: true })
 
@@ -79,8 +119,13 @@ try {
   writeFileSync(oldPath, 'old')
   const oldDate = new Date(Date.now() - 40 * 24 * 60 * 60 * 1000)
   utimesSync(oldPath, oldDate, oldDate)
+  const oldEncryptedPath = join(directory, 'backups', 'qvault-old.json.gz.enc')
+  writeFileSync(oldEncryptedPath, encryptBackup(Buffer.from('old'), key))
+  utimesSync(oldEncryptedPath, oldDate, oldDate)
   const removed = pruneBackups(join(directory, 'backups'), 14)
   assert(removed.includes(oldPath), 'Ancienne sauvegarde non purgée')
+  assert(removed.includes(oldEncryptedPath), 'Ancienne sauvegarde chiffrée non purgée')
+  assert(latestBackup(join(directory, 'backups')) === backup.path, 'Dernière sauvegarde mal identifiée')
   assert(readdirSync(join(directory, 'backups')).includes(backup.path.split('/').pop()), 'Sauvegarde récente purgée à tort')
 
   // Fichier d'identifiants : chargé, sans écraser une variable déjà définie.
@@ -101,6 +146,9 @@ try {
     rows: backup.rows,
     checksum: true,
     gzipRoundTrip: true,
+    encrypted: true,
+    wrongKeyRefused: true,
+    missingKeyRefused: true,
     unicodeLabelPreserved: true,
     nullPreserved: true,
     indexRestored: true,

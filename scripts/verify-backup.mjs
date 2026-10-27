@@ -11,6 +11,7 @@ import { mkdtempSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createClient } from '@libsql/client'
+import { r2Config, verifyRemote } from './r2-lib.mjs'
 import {
   countRows,
   latestBackup,
@@ -69,6 +70,9 @@ try {
       throw new Error(`Table ${table} : ${counts[table] ?? 0} lignes restaurées au lieu de ${rows}`)
     }
   }
+  const offsite = r2Config()
+  const remote = offsite.configured ? await verifyRemote(path, offsite) : 'disabled'
+
   summary = {
     ok: true,
     path,
@@ -78,6 +82,7 @@ try {
     tables: Object.keys(counts).length,
     rows: Object.values(counts).reduce((total, value) => total + value, 0),
     restored: true,
+    offsite: remote === 'disabled' ? 'disabled' : { bucket: offsite.bucket, key: remote.key, sha256: remote.sha256 },
   }
 } catch (error) {
   target.close()

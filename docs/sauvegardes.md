@@ -92,15 +92,33 @@ serveur, mais il ne remplace pas la clé de chiffrement : conserve
 `backup-key.txt` séparément du dossier de sauvegardes. Le dossier créé est en
 `700`.
 
-## Copie hors site
+## Copie hors site (Cloudflare R2)
 
 Le dossier de sauvegardes vit sur le même disque que la production : une perte
-du VPS perd aussi les sauvegardes. Copie les `.json.gz.enc` vers un stockage
-externe (S3/R2/B2 ou autre serveur) une fois par jour. Le fichier étant chiffré,
-il peut transiter par un stockage tiers sans exposer les données.
+du VPS perd aussi les sauvegardes. Chaque fichier `.json.gz.enc` est donc copié
+vers un bucket R2 privé, puis relu et comparé (même taille, même SHA-256).
+
+| Variable | Rôle |
+|---|---|
+| `QVAULT_R2_ACCOUNT_ID` | identifiant du compte Cloudflare |
+| `QVAULT_R2_BUCKET` | bucket privé (`qvault-backups`) |
+| `QVAULT_R2_ACCESS_KEY_ID` | Access Key ID du jeton API R2 |
+| `QVAULT_R2_SECRET_ACCESS_KEY` | Secret Access Key du jeton API R2 |
+| `QVAULT_R2_PREFIX` | préfixe des objets (défaut `qvault/`) |
+
+Le jeton API R2 se crée dans Cloudflare → R2 → Manage API Tokens, avec
+**Object Read & Write** limité au bucket. Sans ces variables, la sauvegarde
+reste locale et `offsite` vaut `disabled` ; avec elles, un envoi raté fait
+échouer la commande (code 1) pour que la routine le signale.
+
+Le fichier étant chiffré, le stockage tiers ne voit aucune donnée en clair. Il
+ne remplace pas `backup-key.txt` : sans cette clé, la copie distante est
+illisible elle aussi.
 
 ## Automatisation
 
 Une routine OpenBot quotidienne lance la sauvegarde à 03:00 (Kinshasa) puis
-`bun run backup:verify`. Elle ne signale que les échecs. Aucun secret ne doit
+`bun run backup:verify`. Elle ne signale que les échecs. Chaque nuit, la
+sauvegarde est donc écrite, copiée sur R2, relue depuis R2, restaurée dans une
+base temporaire et comparée. Aucun secret ne doit
 être stocké dans le dépôt.

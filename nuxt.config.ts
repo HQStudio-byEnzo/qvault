@@ -18,17 +18,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxt/icon',
     'nuxt-auth-utils',
-    '@sentry/nuxt/module',
   ],
-
-  // Supervision des erreurs. Sans SENTRY_DSN, le SDK reste inactif : aucun
-  // événement n'est envoyé et rien ne change pour l'utilisateur.
-  sentry: {
-    org: 'hqstudio',
-    project: 'qvault',
-    authToken: process.env.SENTRY_AUTH_TOKEN || undefined,
-    telemetry: false,
-  },
 
   // Vercel deployment
   nitro: {
@@ -151,8 +141,6 @@ export default defineNuxtConfig({
     // Public
     public: {
       appName: 'QVault',
-      // DSN Sentry (clé d'ingestion publique). Vide = supervision désactivée.
-      sentryDsn: process.env.SENTRY_DSN || '',
       // Single source of truth for absolute URLs (canonical, Open Graph,
       // JSON-LD). Served to the client so per-page head tags stay consistent.
       siteUrl,

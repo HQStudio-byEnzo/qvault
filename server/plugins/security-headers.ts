@@ -3,15 +3,6 @@ import { randomBytes } from 'node:crypto'
 const SCRIPT_NONCE_PLACEHOLDER = /<script(?![^>]*\bnonce=)(?=[\s>])/gi
 
 export default defineNitroPlugin((nitroApp) => {
-  // Le navigateur n'envoie des événements à Sentry que si un DSN est configuré.
-  let sentryOrigin = ''
-  try {
-    const dsn = String(process.env.SENTRY_DSN || '').trim()
-    if (dsn) sentryOrigin = new URL(dsn).origin
-  } catch {
-    sentryOrigin = ''
-  }
-
   nitroApp.hooks.hook('render:response', (response) => {
     if (response.headers) {
       delete response.headers['x-powered-by']
@@ -43,9 +34,7 @@ export default defineNitroPlugin((nitroApp) => {
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' data:",
       "img-src 'self' data:",
-      process.env.NODE_ENV === 'production'
-        ? `connect-src 'self'${sentryOrigin ? ` ${sentryOrigin}` : ''}`
-        : `connect-src 'self' ws: wss:${sentryOrigin ? ` ${sentryOrigin}` : ''}`,
+      process.env.NODE_ENV === 'production' ? "connect-src 'self'" : "connect-src 'self' ws: wss:",
       'upgrade-insecure-requests',
     ].join('; ')
 

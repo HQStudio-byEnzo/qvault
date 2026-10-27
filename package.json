@@ -38,7 +38,6 @@
     "@libsql/client": "^0.17.3",
     "@nuxt/icon": "^1.10.0",
     "@scure/bip39": "^2.2.0",
-    "@sentry/nuxt": "^11.9.0",
     "@types/qrcode": "^1.5.6",
     "@vercel/analytics": "^2.0.1",
     "bcryptjs": "^3.0.3",

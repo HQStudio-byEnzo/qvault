@@ -4,14 +4,22 @@
 //   { format, createdAt, tables: [{ name, sql, columns, rows }] }
 // Il contient les données telles quelles. Le coffre reste chiffré côté client,
 // mais les noms d'utilisateur, e-mails, libellés et URL sont en clair : le
-// fichier doit rester lisible par son propriétaire uniquement (chmod 600).
-import { createHash } from 'node:crypto'
-import { mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
+// fichier est donc chiffré en AES-256-GCM avant d'être écrit, avec une clé
+// aléatoire de 32 octets conservée hors du dépôt (chmod 600).
+//
+// Enveloppe d'un fichier chiffré :
+//   "QVAULTBK1" | iv (12) | tag (16) | ciphertext
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto'
+import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { gzipSync, gunzipSync } from 'node:zlib'
 
 export const BACKUP_FORMAT = 'qvault-backup/1'
+const MAGIC = Buffer.from('QVAULTBK1', 'ascii')
+const IV_BYTES = 12
+const TAG_BYTES = 16
+const KEY_BYTES = 32
 
 const IGNORED_TABLES = new Set(['sqlite_sequence', 'sqlite_stat1'])
 
@@ -63,12 +71,66 @@ function reviveValue(value) {
   return value
 }
 
-/** Écrit la sauvegarde gzippée et renvoie son chemin, sa taille et son empreinte. */
-export function writeBackup(dump, directory) {
+/** Chemin de la clé de chiffrement des sauvegardes, hors du dépôt. */
+export function keyPath() {
+  return process.env.QVAULT_BACKUP_KEY_FILE || join(homedir(), '.config', 'qvault', 'backup-key.txt')
+}
+
+/**
+ * Charge la clé de chiffrement (32 octets en base64). Avec `create`, une clé
+ * aléatoire est générée si le fichier n'existe pas encore.
+ */
+export function loadBackupKey({ create = false, path = keyPath() } = {}) {
+  const fromEnv = String(process.env.QVAULT_BACKUP_KEY || '').trim()
+  if (fromEnv && !process.env.QVAULT_BACKUP_KEY_FILE) {
+    const key = Buffer.from(fromEnv, 'base64')
+    if (key.length !== KEY_BYTES) throw new Error(`QVAULT_BACKUP_KEY invalide (${key.length} octets)`)
+    return key
+  }
+  if (existsSync(path)) {
+    const raw = readFileSync(path, 'utf8').trim()
+    const key = Buffer.from(raw, 'base64')
+    if (key.length !== KEY_BYTES) throw new Error(`Clé de sauvegarde invalide (${key.length} octets) : ${path}`)
+    return key
+  }
+  if (!create) throw new Error(`Clé de sauvegarde absente : ${path}`)
+  mkdirSync(dirname(path), { recursive: true, mode: 0o700 })
+  const key = randomBytes(KEY_BYTES)
+  writeFileSync(path, `${key.toString('base64')}\n`, { mode: 0o600 })
+  chmodSync(path, 0o600)
+  return key
+}
+
+export function encryptBackup(payload, key) {
+  if (!Buffer.isBuffer(key) || key.length !== KEY_BYTES) throw new Error('Clé de chiffrement invalide')
+  const iv = randomBytes(IV_BYTES)
+  const cipher = createCipheriv('aes-256-gcm', key, iv)
+  const ciphertext = Buffer.concat([cipher.update(payload), cipher.final()])
+  return Buffer.concat([MAGIC, iv, cipher.getAuthTag(), ciphertext])
+}
+
+export function decryptBackup(buffer, key) {
+  if (!Buffer.isBuffer(key) || key.length !== KEY_BYTES) throw new Error('Clé de chiffrement invalide')
+  if (!isEncrypted(buffer)) throw new Error('Fichier non chiffré')
+  const iv = buffer.subarray(MAGIC.length, MAGIC.length + IV_BYTES)
+  const tag = buffer.subarray(MAGIC.length + IV_BYTES, MAGIC.length + IV_BYTES + TAG_BYTES)
+  if (buffer.length <= MAGIC.length + IV_BYTES + TAG_BYTES) throw new Error('Fichier chiffré tronqué')
+  const decipher = createDecipheriv('aes-256-gcm', key, iv)
+  decipher.setAuthTag(tag)
+  return Buffer.concat([decipher.update(buffer.subarray(MAGIC.length + IV_BYTES + TAG_BYTES)), decipher.final()])
+}
+
+export function isEncrypted(buffer) {
+  return buffer.length > MAGIC.length && buffer.subarray(0, MAGIC.length).equals(MAGIC)
+}
+
+/** Écrit la sauvegarde chiffrée et renvoie son chemin, sa taille et son empreinte. */
+export function writeBackup(dump, directory, { key } = {}) {
+  if (!key) throw new Error('Clé de chiffrement requise pour écrire une sauvegarde')
   mkdirSync(directory, { recursive: true, mode: 0o700 })
   const stamp = dump.createdAt.replaceAll(':', '-').replace(/\.\d+Z$/, 'Z')
-  const path = join(directory, `qvault-${stamp}.json.gz`)
-  const payload = gzipSync(Buffer.from(JSON.stringify(dump)))
+  const path = join(directory, `qvault-${stamp}.json.gz.enc`)
+  const payload = encryptBackup(gzipSync(Buffer.from(JSON.stringify(dump))), key)
   writeFileSync(path, payload, { mode: 0o600 })
   return {
     path,
@@ -76,14 +138,32 @@ export function writeBackup(dump, directory) {
     sha256: createHash('sha256').update(payload).digest('hex'),
     tables: dump.tables.length,
     rows: dump.tables.reduce((total, table) => total + table.rows.length, 0),
+    encrypted: true,
   }
 }
 
-export function readBackup(path) {
-  const dump = JSON.parse(gunzipSync(readFileSync(path)).toString('utf8'))
+export function readBackup(path, { key } = {}) {
+  const raw = readFileSync(path)
+  const encrypted = isEncrypted(raw)
+  if (encrypted && !key) throw new Error('Sauvegarde chiffrée : clé de déchiffrement requise (QVAULT_BACKUP_KEY_FILE)')
+  const plain = encrypted ? decryptBackup(raw, key) : raw
+  const dump = JSON.parse(gunzipSync(plain).toString('utf8'))
   if (dump.format !== BACKUP_FORMAT) throw new Error(`Format de sauvegarde inconnu : ${dump.format}`)
   return dump
 }
+
+/** Dernière sauvegarde d'un dossier, par ordre de nom (horodatage ISO). */
+export function latestBackup(directory, extension = '.json.gz.enc') {
+  let entries = []
+  try {
+    entries = readdirSync(directory)
+  } catch {
+    return null
+  }
+  const matching = entries.filter(entry => entry.startsWith('qvault-') && entry.endsWith(extension)).sort()
+  return matching.length === 0 ? null : join(directory, matching[matching.length - 1])
+}
+
 
 /**
  * Restaure une sauvegarde. `reset` supprime les tables existantes : à réserver
@@ -145,7 +225,7 @@ export function pruneBackups(directory, days) {
     return removed
   }
   for (const entry of entries) {
-    if (!/^qvault-.*\.json\.gz$/.test(entry)) continue
+    if (!/^qvault-.*\.json\.gz(\.enc)?$/.test(entry)) continue
     const path = join(directory, entry)
     if (statSync(path).mtimeMs >= cutoff) continue
     unlinkSync(path)

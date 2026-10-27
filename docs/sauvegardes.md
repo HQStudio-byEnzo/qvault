@@ -101,13 +101,14 @@ vers un bucket R2 privé, puis relu et comparé (même taille, même SHA-256).
 | Variable | Rôle |
 |---|---|
 | `QVAULT_R2_ACCOUNT_ID` | identifiant du compte Cloudflare |
-| `QVAULT_R2_BUCKET` | bucket privé (`qvault-backups`) |
+| `QVAULT_R2_BUCKET` | bucket privé (`qvault`) |
 | `QVAULT_R2_ACCESS_KEY_ID` | Access Key ID du jeton API R2 |
 | `QVAULT_R2_SECRET_ACCESS_KEY` | Secret Access Key du jeton API R2 |
 | `QVAULT_R2_PREFIX` | préfixe des objets (défaut `qvault/`) |
 
 Le jeton API R2 se crée dans Cloudflare → R2 → Manage API Tokens, avec
-**Object Read & Write** limité au bucket. Sans ces variables, la sauvegarde
+**Object Read & Write** limité au bucket. Une règle de cycle de vie supprime les
+objets du préfixe après 14 jours, comme la purge locale. Sans ces variables, la sauvegarde
 reste locale et `offsite` vaut `disabled` ; avec elles, un envoi raté fait
 échouer la commande (code 1) pour que la routine le signale.
 

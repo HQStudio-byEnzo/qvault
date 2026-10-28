@@ -44,6 +44,11 @@
       "url": "https://github.com/advisories/GHSA-jjm6-p2m9-9w4x",
       "package": "nuxt",
       "reason": "Corrigée uniquement dans Nuxt 4.6. Concerne les liens quand `pages` est désactivé ; QVault utilise les pages Nuxt. Migration Nuxt 4 à planifier."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-gcqx-w48m-w2h4",
+      "package": "deepmerge",
+      "reason": "Aucune version corrigée publiée (4.3.1 est la dernière, avis publié le 18/09/2026). Dépendance de build uniquement, via @rollup/plugin-node-resolve ; n'entre pas dans le bundle de production."
     }
   ]
 }

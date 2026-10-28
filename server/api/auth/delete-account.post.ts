@@ -42,6 +42,9 @@ export default defineEventHandler(async (event) => {
     { sql: 'DELETE FROM email_verification_tokens WHERE user_id = ?', args: [session.user.id] },
     { sql: 'DELETE FROM accepted_terms WHERE user_id = ?', args: [session.user.id] },
     { sql: 'DELETE FROM user_sessions WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM user_recovery_codes WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM login_challenges WHERE user_id = ?', args: [session.user.id] },
+    { sql: 'DELETE FROM user_totp WHERE user_id = ?', args: [session.user.id] },
     { sql: 'DELETE FROM users WHERE id = ?', args: [session.user.id] },
   ], 'write')
 

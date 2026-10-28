@@ -27,11 +27,27 @@ export function useAuthClient() {
 
   /**
    * Connexion
+   *
+   * Si le compte est protégé par un code TOTP, aucune session n'est ouverte :
+   * la réponse porte `twoFactorRequired` et il faut appeler `verifyTwoFactor`.
    */
   async function signIn(data: { username: string; password: string }) {
-    const response: { user: any; needsEmail?: boolean } = await $fetch('/api/auth/login', {
+    const response: { user?: any; needsEmail?: boolean; twoFactorRequired?: boolean; expiresIn?: number } = await $fetch('/api/auth/login', {
       method: 'POST',
       body: data,
+    })
+    if (!response.twoFactorRequired) {
+      await fetchSession()
+      clearMasterPassword()
+    }
+    return response
+  }
+
+  /** Second facteur : code TOTP à 6 chiffres ou code de secours. */
+  async function verifyTwoFactor(code: string) {
+    const response: { user: any; needsEmail?: boolean } = await $fetch('/api/auth/2fa', {
+      method: 'POST',
+      body: { code },
     })
     await fetchSession()
     clearMasterPassword()
@@ -59,6 +75,7 @@ export function useAuthClient() {
     fetchSession,
     signUp,
     signIn,
+    verifyTwoFactor,
     signOut,
   }
 }

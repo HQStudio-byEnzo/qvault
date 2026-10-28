@@ -184,6 +184,42 @@ async function ensureOrganizationNameColumns(db: ReturnType<typeof createClient>
   }
 }
 
+/**
+ * Second facteur TOTP et défis de connexion. Les tables sont créées au
+ * démarrage pour que la base existante n'attende pas un `db:migrate` manuel.
+ */
+async function ensureTotpTables(db: ReturnType<typeof createClient>) {
+  await db.batch([
+    `CREATE TABLE IF NOT EXISTS user_totp (
+      user_id TEXT PRIMARY KEY,
+      secret TEXT NOT NULL,
+      enabled INTEGER NOT NULL DEFAULT 0,
+      last_step INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      enabled_at TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )`,
+    `CREATE TABLE IF NOT EXISTS user_recovery_codes (
+      user_id TEXT NOT NULL,
+      code_hash TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      used_at TEXT,
+      PRIMARY KEY (user_id, code_hash),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )`,
+    `CREATE TABLE IF NOT EXISTS login_challenges (
+      id_hash TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      expires_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )`,
+    'CREATE INDEX IF NOT EXISTS idx_login_challenges_expires ON login_challenges(expires_at)',
+    "DELETE FROM login_challenges WHERE expires_at <= datetime('now')",
+  ], 'write')
+}
+
 async function runVaultSchemaMigration(db: ReturnType<typeof createClient>) {
   await ensureBaseSchema(db)
   await ensureOrganizationNameColumns(db)
@@ -213,6 +249,7 @@ async function runVaultSchemaMigration(db: ReturnType<typeof createClient>) {
   await ensureItemIndexes(db)
   await ensureExtensionTokenColumns(db)
   await ensureUserSessionColumns(db)
+  await ensureTotpTables(db)
   await seedDefaultVaults(db)
 }
 

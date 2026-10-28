@@ -14,7 +14,7 @@
       </header>
 
       <div class="glass-panel auth-card">
-      <form @submit.prevent="handleLogin" class="space-y-4">
+      <form v-if="step === 'credentials'" @submit.prevent="handleLogin" class="space-y-4">
         <div>
           <label for="username" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.login.username') }}</label>
           <input
@@ -78,6 +78,44 @@
           <span v-else>{{ t('auth.login.btn') }}</span>
         </button>
       </form>
+
+      <!-- Second facteur : mot de passe déjà validé, aucun compte ouvert -->
+      <form v-else @submit.prevent="handleVerify" class="space-y-4">
+        <p class="text-sm text-surface-400">{{ t('auth.login.twoFactorDesc') }}</p>
+
+        <div>
+          <label for="twoFactorCode" class="block text-sm font-medium text-surface-300 mb-1">{{ t('auth.login.twoFactorCode') }}</label>
+          <input
+            id="twoFactorCode"
+            ref="codeInput"
+            v-model="twoFactorCode"
+            type="text"
+            required
+            class="input-field text-center font-mono tracking-[0.3em]"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            autocapitalize="characters"
+            spellcheck="false"
+            :aria-invalid="errorMsg ? 'true' : undefined"
+            :aria-describedby="errorMsg ? 'twoFactorError' : 'twoFactorHint'"
+            placeholder="123456"
+          />
+          <p id="twoFactorHint" class="mt-1 text-xs text-surface-500">{{ t('auth.login.twoFactorHint') }}</p>
+        </div>
+
+        <div v-if="errorMsg" id="twoFactorError" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-600" role="alert">
+          {{ errorMsg }}
+        </div>
+
+        <button type="submit" :disabled="isLoading" class="btn-primary w-full py-2.5">
+          <span v-if="isLoading">{{ t('auth.login.loading') }}</span>
+          <span v-else>{{ t('auth.login.twoFactorBtn') }}</span>
+        </button>
+
+        <button type="button" class="w-full text-center text-sm text-surface-400 underline transition-colors hover:text-surface-200" @click="backToCredentials">
+          {{ t('auth.login.twoFactorBack') }}
+        </button>
+      </form>
       </div>
 
       <!-- Footer -->
@@ -108,13 +146,16 @@ definePageMeta({
 })
 
 const { t, locale } = useLang()
-const { signIn } = useAuthClient()
+const { signIn, verifyTwoFactor } = useAuthClient()
 
 const form = reactive({
   username: '',
   password: '',
 })
 
+const step = ref<'credentials' | 'code'>('credentials')
+const twoFactorCode = ref('')
+const codeInput = ref<HTMLInputElement | null>(null)
 const isLoading = ref(false)
 const errorMsg = ref('')
 const unverified = ref(false)
@@ -129,6 +170,12 @@ async function handleLogin() {
 
   try {
     const response = await signIn({ username: form.username, password: form.password })
+    if (response?.twoFactorRequired) {
+      step.value = 'code'
+      await nextTick()
+      codeInput.value?.focus()
+      return
+    }
     // Accounts without a usable address go through the email step first.
     navigateTo(response?.needsEmail ? '/auth/complete-email' : '/dashboard')
   } catch (err: any) {
@@ -142,6 +189,28 @@ async function handleLogin() {
   } finally {
     isLoading.value = false
   }
+}
+
+async function handleVerify() {
+  isLoading.value = true
+  errorMsg.value = ''
+  try {
+    const response = await verifyTwoFactor(twoFactorCode.value.trim())
+    navigateTo(response?.needsEmail ? '/auth/complete-email' : '/dashboard')
+  } catch (err: any) {
+    errorMsg.value = err.data?.message || t('auth.login.twoFactorError')
+    twoFactorCode.value = ''
+    codeInput.value?.focus()
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function backToCredentials() {
+  step.value = 'credentials'
+  twoFactorCode.value = ''
+  errorMsg.value = ''
+  form.password = ''
 }
 
 async function handleResend() {

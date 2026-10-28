@@ -44,6 +44,23 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Second facteur : le mot de passe seul n'ouvre plus de session. Un défi
+  // court est créé et le cookie ne contient que son identifiant, jamais le
+  // secret TOTP.
+  const totp = await getTotpRecord(event, String(user.id))
+  if (totp?.enabled) {
+    await purgeExpiredChallenges(event)
+    const challenge = await createLoginChallenge(event, String(user.id))
+    setCookie(event, TWO_FACTOR_COOKIE, challenge.id, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: challenge.expiresIn,
+    })
+    return { twoFactorRequired: true, expiresIn: challenge.expiresIn }
+  }
+
   await openUserSession(event, {
     id: user.id,
     username: user.username,

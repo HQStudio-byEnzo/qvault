@@ -1,5 +1,6 @@
 // Régressions de sécurité de l'API, contre un serveur lancé (comme test:smoke).
 // SECURITY_BASE_URL=http://localhost:3000 SECURITY_DB_URL=file:./qvault-dev.db bun scripts/security-api-test.mjs
+import { createHmac } from 'node:crypto'
 import { createClient } from '@libsql/client'
 
 const baseURL = process.env.SECURITY_BASE_URL || 'http://localhost:3000'
@@ -23,11 +24,54 @@ async function call(path, { method = 'GET', body, cookie, origin = true, fetchSi
     if (fetchSite) h.set('sec-fetch-site', fetchSite)
   }
   const response = await fetch(`${baseURL}${path}`, { method, headers: h, body: body && JSON.stringify(body) })
-  const setCookie = response.headers.get('set-cookie')
+  // Une réponse peut poser plusieurs cookies (session + effacement du défi 2FA).
+  const rawCookies = typeof response.headers.getSetCookie === 'function'
+    ? response.headers.getSetCookie()
+    : [response.headers.get('set-cookie')].filter(Boolean)
+  const pairs = rawCookies
+    .map(entry => String(entry).split(';', 1)[0].trim())
+    .filter(pair => pair && !pair.endsWith('='))
   const text = await response.text()
   let data
   try { data = text ? JSON.parse(text) : null } catch { data = text }
-  return { status: response.status, data, cookie: setCookie ? setCookie.split(';', 1)[0] : null }
+  return { status: response.status, data, cookie: pairs.length ? pairs.join('; ') : null }
+}
+
+
+// --- TOTP (le test calcule les codes comme une application d'authentification) ---
+function base32Decode(input) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
+  let bits = 0
+  let value = 0
+  const out = []
+  for (const char of String(input).toUpperCase().replace(/=+$/, '')) {
+    const index = alphabet.indexOf(char)
+    if (index < 0) throw new Error(`base32 invalide: ${char}`)
+    value = (value << 5) | index
+    bits += 5
+    if (bits >= 8) {
+      out.push((value >>> (bits - 8)) & 255)
+      bits -= 8
+    }
+  }
+  return Buffer.from(out)
+}
+
+/** Attend la fenêtre TOTP suivante : un code consommé à l'enrôlement ne peut pas resservir. */
+function waitNextTotpWindow() {
+  const now = Date.now()
+  const next = (Math.floor(now / 30000) + 1) * 30000
+  return new Promise(resolve => setTimeout(resolve, Math.max(250, next - now + 400)))
+}
+
+function totpFor(secret, at = Date.now()) {
+  const step = Math.floor(at / 1000 / 30)
+  const counter = Buffer.alloc(8)
+  counter.writeBigUInt64BE(BigInt(step))
+  const digest = createHmac('sha1', base32Decode(secret)).update(counter).digest()
+  const offset = digest[digest.length - 1] & 0x0f
+  const binary = ((digest[offset] & 0x7f) << 24) | ((digest[offset + 1] & 0xff) << 16) | ((digest[offset + 2] & 0xff) << 8) | (digest[offset + 3] & 0xff)
+  return String(binary % 1_000_000).padStart(6, '0')
 }
 
 const b64 = bytes => Buffer.from(bytes).toString('base64')
@@ -41,7 +85,7 @@ async function cleanup() {
     const users = await db.execute({ sql: "SELECT id FROM users WHERE username LIKE 'secprobe_%'" })
     for (const row of users.rows) {
       const id = String(row.id)
-      for (const table of ['vault_item_history', 'vault_items', 'tags', 'folders', 'vaults', 'master_verifiers', 'extension_tokens', 'extension_pair_codes', 'email_verification_tokens', 'accepted_terms']) {
+      for (const table of ['vault_item_history', 'vault_items', 'tags', 'folders', 'vaults', 'master_verifiers', 'extension_tokens', 'extension_pair_codes', 'email_verification_tokens', 'accepted_terms', 'user_totp', 'user_recovery_codes', 'login_challenges']) {
         await db.execute({ sql: `DELETE FROM ${table} WHERE user_id = ?`, args: [id] }).catch(() => {})
       }
       await db.execute({ sql: 'DELETE FROM user_sessions WHERE user_id = ?', args: [id] }).catch(() => {})
@@ -194,6 +238,87 @@ try {
   assert((await call('/api/vault', { cookie: thirdDevice })).status === 401, 'sessions: autre session encore valide')
   assert((await call('/api/vault', { cookie })).status === 200, 'sessions: session courante fermée')
   results.sessionsRevocable = true
+
+  // Double authentification : enrôlement, connexion en deux étapes, anti-rejeu,
+  // codes de secours et désactivation protégée par mot de passe.
+  const tfUsername = `secprobe_2fa_${stamp}`
+  const tfEmail = `secprobe-2fa-${stamp}@example.com`
+  const tfRegistration = await call('/api/auth/register', { method: 'POST', body: { username: tfUsername, email: tfEmail, password, acceptedTerms: true } })
+  assert(tfRegistration.status === 200, `2fa register: ${tfRegistration.status}`)
+  const tfToken = new URL(tfRegistration.data.devVerificationUrl).searchParams.get('token')
+  assert((await call('/api/auth/verify-email', { method: 'POST', body: { token: tfToken } })).status === 200, '2fa verify-email')
+  const tfLogin = await call('/api/auth/login', { method: 'POST', body: { username: tfUsername, password } })
+  assert(tfLogin.status === 200 && tfLogin.cookie, `2fa login initial: ${tfLogin.status}`)
+  let tfCookie = tfLogin.cookie
+  assert(tfLogin.data.twoFactorRequired !== true, '2fa: demandée avant activation')
+
+  const initialStatus = await call('/api/security/totp', { cookie: tfCookie })
+  assert(initialStatus.data?.enabled === false, '2fa: état initial incorrect')
+  assert((await call('/api/security/totp', {})).status === 401, '2fa: état accessible sans session')
+
+  const setup = await call('/api/security/totp/setup', { method: 'POST', cookie: tfCookie })
+  assert(setup.status === 200 && /^[A-Z2-7]{16,}$/.test(setup.data.secret), `2fa setup: ${setup.status}`)
+  assert(String(setup.data.otpauthUrl).startsWith('otpauth://totp/'), '2fa setup: URL otpauth absente')
+  const tfSecret = setup.data.secret
+
+  assert((await call('/api/security/totp/enable', { method: 'POST', cookie: tfCookie, body: { code: '000000' } })).status === 400, '2fa: code erroné accepté')
+  assert((await call('/api/security/totp', { cookie: tfCookie })).data?.enabled === false, '2fa: activée malgré un code erroné')
+
+  const enrolment = await call('/api/security/totp/enable', { method: 'POST', cookie: tfCookie, body: { code: totpFor(tfSecret) } })
+  assert(enrolment.status === 200, `2fa enable: ${enrolment.status}`)
+  assert(Array.isArray(enrolment.data.recoveryCodes) && enrolment.data.recoveryCodes.length === 10, '2fa: codes de secours manquants')
+  assert(enrolment.data.recoveryCodes.every(code => /^[A-Z2-9]{5}-[A-Z2-9]{5}$/.test(code)), '2fa: format des codes de secours')
+  const recovery = enrolment.data.recoveryCodes
+  const enabledStatus = await call('/api/security/totp', { cookie: tfCookie })
+  assert(enabledStatus.data?.enabled === true && enabledStatus.data?.recoveryCodesLeft === 10, '2fa: état après activation')
+
+  // Le secret ne doit pas être lisible en base.
+  const tfDb = createClient({ url: dbUrl, authToken: process.env.TURSO_DB_TOKEN || undefined })
+  try {
+    const tfUserId = String((await tfDb.execute({ sql: 'SELECT id FROM users WHERE username = ?', args: [tfUsername] })).rows[0].id)
+    const stored = String((await tfDb.execute({ sql: 'SELECT secret FROM user_totp WHERE user_id = ?', args: [tfUserId] })).rows[0].secret)
+    assert(!stored.includes(tfSecret) && stored.startsWith('t1:'), '2fa: secret stocké en clair')
+
+    // Le mot de passe seul n'ouvre plus de session.
+    const challenge = await call('/api/auth/login', { method: 'POST', body: { username: tfUsername, password } })
+    assert(challenge.status === 200 && challenge.data?.twoFactorRequired === true, '2fa: session ouverte sans code')
+    assert(String(challenge.cookie || '').startsWith('qvault_2fa='), '2fa: cookie de défi absent')
+    assert((await call('/api/vault', { cookie: challenge.cookie })).status === 401, '2fa: défi utilisable comme session')
+
+    assert((await call('/api/auth/2fa', { method: 'POST', body: { code: '000000' }, cookie: challenge.cookie })).status === 401, '2fa: code erroné accepté')
+    // Le code d'enrôlement est consommé : la connexion attend le suivant.
+    await waitNextTotpWindow()
+    const usedCode = totpFor(tfSecret)
+    const verified = await call('/api/auth/2fa', { method: 'POST', body: { code: usedCode }, cookie: challenge.cookie })
+    assert(verified.status === 200 && verified.cookie, `2fa verify: ${verified.status}`)
+    tfCookie = verified.cookie
+    assert((await call('/api/vault', { cookie: tfCookie })).status === 200, '2fa: session non ouverte après le code')
+
+    // Anti-rejeu : le même code ne rouvre pas une seconde session.
+    const replayChallenge = await call('/api/auth/login', { method: 'POST', body: { username: tfUsername, password } })
+    assert((await call('/api/auth/2fa', { method: 'POST', body: { code: usedCode }, cookie: replayChallenge.cookie })).status === 401, '2fa: code rejoué accepté')
+
+    // Code de secours à usage unique.
+    const recoveryChallenge = await call('/api/auth/login', { method: 'POST', body: { username: tfUsername, password } })
+    const recoveryLogin = await call('/api/auth/2fa', { method: 'POST', body: { code: recovery[0] }, cookie: recoveryChallenge.cookie })
+    assert(recoveryLogin.status === 200 && recoveryLogin.cookie, `2fa recovery: ${recoveryLogin.status}`)
+    assert((await call('/api/security/totp', { cookie: recoveryLogin.cookie })).data?.recoveryCodesLeft === 9, '2fa: code de secours non consommé')
+    const reuseChallenge = await call('/api/auth/login', { method: 'POST', body: { username: tfUsername, password } })
+    assert((await call('/api/auth/2fa', { method: 'POST', body: { code: recovery[0] }, cookie: reuseChallenge.cookie })).status === 401, '2fa: code de secours réutilisable')
+    tfCookie = recoveryLogin.cookie
+
+    // Désactivation : mot de passe et code exigés.
+    assert((await call('/api/security/totp/disable', { method: 'POST', cookie: tfCookie, body: { password: 'mauvais', code: totpFor(tfSecret) } })).status === 401, '2fa: désactivation avec un mauvais mot de passe')
+    assert((await call('/api/security/totp/disable', { method: 'POST', cookie: tfCookie, body: { password, code: '000000' } })).status === 401, '2fa: désactivation sans code valide')
+    assert((await call('/api/security/totp/disable', { method: 'POST', cookie: tfCookie, body: { password, code: recovery[1] } })).status === 200, '2fa: désactivation refusée')
+    const afterDisable = await call('/api/auth/login', { method: 'POST', body: { username: tfUsername, password } })
+    assert(afterDisable.status === 200 && !afterDisable.data?.twoFactorRequired && afterDisable.cookie, '2fa: encore exigée après désactivation')
+    const leftovers = await tfDb.execute({ sql: 'SELECT COUNT(*) AS total FROM user_recovery_codes WHERE user_id = ?', args: [tfUserId] })
+    assert(Number((leftovers.rows[0]).total) === 0, '2fa: codes de secours conservés après désactivation')
+  } finally {
+    tfDb.close()
+  }
+  results.twoFactorEnforced = true
 
   console.log(JSON.stringify({ ok: true, ...results }))
 } finally {

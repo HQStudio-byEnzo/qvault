@@ -111,12 +111,14 @@ export function assertEncryptedPayload(payload: unknown, iv: unknown, { allowLeg
     : null
   const payloadParts = legacyParts || currentParts
 
+  const [saltPart, cipherPart] = payloadParts ?? []
   if (
-    !payloadParts ||
-    !validBase64(payloadParts[0]) ||
-    decodedBase64Length(payloadParts[0]) !== 16 ||
-    !validBase64(payloadParts[1]) ||
-    decodedBase64Length(payloadParts[1]) < 16 ||
+    !saltPart ||
+    !cipherPart ||
+    !validBase64(saltPart) ||
+    decodedBase64Length(saltPart) !== 16 ||
+    !validBase64(cipherPart) ||
+    decodedBase64Length(cipherPart) < 16 ||
     !validBase64(vector) ||
     decodedBase64Length(vector) !== 12
   ) {
@@ -142,6 +144,9 @@ export function assertEncryptedName(name: unknown) {
   }
   const [, salt, iv, ciphertext] = parts
   if (
+    !salt ||
+    !iv ||
+    !ciphertext ||
     !validBase64(salt) ||
     decodedBase64Length(salt) !== 16 ||
     !validBase64(iv) ||

@@ -51,6 +51,7 @@ export function useModalFocus(
 
     const first = nodes[0]
     const last = nodes[nodes.length - 1]
+    if (!first || !last) return
     const current = document.activeElement as HTMLElement | null
     const inside = !!container.value && !!current && container.value.contains(current)
 
@@ -71,7 +72,8 @@ export function useModalFocus(
       if (preferred) preferred.focus()
       else {
         const nodes = focusableNodes()
-        if (nodes.length) nodes[0].focus()
+        const target = nodes[0]
+        if (target) target.focus()
         else container.value?.focus()
       }
     })

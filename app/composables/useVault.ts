@@ -57,6 +57,13 @@ export function useVault() {
   const { encrypt, decrypt, serializeEncryptedPayload, parseEncryptedPayload } = useCrypto()
 
   /**
+   * Nuxt 4 type `$fetch` contre l'union de toutes les routes Nitro. Avec une
+   * quarantaine de routes, TypeScript sature (TS2321) sur chaque appel ; ce
+   * raccourci conserve le typage de la réponse sans l'instanciation récursive.
+   */
+  const api = $fetch as unknown as <T>(url: string, options?: Record<string, unknown>) => Promise<T>
+
+  /**
    * Update the local stats counters without a server round-trip.
    */
   function bumpStats(delta: number, type: VaultItem['type'], favorite: boolean) {
@@ -77,12 +84,14 @@ export function useVault() {
     error.value = null
 
     try {
-      const query = new URLSearchParams()
-      if (filters?.type) query.set('type', filters.type)
-      if (filters?.favorites) query.set('favorites', 'true')
-      if (filters?.search) query.set('search', filters.search)
+      // Objet `query` plutôt qu'une URL construite : la route reste un littéral,
+      // ce qui évite l'instanciation de types récursive de Nitro.
+      const query: Record<string, string> = {}
+      if (filters?.type) query.type = filters.type
+      if (filters?.favorites) query.favorites = 'true'
+      if (filters?.search) query.search = filters.search
 
-      const response = await $fetch(`/api/vault?${query.toString()}`) as { items: VaultItem[]; count: number }
+      const response = await $fetch<{ items: VaultItem[]; count: number }>('/api/vault', { query })
       items.value = response.items
     } catch (err: any) {
       error.value = err.data?.message || 'Erreur lors du chargement.'
@@ -96,7 +105,7 @@ export function useVault() {
    */
   async function fetchStats() {
     try {
-      stats.value = await $fetch('/api/vault/stats') as VaultStats
+      stats.value = await $fetch<VaultStats>('/api/vault/stats')
     } catch (err: any) {
       console.error('Erreur stats:', err)
     }
@@ -130,7 +139,7 @@ export function useVault() {
     const iv = encrypted.iv
 
     try {
-      const response: { id: string } = await $fetch('/api/vault', {
+      const response = await $fetch<{ id: string }>('/api/vault', {
         method: 'POST',
         body: {
           type: data.type,
@@ -196,6 +205,7 @@ export function useVault() {
       throw new Error('Format de payload chiffré invalide.')
     }
 
+    if (!item.iv) throw new Error('IV manquant pour cet élément chiffré.')
     return decrypt(envelope.ciphertext, item.iv, secret, envelope.salt, envelope.iterations)
   }
 
@@ -246,9 +256,9 @@ export function useVault() {
     const historyEntries: Array<{ id: string; payload: string; iv: string | null; is_encrypted: boolean | number }> = []
     const pageSize = 1000
     for (let offset = 0; ; offset += pageSize) {
-      const page = await $fetch(`/api/vault/history?limit=${pageSize}&offset=${offset}`) as {
+      const page = await api<{
         history: Array<{ id: string; payload: string; iv: string | null; is_encrypted: boolean | number }>
-      }
+      }>(`/api/vault/history?limit=${pageSize}&offset=${offset}`)
       historyEntries.push(...page.history)
       if (page.history.length < pageSize) break
       await new Promise(resolve => setTimeout(resolve, 0))
@@ -262,6 +272,7 @@ export function useVault() {
       } catch {
         throw new Error('Une ancienne version chiffrée est corrompue.')
       }
+      if (!snapshot.iv) throw new Error('Une ancienne version chiffrée est corrompue.')
       const historyPlain = await decrypt(
         envelope.ciphertext,
         snapshot.iv,
@@ -311,7 +322,7 @@ export function useVault() {
       }
     }
 
-    await $fetch('/api/vault/rotate-encryption', {
+    await api('/api/vault/rotate-encryption', {
       method: 'POST',
       body: {
         items: replacements,
@@ -335,10 +346,11 @@ export function useVault() {
    */
   async function updateItem(id: string, data: Partial<VaultItem>) {
     const index = items.value.findIndex(entry => entry.id === id)
-    const previous = index >= 0 ? { ...items.value[index] } : null
+    const current = index >= 0 ? items.value[index] : undefined
+    const previous = current ? { ...current } : null
 
-    if (index >= 0) {
-      const next = { ...items.value[index], ...data, updated_at: new Date().toISOString() }
+    if (current) {
+      const next = { ...current, ...data, updated_at: new Date().toISOString() }
       items.value[index] = next
       if (previous && 'favorite' in data && stats.value) {
         const delta = (data.favorite ? 1 : 0) - (previous.favorite ? 1 : 0)
@@ -347,7 +359,7 @@ export function useVault() {
     }
 
     try {
-      await $fetch(`/api/vault/${id}`, { method: 'PUT', body: data })
+      await api(`/api/vault/${id}`, { method: 'PUT', body: data })
     } catch (err: any) {
       if (previous && index >= 0) items.value[index] = previous
       error.value = err.data?.message || 'Erreur lors de la mise à jour.'
@@ -384,7 +396,7 @@ export function useVault() {
     if (removed) bumpStats(-1, removed.type, removed.favorite)
 
     try {
-      await $fetch(`/api/vault/${item.id}`, { method: 'DELETE' })
+      await api(`/api/vault/${item.id}`, { method: 'DELETE' })
     } catch (err: any) {
       if (removed) {
         items.value.splice(index, 0, removed)
@@ -427,7 +439,7 @@ export function useVault() {
       })
     }
 
-    await $fetch('/api/vault/upgrade-encryption', { method: 'POST', body: { items: upgrades } })
+    await api('/api/vault/upgrade-encryption', { method: 'POST', body: { items: upgrades } })
     await fetchItems()
     return upgrades.length
   }

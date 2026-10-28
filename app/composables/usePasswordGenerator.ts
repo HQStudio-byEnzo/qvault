@@ -18,7 +18,7 @@ const SETS = {
 function secureIndex(max: number) {
   const values = new Uint32Array(1)
   crypto.getRandomValues(values)
-  return values[0] % max
+  return (values[0] ?? 0) % max
 }
 
 export function usePasswordGenerator() {

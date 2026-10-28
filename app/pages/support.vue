@@ -100,7 +100,7 @@
 
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
-import type { SupportEntry } from '~/server/utils/support-catalog'
+import type { SupportEntry } from '~~/server/utils/support-catalog'
 
 definePageMeta({ layout: 'default' })
 

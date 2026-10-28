@@ -130,7 +130,8 @@ const relatedLinks = computed(() => {
     compare: { to: '/generateur-mot-de-passe', label: locale.value === 'en' ? 'Password generator' : 'Générateur de mot de passe', icon: 'hugeicons:sparkles' },
     troubleshoot: { to: '/guides/depannage', label: locale.value === 'en' ? 'Troubleshooting' : 'Dépannage', icon: 'hugeicons:lifebuoy' },
   }
-  return [tools[guide.category], ...others]
+  const tool = tools[guide.category]
+  return [...(tool ? [tool] : []), ...others]
 })
 
 /**

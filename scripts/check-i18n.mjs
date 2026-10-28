@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { extname, join } from 'node:path'
 
-const source = readFileSync('composables/useI18n.ts', 'utf8').replaceAll('\r\n', '\n')
+const source = readFileSync('app/composables/useI18n.ts', 'utf8').replaceAll('\r\n', '\n')
 const frStart = source.indexOf('  fr: {')
 const enStart = source.indexOf('  en: {')
 const end = source.lastIndexOf('\n  },\n}')
@@ -26,10 +26,10 @@ function walk(directory) {
     if (entry.name.startsWith('.') || entry.name === 'node_modules') continue
     const path = join(directory, entry.name)
     if (entry.isDirectory()) walk(path)
-    else if (['.vue', '.ts'].includes(extname(entry.name)) && path.replaceAll('\\', '/') !== 'composables/useI18n.ts') files.push(path)
+    else if (['.vue', '.ts'].includes(extname(entry.name)) && path.replaceAll('\\', '/') !== 'app/composables/useI18n.ts') files.push(path)
   }
 }
-for (const directory of ['components', 'composables', 'layouts', 'pages']) walk(directory)
+for (const directory of ['app/components', 'app/composables', 'app/layouts', 'app/pages']) walk(directory)
 
 const used = new Set()
 for (const file of files) {

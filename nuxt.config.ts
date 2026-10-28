@@ -3,9 +3,6 @@ const siteUrl = (process.env.APP_URL || 'https://qvault.hqmerchant.xyz').replace
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-19',
-  future: {
-    compatibilityVersion: 3,
-  },
   devtools: { enabled: process.env.NODE_ENV !== 'production' },
 
   experimental: {

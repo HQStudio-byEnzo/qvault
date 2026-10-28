@@ -3,7 +3,7 @@
  * Crée un compte (username + e-mail) puis envoie un lien de vérification.
  * Le compte reste inactif jusqu'à la confirmation de l'adresse e-mail.
  */
-import { LEGAL_TERMS_VERSION, truncateIp } from '~/server/utils/legal'
+import { LEGAL_TERMS_VERSION, truncateIp } from '~~/server/utils/legal'
 
 export default defineEventHandler(async (event) => {
   await enforceRateLimit(event, 'auth-register', 5, 60 * 60 * 1000)

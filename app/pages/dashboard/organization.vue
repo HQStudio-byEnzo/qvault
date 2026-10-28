@@ -68,7 +68,7 @@ async function load() {
 async function perform(work: () => Promise<unknown>) { message.value = ''; failed.value = false; try { await work(); message.value = t('organization.saved'); await load() } catch (error: any) { failed.value = true; message.value = error?.data?.message || t('organization.failed') } }
 async function create(kind: 'vault' | 'folder' | 'tag', name: string) { const trimmed = name.trim(); if (!trimmed) return; await perform(() => createOrganization(kind, trimmed, { color: tagColor.value, vaultId: folderVault.value })); if (kind === 'vault') vaultName.value = ''; else if (kind === 'folder') folderName.value = ''; else tagName.value = '' }
 async function remove(kind: 'vault' | 'folder' | 'tag', id: string) { await perform(() => removeOrganization(kind, id)) }
-async function assign() { await perform(() => $fetch('/api/organization/assign', { method: 'POST', body: { item_id: selectedItemId.value, vault_id: selectedVaultId.value, folder_id: selectedFolderId.value || null, tag_ids: selectedTagIds.value } })); await fetchItems() }
+async function assign() { await perform(() => $fetch<unknown>('/api/organization/assign', { method: 'POST', body: { item_id: selectedItemId.value, vault_id: selectedVaultId.value, folder_id: selectedFolderId.value || null, tag_ids: selectedTagIds.value } })); await fetchItems() }
 watch(selectedItemId, (id) => { const item = items.value.find(entry => entry.id === id); if (!item) return; selectedVaultId.value = item.vault_id || data.value.vaults[0]?.id || ''; selectedFolderId.value = item.folder_id || ''; selectedTagIds.value = item.tags?.map(tag => tag.id) || [] })
 onMounted(async () => { await Promise.all([load(), fetchItems()]) })
 </script>

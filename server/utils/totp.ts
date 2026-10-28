@@ -57,11 +57,12 @@ export function totpCode(secret: string, step: number, digits: number = TOTP_DIG
   const counter = Buffer.alloc(8)
   counter.writeBigUInt64BE(BigInt(step))
   const digest = createHmac('sha1', key).update(counter).digest()
-  const offset = digest[digest.length - 1] & 0x0f
-  const binary = ((digest[offset] & 0x7f) << 24)
-    | ((digest[offset + 1] & 0xff) << 16)
-    | ((digest[offset + 2] & 0xff) << 8)
-    | (digest[offset + 3] & 0xff)
+  // SHA-1 produit toujours 20 octets : les index ci-dessous sont dans les bornes.
+  const offset = (digest.at(-1) ?? 0) & 0x0f
+  const binary = ((digest[offset] ?? 0) & 0x7f) << 24
+    | ((digest[offset + 1] ?? 0) & 0xff) << 16
+    | ((digest[offset + 2] ?? 0) & 0xff) << 8
+    | ((digest[offset + 3] ?? 0) & 0xff)
   return String(binary % 10 ** digits).padStart(digits, '0')
 }
 

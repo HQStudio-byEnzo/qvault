@@ -55,13 +55,14 @@ export function encryptTotpSecret(secret: string): string {
 
 export function decryptTotpSecret(envelope: string): string {
   const parts = String(envelope || '').split(':')
-  if (parts.length !== 4 || parts[0] !== ENVELOPE_PREFIX) {
+  const [, iv, tag, ciphertext] = parts
+  if (parts.length !== 4 || parts[0] !== ENVELOPE_PREFIX || !iv || !tag || !ciphertext) {
     throw createError({ statusCode: 500, message: 'Secret TOTP stocké dans un format inconnu.' })
   }
   try {
-    const decipher = createDecipheriv('aes-256-gcm', totpKey(), Buffer.from(parts[1], 'base64url'))
-    decipher.setAuthTag(Buffer.from(parts[2], 'base64url'))
-    return Buffer.concat([decipher.update(Buffer.from(parts[3], 'base64url')), decipher.final()]).toString('utf8')
+    const decipher = createDecipheriv('aes-256-gcm', totpKey(), Buffer.from(iv, 'base64url'))
+    decipher.setAuthTag(Buffer.from(tag, 'base64url'))
+    return Buffer.concat([decipher.update(Buffer.from(ciphertext, 'base64url')), decipher.final()]).toString('utf8')
   } catch {
     throw createError({
       statusCode: 503,

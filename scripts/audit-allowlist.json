@@ -1,49 +1,9 @@
 {
   "advisories": [
     {
-      "url": "https://github.com/advisories/GHSA-v5rq-49vh-5v5c",
-      "package": "@simple-git/argv-parser",
-      "reason": "Dépendance de dev (Nuxt devtools). Corrigée seulement dans simple-git 4, qui casse @nuxt/devtools 3.4.1 (plus d'export ESM par défaut). N'entre pas dans le bundle de production."
-    },
-    {
-      "url": "https://github.com/advisories/GHSA-858h-whjf-mvg5",
-      "package": "simple-git",
-      "reason": "Dépendance de dev (Nuxt devtools). Corrigée seulement dans simple-git 4, qui casse @nuxt/devtools 3.4.1 (plus d'export ESM par défaut). N'entre pas dans le bundle de production."
-    },
-    {
-      "url": "https://github.com/advisories/GHSA-x6jw-m9v5-85vh",
-      "package": "simple-git",
-      "reason": "Dépendance de dev (Nuxt devtools). Corrigée seulement dans simple-git 4, qui casse @nuxt/devtools 3.4.1 (plus d'export ESM par défaut). N'entre pas dans le bundle de production."
-    },
-    {
-      "url": "https://github.com/advisories/GHSA-g4wm-2vf7-vfgr",
-      "package": "simple-git",
-      "reason": "Dépendance de dev (Nuxt devtools). Corrigée seulement dans simple-git 4, qui casse @nuxt/devtools 3.4.1 (plus d'export ESM par défaut). N'entre pas dans le bundle de production."
-    },
-    {
-      "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
-      "package": "braces",
-      "reason": "Dépendance de dev (chokidar, watch de Nuxt). Aucune version corrigée publiée (3.0.3 est la dernière). N'entre pas dans le bundle de production."
-    },
-    {
       "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
       "package": "node-forge",
       "reason": "Dépendance de dev (listhen, serveur local de Nuxt). Aucune version corrigée publiée (1.4.0 est la dernière). N'entre pas dans le bundle de production."
-    },
-    {
-      "url": "https://github.com/advisories/GHSA-vjh5-4x84-xrqp",
-      "package": "nuxt",
-      "reason": "Corrigée uniquement dans Nuxt 4. Les route rules ignorent les variantes de casse, mais Nuxt ne sert aucune route insensible à la casse ici et la CSP est posée par requête (server/plugins/security-headers.ts). Migration Nuxt 4 à planifier."
-    },
-    {
-      "url": "https://github.com/advisories/GHSA-xfq5-w38q-pc2x",
-      "package": "nuxt",
-      "reason": "Corrigée uniquement dans Nuxt 4.6.2. Les server islands ne sont pas activés dans nuxt.config.ts, donc la surface n'est pas utilisée. Migration Nuxt 4 à planifier."
-    },
-    {
-      "url": "https://github.com/advisories/GHSA-jjm6-p2m9-9w4x",
-      "package": "nuxt",
-      "reason": "Corrigée uniquement dans Nuxt 4.6. Concerne les liens quand `pages` est désactivé ; QVault utilise les pages Nuxt. Migration Nuxt 4 à planifier."
     },
     {
       "url": "https://github.com/advisories/GHSA-gcqx-w48m-w2h4",

@@ -2,7 +2,7 @@
  * GET /api/auth/me
  * Returns current user info from database
  */
-import { getLegalAcceptance } from '~/server/utils/legal'
+import { getLegalAcceptance } from '~~/server/utils/legal'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)

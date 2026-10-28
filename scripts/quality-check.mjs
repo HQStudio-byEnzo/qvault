@@ -32,7 +32,7 @@ const checks = [
     // Vercel Analytics is a deliberate exception: it is cookieless and stores
     // no personal data. Ad and search trackers remain forbidden.
     pattern: /googletagmanager|google-analytics/,
-    exclude: path => relative(root, path).replaceAll('\\', '/') === 'plugins/analytics.client.ts',
+    exclude: path => relative(root, path).replaceAll('\\', '/') === 'app/plugins/analytics.client.ts',
   },
   {
     label: 'production console logging',

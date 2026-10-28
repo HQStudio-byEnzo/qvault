@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs'
-import { useCrypto } from '../composables/useCrypto.ts'
-import { useTotp } from '../composables/useTotp.ts'
-import { forgetPasskeyUnlock } from '../composables/usePasskeyUnlock.ts'
-import { parsePasswordEntry, serializePasswordEntry } from '../utils/password-entry.ts'
-import { isPrivateAnalyticsPath } from '../utils/analytics.ts'
-import { CREDENTIAL_SCHEMA, LEGACY_CREDENTIAL_SCHEMA } from '../utils/brand.ts'
-import { isEncryptedNameValue, parseEncryptedName, serializeEncryptedName } from '../utils/encrypted-name.ts'
-import { isLegacyEncryptedPayload } from '../utils/payload-version.ts'
-import { deviceLabel } from '../utils/device-label.ts'
-import { TRASH_RETENTION_DAYS, trashExpiresAt } from '../utils/trash.ts'
+import { useCrypto } from '../app/composables/useCrypto.ts'
+import { useTotp } from '../app/composables/useTotp.ts'
+import { forgetPasskeyUnlock } from '../app/composables/usePasskeyUnlock.ts'
+import { parsePasswordEntry, serializePasswordEntry } from '../app/utils/password-entry.ts'
+import { isPrivateAnalyticsPath } from '../app/utils/analytics.ts'
+import { CREDENTIAL_SCHEMA, LEGACY_CREDENTIAL_SCHEMA } from '../app/utils/brand.ts'
+import { isEncryptedNameValue, parseEncryptedName, serializeEncryptedName } from '../app/utils/encrypted-name.ts'
+import { isLegacyEncryptedPayload } from '../app/utils/payload-version.ts'
+import { deviceLabel } from '../app/utils/device-label.ts'
+import { TRASH_RETENTION_DAYS, trashExpiresAt } from '../app/utils/trash.ts'
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
@@ -104,7 +104,7 @@ for (const path of ['/', '/features', '/guides/creer-un-coffre', '/audit-securit
 // ne propose d'en enregistrer un.
 const schemaSql = readFileSync(new URL('../server/database/schema.sql', import.meta.url), 'utf8')
 assert(!/password_hint/.test(schemaSql), 'password_hint est encore créé par le schéma')
-const i18nSource = readFileSync(new URL('../composables/useI18n.ts', import.meta.url), 'utf8')
+const i18nSource = readFileSync(new URL('../app/composables/useI18n.ts', import.meta.url), 'utf8')
 assert(!/'[a-zA-Z.]*hint[A-Z][^']*':/.test(i18nSource), 'Un libellé d’indice de mot de passe subsiste')
 
 console.log(JSON.stringify({

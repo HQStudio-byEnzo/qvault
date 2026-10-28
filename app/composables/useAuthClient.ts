@@ -32,7 +32,7 @@ export function useAuthClient() {
    * la réponse porte `twoFactorRequired` et il faut appeler `verifyTwoFactor`.
    */
   async function signIn(data: { username: string; password: string }) {
-    const response: { user?: any; needsEmail?: boolean; twoFactorRequired?: boolean; expiresIn?: number } = await $fetch('/api/auth/login', {
+    const response = await $fetch<{ user?: any; needsEmail?: boolean; twoFactorRequired?: boolean; expiresIn?: number }>('/api/auth/login', {
       method: 'POST',
       body: data,
     })
@@ -45,7 +45,7 @@ export function useAuthClient() {
 
   /** Second facteur : code TOTP à 6 chiffres ou code de secours. */
   async function verifyTwoFactor(code: string) {
-    const response: { user: any; needsEmail?: boolean } = await $fetch('/api/auth/2fa', {
+    const response = await $fetch<{ user: any; needsEmail?: boolean }>('/api/auth/2fa', {
       method: 'POST',
       body: { code },
     })

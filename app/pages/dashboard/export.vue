@@ -261,7 +261,7 @@ async function handleImport(event: Event) {
       throw new Error(t('export.invalidFormat'))
     }
 
-    const sourcePassword = backupPassword.value || masterPassword.value
+    const sourcePassword = backupPassword.value || masterPassword.value || ''
     let content: BackupContent
     try {
       const iterations = envelope.version === 3 ? 100_000 : 600_000

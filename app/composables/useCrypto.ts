@@ -24,17 +24,18 @@ export function serializeEncryptedPayload(value: Pick<EncryptedPayload, 'salt' |
 
 export function parseEncryptedPayload(payload: string) {
   const parts = payload.split(':')
-  if (parts.length === 2 && parts.every(Boolean)) {
-    return { salt: parts[0], ciphertext: parts[1], iterations: LEGACY_PBKDF2_ITERATIONS }
+  const [first, second, third, fourth] = parts
+  if (parts.length === 2 && first && second) {
+    return { salt: first, ciphertext: second, iterations: LEGACY_PBKDF2_ITERATIONS }
   }
   if (
     parts.length === 4 &&
-    parts[0] === ENCRYPTED_PAYLOAD_VERSION &&
-    Number(parts[1]) === PBKDF2_ITERATIONS &&
-    parts[2] &&
-    parts[3]
+    first === ENCRYPTED_PAYLOAD_VERSION &&
+    Number(second) === PBKDF2_ITERATIONS &&
+    third &&
+    fourth
   ) {
-    return { salt: parts[2], ciphertext: parts[3], iterations: PBKDF2_ITERATIONS }
+    return { salt: third, ciphertext: fourth, iterations: PBKDF2_ITERATIONS }
   }
   throw new Error('INVALID_ENCRYPTED_PAYLOAD')
 }

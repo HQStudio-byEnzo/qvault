@@ -31,7 +31,7 @@ const itemOptions = computed(() => [
   ...items.value.map(item => ({ value: item.id, label: item.label || item.type })),
 ])
 const selectedId = ref(''), versions = ref<any[]>([]), loading = ref(false), restoring = ref(''), message = ref(''), failed = ref(false)
-async function loadHistory() { if (!selectedId.value) return; loading.value = true; try { const data: { history: any[] } = await $fetch(`/api/vault/${selectedId.value}/history`); versions.value = data.history } finally { loading.value = false } }
+async function loadHistory() { if (!selectedId.value) return; loading.value = true; try { const data = await $fetch<{ history: any[] }>(`/api/vault/${selectedId.value}/history`); versions.value = data.history } finally { loading.value = false } }
 async function restore(historyId: string) { restoring.value = historyId; message.value = ''; failed.value = false; try { await $fetch(`/api/vault/${selectedId.value}/restore`, { method: 'POST', body: { history_id: historyId } }); message.value = t('history.restored'); await Promise.all([loadHistory(), fetchItems()]) } catch { failed.value = true; message.value = t('history.failed') } finally { restoring.value = '' } }
 watch(selectedId, loadHistory)
 onMounted(fetchItems)

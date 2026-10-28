@@ -73,7 +73,7 @@ useModalFocus(dialogEl, () => {}, { active: visible, closeOnEscape: false })
 
 onMounted(async () => {
   try {
-    const me: { termsAccepted: boolean } = await $fetch('/api/auth/me')
+    const me = await $fetch<{ termsAccepted: boolean }>('/api/auth/me')
     visible.value = !me.termsAccepted
   } catch {
     visible.value = false

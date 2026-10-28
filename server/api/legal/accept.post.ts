@@ -2,7 +2,7 @@
  * POST /api/legal/accept
  * Enregistre l'acceptation des documents legaux pour la version courante
  */
-import { LEGAL_TERMS_VERSION, setLegalAcceptance } from '~/server/utils/legal'
+import { LEGAL_TERMS_VERSION, setLegalAcceptance } from '~~/server/utils/legal'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)

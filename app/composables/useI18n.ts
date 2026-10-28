@@ -2052,7 +2052,7 @@ export function useLang() {
   const locale = useState<string>('locale', () => 'fr')
 
   function t(key: string): string {
-    return translations[locale.value]?.[key] || translations.en[key] || key
+    return translations[locale.value]?.[key] || translations.en?.[key] || key
   }
 
   function setLocale(lang: string) {

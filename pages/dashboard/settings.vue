@@ -295,6 +295,88 @@
 
       <section class="glass-panel p-5 md:p-6 space-y-4">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+          <Icon name="hugeicons:shield-02" class="w-5 h-5 text-accent-text" />
+          {{ t('settings.totpTitle') }}
+        </h2>
+        <p class="text-sm text-surface-400">{{ t('settings.totpDesc') }}</p>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="tech-status">{{ totpEnabled ? t('settings.totpActive') : t('settings.totpInactive') }}</span>
+          <span v-if="totpEnabled" class="text-xs text-surface-500">{{ t('settings.totpRecoveryLeft').replace('{count}', String(totpRecoveryLeft)) }}</span>
+        </div>
+
+        <div v-if="!totpEnabled" class="space-y-3">
+          <button v-if="!totpSetup" type="button" class="btn-primary" :disabled="totpLoading" @click="startTotpSetup">
+            <Icon name="hugeicons:lock-key" class="w-4 h-4" />
+            {{ t('settings.totpEnable') }}
+          </button>
+
+          <div v-else class="space-y-3">
+            <p class="text-sm text-surface-400">{{ t('settings.totpScan') }}</p>
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+              <img v-if="totpQr" :src="totpQr" :alt="t('settings.totpQrAlt')" class="h-44 w-44 rounded-xl bg-white p-2" />
+              <div class="min-w-0 space-y-2">
+                <p class="text-xs text-surface-500">{{ t('settings.totpManual') }}</p>
+                <code class="block break-all rounded-lg border border-border bg-surface-900/60 px-3 py-2 font-mono text-xs text-foreground">{{ totpSecret }}</code>
+                <button type="button" class="btn-secondary" @click="copySecurely(totpSecret)">{{ t('settings.totpCopySecret') }}</button>
+              </div>
+            </div>
+            <div>
+              <label for="totpConfirm" class="block text-sm font-medium text-surface-300 mb-1">{{ t('settings.totpCodeLabel') }}</label>
+              <input
+                id="totpConfirm"
+                v-model="totpCode"
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                class="input-field max-w-[12rem] text-center font-mono tracking-[0.2em]"
+                placeholder="123456"
+              />
+            </div>
+            <button type="button" class="btn-primary" :disabled="totpLoading || totpCode.trim().length < 6" @click="confirmTotp">
+              {{ t('settings.totpConfirm') }}
+            </button>
+          </div>
+        </div>
+
+        <div v-if="totpRecoveryCodes.length" class="space-y-3 rounded-xl border border-amber-500/25 bg-amber-500/10 p-4">
+          <p class="text-sm font-medium text-amber-700">{{ t('settings.totpRecoveryTitle') }}</p>
+          <p class="text-sm text-amber-700">{{ t('settings.totpRecoveryDesc') }}</p>
+          <ul data-testid="totp-recovery-codes" class="grid grid-cols-2 gap-2 font-mono text-sm text-foreground">
+            <li v-for="code in totpRecoveryCodes" :key="code">{{ code }}</li>
+          </ul>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="btn-secondary" @click="copySecurely(totpRecoveryCodes.join('\n'))">{{ t('settings.totpRecoveryCopy') }}</button>
+            <button type="button" class="btn-secondary" @click="downloadRecoveryCodes">{{ t('settings.totpRecoveryDownload') }}</button>
+            <button type="button" class="btn-secondary" @click="totpRecoveryCodes = []">{{ t('settings.totpRecoverySaved') }}</button>
+          </div>
+        </div>
+
+        <div v-if="totpEnabled" class="space-y-3">
+          <button v-if="!totpDisableOpen" type="button" class="btn-secondary" @click="totpDisableOpen = true">{{ t('settings.totpDisable') }}</button>
+          <div v-else class="space-y-3">
+            <p class="text-sm text-amber-700">{{ t('settings.totpDisableWarning') }}</p>
+            <input v-model="totpDisablePassword" type="password" class="input-field" autocomplete="current-password" :placeholder="t('settings.yourPassword')" />
+            <input
+              v-model="totpDisableCode"
+              type="text"
+              class="input-field max-w-[12rem] text-center font-mono tracking-[0.2em]"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              :placeholder="t('settings.totpCodeLabel')"
+            />
+            <div class="flex flex-wrap gap-2">
+              <button type="button" class="btn-danger" :disabled="totpLoading" @click="disableTotp">{{ t('settings.totpDisableConfirm') }}</button>
+              <button type="button" class="btn-secondary" @click="cancelTotpDisable">{{ t('settings.cancel') }}</button>
+            </div>
+          </div>
+        </div>
+
+        <p v-if="totpMessage" class="text-sm" :class="totpFailed ? 'text-red-600' : 'text-accent-text'">{{ totpMessage }}</p>
+      </section>
+
+      <section class="glass-panel p-5 md:p-6 space-y-4">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
           <Icon name="hugeicons:unplug" class="w-5 h-5 text-accent-text" />
           {{ t('settings.extensionTitle') }}
         </h2>
@@ -496,6 +578,7 @@
 <script setup lang="ts">
 import { useLang } from '~/composables/useI18n'
 import { type ShortcutActionId, useShortcutPreferences } from '~/composables/useShortcuts'
+import QRCode from 'qrcode'
 import { deviceLabel } from '~/utils/device-label'
 import {
   MIN_ACCOUNT_PASSWORD_LENGTH,
@@ -573,6 +656,118 @@ async function revokeOtherSessions() {
     sessionsMessage.value = t('settings.devicesFailed')
   }
 }
+
+// --- Double authentification (TOTP) --------------------------------------
+interface TotpStatus { enabled: boolean; pending: boolean; enabledAt: string | null; recoveryCodesLeft: number }
+
+const totpEnabled = ref(false)
+const totpRecoveryLeft = ref(0)
+const totpSetup = ref(false)
+const totpSecret = ref('')
+const totpQr = ref('')
+const totpCode = ref('')
+const totpRecoveryCodes = ref<string[]>([])
+const totpDisableOpen = ref(false)
+const totpDisablePassword = ref('')
+const totpDisableCode = ref('')
+const totpLoading = ref(false)
+const totpMessage = ref('')
+const totpFailed = ref(false)
+
+async function loadTotpStatus() {
+  try {
+    const data = await $fetch<TotpStatus>('/api/security/totp')
+    totpEnabled.value = data.enabled
+    totpRecoveryLeft.value = data.recoveryCodesLeft
+  } catch {
+    // Un compte sans e-mail confirmé n'a pas accès à l'API : la section reste
+    // simplement à l'état inactif, sans message d'erreur.
+  }
+}
+
+async function startTotpSetup() {
+  totpLoading.value = true
+  totpFailed.value = false
+  totpMessage.value = ''
+  try {
+    const data = await $fetch<{ secret: string; otpauthUrl: string }>('/api/security/totp/setup', { method: 'POST' })
+    totpSecret.value = data.secret
+    totpSetup.value = true
+    totpCode.value = ''
+    totpQr.value = await QRCode.toDataURL(data.otpauthUrl, { errorCorrectionLevel: 'M', width: 360, margin: 1 })
+  } catch (error: any) {
+    totpFailed.value = true
+    totpMessage.value = error?.data?.message || t('settings.totpFailed')
+  } finally {
+    totpLoading.value = false
+  }
+}
+
+async function confirmTotp() {
+  totpLoading.value = true
+  totpFailed.value = false
+  totpMessage.value = ''
+  try {
+    const data = await $fetch<{ recoveryCodes: string[] }>('/api/security/totp/enable', {
+      method: 'POST',
+      body: { code: totpCode.value.trim() },
+    })
+    totpRecoveryCodes.value = data.recoveryCodes
+    totpEnabled.value = true
+    totpRecoveryLeft.value = data.recoveryCodes.length
+    totpSetup.value = false
+    totpSecret.value = ''
+    totpQr.value = ''
+    totpCode.value = ''
+    await loadSessions()
+    totpMessage.value = t('settings.totpEnabledMessage')
+  } catch (error: any) {
+    totpFailed.value = true
+    totpMessage.value = error?.data?.message || t('settings.totpFailed')
+  } finally {
+    totpLoading.value = false
+  }
+}
+
+async function disableTotp() {
+  totpLoading.value = true
+  totpFailed.value = false
+  totpMessage.value = ''
+  try {
+    await $fetch('/api/security/totp/disable', {
+      method: 'POST',
+      body: { password: totpDisablePassword.value, code: totpDisableCode.value.trim() },
+    })
+    totpEnabled.value = false
+    totpRecoveryLeft.value = 0
+    totpRecoveryCodes.value = []
+    cancelTotpDisable()
+    await loadSessions()
+    totpMessage.value = t('settings.totpDisabledMessage')
+  } catch (error: any) {
+    totpFailed.value = true
+    totpMessage.value = error?.data?.message || t('settings.totpFailed')
+  } finally {
+    totpLoading.value = false
+  }
+}
+
+function cancelTotpDisable() {
+  totpDisableOpen.value = false
+  totpDisablePassword.value = ''
+  totpDisableCode.value = ''
+}
+
+function downloadRecoveryCodes() {
+  if (!import.meta.client || !totpRecoveryCodes.value.length) return
+  const content = `${t('settings.totpRecoveryFileHeader')}\n\n${totpRecoveryCodes.value.join('\n')}\n`
+  const url = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'qvault-codes-de-secours.txt'
+  link.click()
+  URL.revokeObjectURL(url)
+}
 const extensionConfigured = ref(false)
 const extensionLoading = ref(false)
 const extensionToken = ref('')
@@ -622,6 +817,7 @@ onMounted(async () => {
   await fetchItems()
   await loadExtensionTokenStatus()
   await loadSessions()
+  await loadTotpStatus()
 })
 
 // Change password

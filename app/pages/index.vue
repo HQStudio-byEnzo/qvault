@@ -149,7 +149,7 @@
           <p class="eyebrow">{{ t('landing.securityLabel') }}</p>
           <h2>{{ t('landing.securityTitle') }}</h2>
           <p class="lp-section__lede">{{ t('landing.securityDesc') }}</p>
-          <NuxtLink to="/audit-securite" class="btn-secondary">
+          <NuxtLink to="/audit-securite" class="lp-security__link">
             {{ t('landing.inspectSecurity') }}
             <Icon name="hugeicons:arrow-right-01" class="h-4 w-4" />
           </NuxtLink>
@@ -312,6 +312,18 @@ const securityFlow = computed(() => [
 </script>
 
 <style scoped>
+.lp .eyebrow {
+  /* Une bordure arrondie se lit comme un bouton ou un filtre : sur la LP les
+     libellés de section restent du texte, sans contour. */
+  background: none;
+  border: 0;
+  border-radius: 0;
+  color: var(--color-accent-text);
+  letter-spacing: 0.12em;
+  min-height: 0;
+  padding-inline: 0;
+}
+
 .lp {
   background: var(--color-paper);
   color: var(--color-text);
@@ -775,7 +787,7 @@ const securityFlow = computed(() => [
   margin-top: var(--space-1);
 }
 
-.lp-tool > svg {
+.lp-tool > .iconify {
   color: var(--color-text-faint);
   margin-inline-start: auto;
   margin-top: 0.25rem;
@@ -791,6 +803,22 @@ const securityFlow = computed(() => [
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   margin-block: var(--space-3) var(--space-4);
   text-wrap: balance;
+}
+
+.lp-security__link {
+  align-items: center;
+  color: var(--color-accent-text);
+  display: inline-flex;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  gap: var(--space-1);
+  margin-top: var(--space-5);
+  min-height: 2.75rem;
+  text-decoration: none;
+}
+
+.lp-security__link:hover {
+  text-decoration: underline;
 }
 
 .lp-security__flow {
@@ -859,6 +887,23 @@ const securityFlow = computed(() => [
   display: none;
 }
 
+.lp-faq summary:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 2px;
+}
+
+.lp-faq summary .iconify {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.lp-faq details[open] summary {
+  color: var(--color-accent-text);
+}
+
+.lp-faq details[open] summary .iconify {
+  transform: rotate(45deg);
+}
+
 .lp-faq p {
   color: var(--color-text-muted);
   font-size: 0.9375rem;
@@ -920,8 +965,13 @@ const securityFlow = computed(() => [
   color: var(--color-text-muted);
   display: inline-flex;
   font-size: 0.875rem;
-  min-height: 1.5rem;
+  min-height: 2.75rem;
   text-decoration: none;
+}
+
+.lp-footer__links a:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 2px;
 }
 
 .lp-footer__links a:hover {

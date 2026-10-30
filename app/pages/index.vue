@@ -17,11 +17,35 @@
         <div class="lp-nav__actions">
           <UiLangSwitch />
           <NuxtLink v-if="!loggedIn" to="/auth/login" class="btn-secondary lp-nav__login">{{ t('nav.login') }}</NuxtLink>
-          <NuxtLink :to="loggedIn ? '/dashboard' : '/auth/register'" class="btn-primary">
+          <NuxtLink :to="loggedIn ? '/dashboard' : '/auth/register'" class="btn-primary lp-nav__cta">
             {{ loggedIn ? t('hero.dashboardCta') : t('hero.cta') }}
           </NuxtLink>
+
+          <button
+            ref="menuButton"
+            type="button"
+            class="lp-nav__toggle"
+            data-lp-menu-button
+            aria-controls="lp-nav-panel"
+            :aria-expanded="menuOpen ? 'true' : 'false'"
+            :aria-label="menuOpen ? t('nav.closeMenu') : t('nav.openMenu')"
+            @click="toggleMenu"
+          >
+            <Icon :name="menuOpen ? 'hugeicons:cancel-01' : 'hugeicons:menu-01'" class="h-5 w-5" />
+          </button>
         </div>
       </div>
+
+      <nav v-show="menuOpen" id="lp-nav-panel" ref="menuPanel" class="lp-nav__panel" :aria-label="t('nav.menu')">
+        <a href="#features" @click="closeMenu">{{ t('nav.features') }}</a>
+        <a href="#how" @click="closeMenu">{{ t('nav.how') }}</a>
+        <a href="#tools" @click="closeMenu">{{ t('nav.tools') }}</a>
+        <NuxtLink to="/support" @click="closeMenu">{{ t('sidebar.support') }}</NuxtLink>
+        <NuxtLink v-if="!loggedIn" to="/auth/login" class="lp-nav__panel-login" @click="closeMenu">{{ t('nav.login') }}</NuxtLink>
+        <NuxtLink :to="loggedIn ? '/dashboard' : '/auth/register'" class="btn-primary lp-nav__panel-cta" @click="closeMenu">
+          {{ loggedIn ? t('hero.dashboardCta') : t('hero.cta') }}
+        </NuxtLink>
+      </nav>
     </header>
 
     <section class="lp-hero">
@@ -94,7 +118,7 @@
         <li v-for="(step, index) in workflow" :key="step.title">
           <span class="lp-steps__index">{{ index + 1 }}</span>
           <div>
-            <h3><Icon :name="step.icon" class="h-4 w-4" /> {{ step.title }}</h3>
+            <h3>{{ step.title }}</h3>
             <p>{{ step.description }}</p>
           </div>
         </li>
@@ -125,7 +149,7 @@
           <p class="eyebrow">{{ t('landing.securityLabel') }}</p>
           <h2>{{ t('landing.securityTitle') }}</h2>
           <p class="lp-section__lede">{{ t('landing.securityDesc') }}</p>
-          <NuxtLink to="/audit-securite" class="btn-secondary">
+          <NuxtLink to="/audit-securite" class="lp-security__link">
             {{ t('landing.inspectSecurity') }}
             <Icon name="hugeicons:arrow-right-01" class="h-4 w-4" />
           </NuxtLink>
@@ -200,6 +224,45 @@ const { features } = useFeatureCatalog()
 
 const SOURCE_CODE_URL = 'https://github.com/HQStudio-byEnzo/qvault'
 
+// Menu de navigation mobile : le header ne garde que le logo, la langue et le
+// CTA sous 60rem, d'où ce panneau. Il se ferme au clic d'un lien, sur Échap et
+// dès que la largeur repasse au-dessus du point de rupture.
+const menuOpen = ref(false)
+const menuButton = ref<HTMLButtonElement | null>(null)
+const menuPanel = ref<HTMLElement | null>(null)
+
+function closeMenu() {
+  menuOpen.value = false
+}
+
+function toggleMenu() {
+  menuOpen.value = !menuOpen.value
+  if (menuOpen.value) nextTick(() => menuPanel.value?.querySelector('a')?.focus())
+}
+
+function onMenuKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Escape' || !menuOpen.value) return
+  menuOpen.value = false
+  menuButton.value?.focus()
+}
+
+function onViewportChange(event: MediaQueryListEvent) {
+  if (event.matches) menuOpen.value = false
+}
+
+let viewportQuery: MediaQueryList | null = null
+
+onMounted(() => {
+  window.addEventListener('keydown', onMenuKeydown)
+  viewportQuery = window.matchMedia('(min-width: 60rem)')
+  viewportQuery.addEventListener('change', onViewportChange)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onMenuKeydown)
+  viewportQuery?.removeEventListener('change', onViewportChange)
+})
+
 // Single source of truth: the visible FAQ and its structured data stay in sync.
 const faqItems = computed(() => Array.from({ length: 6 }, (_, index) => ({
   question: t(`faq.q${index + 1}`),
@@ -249,9 +312,24 @@ const securityFlow = computed(() => [
 </script>
 
 <style scoped>
+.lp .eyebrow {
+  /* Une bordure arrondie se lit comme un bouton ou un filtre : sur la LP les
+     libellés de section restent du texte, sans contour. */
+  background: none;
+  border: 0;
+  border-radius: 0;
+  color: var(--color-accent-text);
+  letter-spacing: 0.12em;
+  min-height: 0;
+  padding-inline: 0;
+}
+
 .lp {
   background: var(--color-paper);
   color: var(--color-text);
+  /* 3,28:1 sur le fond de page : les bordures de carte restent visibles en
+     plein jour, contrairement au token --color-rule (1,44:1). */
+  --lp-rule: oklch(0.5 0.018 107.3);
 }
 
 .lp-nav {
@@ -309,6 +387,52 @@ const securityFlow = computed(() => [
   margin-inline-start: auto;
 }
 
+/* Le burger n'apparaît qu'avec le panneau : au-delà de 60rem les liens sont
+   visibles dans la barre. */
+.lp-nav__toggle {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--lp-rule);
+  border-radius: var(--radius-md);
+  color: var(--color-ink);
+  display: inline-flex;
+  height: 2.75rem;
+  justify-content: center;
+  width: 2.75rem;
+}
+
+.lp-nav__toggle:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 2px;
+}
+
+.lp-nav__panel {
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--lp-rule);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2) clamp(var(--space-4), 4vw, var(--space-8)) var(--space-4);
+}
+
+.lp-nav__panel a {
+  align-items: center;
+  border-bottom: 1px solid var(--color-rule);
+  color: var(--color-text);
+  display: flex;
+  font-size: 1rem;
+  min-height: 2.75rem;
+  text-decoration: none;
+}
+
+.lp-nav__panel a:last-child {
+  border-bottom: 0;
+}
+
+.lp-nav__panel-login {
+  color: var(--color-accent-text) !important;
+  font-weight: 600;
+}
+
 .lp-hero {
   align-items: center;
   display: grid;
@@ -320,8 +444,10 @@ const securityFlow = computed(() => [
 
 .lp-hero__title {
   color: var(--color-ink);
-  font-size: clamp(2.25rem, 6vw, 3.75rem);
-  line-height: 1.05;
+  /* 60 px en colonne de 520 px donnait quatre lignes ; 48 px max en donne
+     deux à trois, y compris avec la version anglaise plus longue. */
+  font-size: clamp(2rem, 4.4vw, 3rem);
+  line-height: 1.1;
   margin-top: var(--space-4);
   text-wrap: balance;
 }
@@ -345,6 +471,17 @@ const securityFlow = computed(() => [
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-top: var(--space-6);
+}
+
+/* 44 px au doigt, 40 px à la souris. */
+.lp :is(.btn-primary, .btn-secondary) {
+  min-height: 2.75rem;
+}
+
+@media (min-width: 60rem) {
+  .lp :is(.btn-primary, .btn-secondary) {
+    min-height: 2.5rem;
+  }
 }
 
 .lp-hero__points {
@@ -433,14 +570,20 @@ const securityFlow = computed(() => [
 .lp-preview__label {
   color: var(--color-ink);
   flex: 1;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 500;
 }
 
 .lp-preview__value {
-  color: var(--color-text-faint);
+  color: var(--color-text-muted);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Seul endroit de la page où la couleur dit « protégé ». */
+.lp-preview__head .tech-status {
+  border-color: color-mix(in oklab, var(--color-accent-500) 45%, var(--lp-rule));
+  color: var(--color-accent-500);
 }
 
 .lp-preview__foot {
@@ -457,7 +600,16 @@ const securityFlow = computed(() => [
 .lp-section {
   margin-inline: auto;
   max-width: 76rem;
-  padding: clamp(var(--space-10), 6vw, var(--space-20)) clamp(var(--space-4), 4vw, var(--space-8));
+  padding: clamp(var(--space-10), 4.5vw, var(--space-16)) clamp(var(--space-4), 4vw, var(--space-8));
+}
+
+/* Une seule bande de surface différente : elle casse le noir continu et
+   marque la section Confidentialité sans pastille supplémentaire. */
+.lp-security {
+  background: var(--color-paper-2);
+  border: 1px solid var(--lp-rule);
+  border-radius: var(--radius-xl);
+  padding: clamp(var(--space-6), 4vw, var(--space-10));
 }
 
 .lp-section__head {
@@ -483,12 +635,12 @@ const securityFlow = computed(() => [
   display: grid;
   gap: var(--space-4);
   margin-top: var(--space-10);
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .lp-feature {
-  background: var(--color-paper);
-  border: 1px solid var(--color-rule);
+  background: var(--color-paper-2);
+  border: 1px solid var(--lp-rule);
   border-radius: var(--radius-lg);
   color: inherit;
   display: flex;
@@ -520,6 +672,7 @@ const securityFlow = computed(() => [
   color: var(--color-ink);
   font-family: var(--font-display);
   font-size: 1.0625rem;
+  line-height: 1.3;
 }
 
 .lp-feature p {
@@ -555,10 +708,17 @@ const securityFlow = computed(() => [
 }
 
 .lp-steps__index {
-  color: var(--color-accent-600);
+  align-items: center;
+  background: var(--color-accent-soft);
+  border-radius: 999px;
+  color: var(--color-accent-text);
+  display: grid;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 0.8125rem;
   font-weight: 600;
+  height: 1.75rem;
+  place-items: center;
+  width: 1.75rem;
 }
 
 .lp-steps h3 {
@@ -566,7 +726,7 @@ const securityFlow = computed(() => [
   color: var(--color-ink);
   display: flex;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 1.125rem;
   gap: var(--space-2);
 }
 
@@ -585,9 +745,9 @@ const securityFlow = computed(() => [
 }
 
 .lp-tool {
-  align-items: center;
+  align-items: flex-start;
   background: var(--color-paper-2);
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--lp-rule);
   border-radius: var(--radius-lg);
   color: inherit;
   display: flex;
@@ -618,6 +778,7 @@ const securityFlow = computed(() => [
   color: var(--color-ink);
   font-family: var(--font-display);
   font-size: 1rem;
+  line-height: 1.3;
 }
 
 .lp-tool p {
@@ -626,9 +787,10 @@ const securityFlow = computed(() => [
   margin-top: var(--space-1);
 }
 
-.lp-tool > svg {
+.lp-tool > .iconify {
   color: var(--color-text-faint);
   margin-inline-start: auto;
+  margin-top: 0.25rem;
 }
 
 .lp-security {
@@ -643,6 +805,22 @@ const securityFlow = computed(() => [
   text-wrap: balance;
 }
 
+.lp-security__link {
+  align-items: center;
+  color: var(--color-accent-text);
+  display: inline-flex;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  gap: var(--space-1);
+  margin-top: var(--space-5);
+  min-height: 2.75rem;
+  text-decoration: none;
+}
+
+.lp-security__link:hover {
+  text-decoration: underline;
+}
+
 .lp-security__flow {
   display: grid;
   gap: var(--space-3);
@@ -651,7 +829,7 @@ const securityFlow = computed(() => [
 .lp-security__flow li {
   align-items: flex-start;
   background: var(--color-paper-2);
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--lp-rule);
   border-radius: var(--radius-lg);
   display: flex;
   gap: var(--space-4);
@@ -709,6 +887,23 @@ const securityFlow = computed(() => [
   display: none;
 }
 
+.lp-faq summary:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 2px;
+}
+
+.lp-faq summary .iconify {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.lp-faq details[open] summary {
+  color: var(--color-accent-text);
+}
+
+.lp-faq details[open] summary .iconify {
+  transform: rotate(45deg);
+}
+
 .lp-faq p {
   color: var(--color-text-muted);
   font-size: 0.9375rem;
@@ -719,27 +914,23 @@ const securityFlow = computed(() => [
 
 .lp-cta {
   align-items: center;
-  background: var(--color-accent-600);
-  color: var(--color-primary-foreground);
+  background: var(--color-paper-2);
+  border: 1px solid var(--lp-rule);
+  border-radius: var(--radius-xl);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-5);
+  gap: var(--space-6);
   justify-content: space-between;
   margin-inline: auto;
   max-width: 76rem;
-  padding: clamp(var(--space-8), 6vw, var(--space-12)) clamp(var(--space-5), 4vw, var(--space-10));
+  padding: clamp(var(--space-8), 5vw, var(--space-12)) clamp(var(--space-5), 4vw, var(--space-10));
 }
 
 .lp-cta h2 {
-  color: var(--color-primary-foreground);
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  color: var(--color-ink);
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  max-width: 34rem;
   text-wrap: balance;
-}
-
-.lp-cta .btn-primary {
-  background: #fff;
-  border-color: #fff;
-  color: oklch(var(--accent-800));
 }
 
 .lp-footer {
@@ -774,8 +965,13 @@ const securityFlow = computed(() => [
   color: var(--color-text-muted);
   display: inline-flex;
   font-size: 0.875rem;
-  min-height: 1.5rem;
+  min-height: 2.75rem;
   text-decoration: none;
+}
+
+.lp-footer__links a:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 2px;
 }
 
 .lp-footer__links a:hover {
@@ -793,6 +989,22 @@ const securityFlow = computed(() => [
     display: flex;
   }
 
+  .lp-nav__toggle,
+  .lp-nav__panel {
+    display: none !important;
+  }
+
+  .lp-features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Deux lignes de titre réservées : descriptions et liens s'alignent dans la
+     grille 3 × 2. Inutile en une colonne, où cela rallonge la page. */
+  .lp-feature h3,
+  .lp-tool h3 {
+    min-height: 2.6em;
+  }
+
   .lp-hero {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   }
@@ -804,8 +1016,16 @@ const securityFlow = computed(() => [
 }
 
 @media (max-width: 40rem) {
-  .lp-nav__login {
+  .lp-nav__login,
+  .lp-nav__cta {
     display: none;
+  }
+
+  /* Le CTA principal reste accessible dans le panneau, en pleine largeur. */
+  .lp-nav__panel-cta {
+    justify-content: center;
+    margin-top: var(--space-3);
+    width: 100%;
   }
 }
 </style>
